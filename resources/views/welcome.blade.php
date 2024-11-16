@@ -10,7 +10,7 @@
         <meta name="author" content="" />
         <link rel="shortcut icon" href="images/fevicon.png" type="">
 
-        <title> Vehicle Rental </title>
+        <title> iRENTA HUB </title>
 
 
         <!-- bootstrap core css -->
@@ -23,7 +23,7 @@
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
 
         <!-- font awesome style -->
-        <link href="{{ asset('assets/css/font-awesome.min.css') }}" rel="stylesheet" />
+        <script src="https://kit.fontawesome.com/2a90b2a25f.js" crossorigin="anonymous"></script>
 
         <!-- Custom styles for this template -->
         <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet" />
@@ -35,129 +35,40 @@
     </head>
     <body >
     <div class="hero_area">
-        <!-- header section strats -->
-        <header class="header_section">
-            <div class="header_bottom">
-                <div class="container-fluid">
-                <nav class="navbar navbar-expand-lg custom_nav-container ">
-                    <a class="navbar-brand" href="index.html">
-                    <span>
-                        Vehicle Rental
-                    </span>
-                    </a>
+        
+        @include('landing.header')
 
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class=""> </span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav  ">
-                        <li class="nav-item active">
-                        <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link" href="service.html">Services</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link" href="about.html"> About</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link" href="contact.html">Contact Us</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link" href="#"> <i class="fa fa-user" aria-hidden="true"></i> Login</a>
-                        </li>
-                        <form class="form-inline">
-                        <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit">
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                        </button>
-                        </form>
-                    </ul>
-                    </div>
-                </nav>
-                </div>
-            </div>
-        </header>
-        <!-- end header section -->
         <!-- slider section -->
         <section class="slider_section ">
         <div class="slider_bg_box">
-            <img src="{{ asset('assets/images/slider-bg.jpg') }}" alt="">
+            <img src="{{ asset('assets/images/vehicle.jpg') }}" alt="">
         </div>
         <div id="customCarousel1" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="container ">
-                <div class="row">
-                    <div class="col-md-7 ">
-                    <div class="detail-box">
-                        <h1>
-                        We Provide best <br>
-                        Transport Service
-                        </h1>
-                        <p>
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eum magnam, voluptates distinctio, officia architecto tenetur debitis hic aspernatur libero commodi atque fugit adipisci, blanditiis quidem dolorum odit voluptas? Voluptate, eveniet?
-                        </p>
-                        <div class="btn-box">
-                        <a href="" class="btn1">
-                            Get A Quote
-                        </a>
+                <div class="carousel-item active">
+                    <div class="container ">
+                    <div class="row">
+                        <div class="col-md-7 ">
+                        <div class="detail-box">
+                            <h1>
+                            Experience the Best Way to Explore 
+                            <!-- <br> -->
+                            Marinduque with iRENTA HUB
+                            </h1>
+                            <p>
+                            iRENTA HUB offers a wide range of vehicles for rent, with experienced and professional drivers who know Marinduque's roads. We also provide airport transfers, city tours, and outdoor activities to make your trip more enjoyable.
+                            </p>
+                            <div class="btn-box">
+                            <a href="" class="btn1">
+                                Book Now
+                            </a>
+                            </div>
+                        </div>
                         </div>
                     </div>
                     </div>
                 </div>
-                </div>
             </div>
-            <div class="carousel-item">
-                <div class="container ">
-                <div class="row">
-                    <div class="col-md-7 ">
-                    <div class="detail-box">
-                        <h1>
-                        We Provide best <br>
-                        Transport Service
-                        </h1>
-                        <p>
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eum magnam, voluptates distinctio, officia architecto tenetur debitis hic aspernatur libero commodi atque fugit adipisci, blanditiis quidem dolorum odit voluptas? Voluptate, eveniet?
-                        </p>
-                        <div class="btn-box">
-                        <a href="" class="btn1">
-                            Get A Quote
-                        </a>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="container ">
-                <div class="row">
-                    <div class="col-md-7 ">
-                    <div class="detail-box">
-                        <h1>
-                        We Provide best <br>
-                        Transport Service
-                        </h1>
-                        <p>
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eum magnam, voluptates distinctio, officia architecto tenetur debitis hic aspernatur libero commodi atque fugit adipisci, blanditiis quidem dolorum odit voluptas? Voluptate, eveniet?
-                        </p>
-                        <div class="btn-box">
-                        <a href="" class="btn1">
-                            Get A Quote
-                        </a>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
-            <ol class="carousel-indicators">
-            <li data-target="#customCarousel1" data-slide-to="0" class="active"></li>
-            <li data-target="#customCarousel1" data-slide-to="1"></li>
-            <li data-target="#customCarousel1" data-slide-to="2"></li>
-            </ol>
         </div>
 
         </section>
@@ -478,7 +389,8 @@
             <div class="col-lg-7 col-md-6 px-0">
             <div class="map_container">
                 <div class="map">
-                <div id="googleMap"></div>
+                <div >
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d248420.9647039206!2d121.9490304886287!3d13.376522378746706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sph!4v1731753995308!5m2!1sen!2sph" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
                 </div>
             </div>
             </div>

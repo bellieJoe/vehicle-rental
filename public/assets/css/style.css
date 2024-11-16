@@ -310,10 +310,10 @@ a:focus {
 }
 
 .slider_section .slider_bg_box img {
-  width: auto;
-  height: auto;
-  min-width: 100%;
-  min-height: 100%;
+  width: 100%;
+  /* height: auto;  */
+  /* min-width: 100%;
+  min-height: 100%; */
 }
 
 .slider_section .slider_bg_box::before {
