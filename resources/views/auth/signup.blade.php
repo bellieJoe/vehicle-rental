@@ -1,67 +1,55 @@
 @extends('auth.layouts.master')
 @section('content')
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="card mx-auto" style="width: 500px">
-            <div class="card-body">
-                <form action="" class="container-lg p-4" method="POST">
-                    @csrf
-                    <a href="{{ route('home') }}" class="text-center font-bold h3 mx-auto block">iRENTA HUB</a>
-
-                    <h2 class="mb-2 h4 font-bold">Sign Up</h2>
-
-                    <div class="mb-2">
-                        <label for="" class="text-danger">*</label>
-                        <label for="">Name</label>
-                        <input type="text" class="form-control" name="name" value="{{ old('name') }}" placeholder="eg. John Doe" required>
-                        @error('name')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+    <div class="card o-hidden border-0 shadow-lg my-5 tw-max-w-md mx-auto">
+        <div class="card-body p-0">
+            <!-- Nested Row within Card Body -->
+            <div class="">
+                <div class="p-5">
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
                     </div>
-                    <div class="mb-2">
-                        <label for="" class="text-danger">*</label>
-                        <label for="">Email</label>
-                        <input type="text" class="form-control" name="email" value="{{ old('email') }}" placeholder="eg. john@example.com" required>
-                        @error('email')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                    <form class="user" action="{{ route('auth.register-client') }}" method="POST">
+                        @csrf
+                        <div class="form-group ">
+                            <input type="text" name="name" value="{{ old('name') }}" class="form-control form-control-user" placeholder="Full Name">
+                            @error('name')
+                            asd
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control form-control-user" name="email" value="{{ old('email') }}" placeholder="Email Address">
+                            @error('email', 'org_register')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                <input type="password" class="form-control form-control-user" name="password" placeholder="Password">
+                                @error('password', 'org_register')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control form-control-user" name="password_confirmation" placeholder="Repeat Password">
+                                @error('password_confirmation', 'org_register')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-3 btn-user btn-block">
+                            Register Account
+                        </button>
+                        
+                    </form>
+                    <hr>
+                    <div class="text-center">
+                        <a class="small" href="forgot-password.html">Forgot Password?</a>
                     </div>
-                    <div class="mb-2">
-                        <label for="" class="text-danger">*</label>
-                        <label for="">Address</label>
-                        <input type="text" class="form-control" name="address" value="{{ old('address') }}" placeholder="eg. 123 Street Street" required>
-                        @error('address')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                    <div class="text-center">
+                        <a class="small" href="{{ route('auth.signin') }}">Already have an account? Sign In!</a>
                     </div>
-                    <div class="mb-2">
-                        <label for="" class="text-danger">*</label>
-                        <label for="">Password</label>
-                        <input type="password" class="form-control" name="password" placeholder="Enter your password" required>
-                        @error('password')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="mb-2">
-                        <label for="" class="text-danger">*</label>
-                        <label for="">Password Confirmation</label>
-                        <input type="password" class="form-control" name="password_confirmation" placeholder="Repeat your password" required>
-                        @error('password_confirmation')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="mb-4">
-                        <label for="" class="text-danger">*</label>
-                        <label for="">Contact Number</label>
-                        <input type="text" class="form-control" name="contact_number" value="{{ old('contact_number') }}" placeholder="eg. 09171234567" required>
-                        @error('contact_number')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="ml-auto mr-0 d-flex justify-content-end">
-                        <a href="{{ route('auth.signin') }}" class="btn btn-outline-primary ml-2">Sign In</a>
-                        <button class="btn btn-primary ml-2" type="submit">Sign Up</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

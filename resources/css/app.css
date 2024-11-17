@@ -2,3 +2,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import "./sb-admin-2.css";
+@import "./sb-admin-2.min.css";

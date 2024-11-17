@@ -7,17 +7,16 @@
     
     <script src="https://kit.fontawesome.com/2a90b2a25f.js" crossorigin="anonymous"></script>
 
+    
+
     {{-- JQuery --}}
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-
-    {{-- select2 --}}
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="{{ mix('assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="{{ mix('assets/css/app.css') }}" rel="stylesheet">
+    {{-- <link href="{{ mix('assets/css/sb-admin-2.min.css') }}" rel="stylesheet"> --}}
 
     <title>iRENTA HUB</title>
 </head>
@@ -25,7 +24,16 @@
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
-        @include('main.layouts.sidebar')
+        @auth
+            @if (auth()->user()->role == 'admin')
+                @include('main.layouts.admin-sidebar')
+            @elseif (auth()->user()->role == 'client')
+                @include('main.layouts.client-sidebar')
+            @elseif (auth()->user()->role == 'org')
+                @include('main.layouts.org-sidebar')
+            @endif
+        @endauth
+
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
@@ -57,10 +65,5 @@
     <!-- Custom scripts for all pages-->
     <script src="{{asset('assets/js/sb-admin-2.min.js')}}"></script>
 
-    <script>
-        $(function() {
-            $('.select2').select2()
-        });
-    </script>
 </body>
 </html>

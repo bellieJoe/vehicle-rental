@@ -27,6 +27,8 @@
         <!-- Custom styles for this template-->
         <link href="{{ mix('assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
 
+        <link href="{{ mix('assets/css/app.css') }}" rel="stylesheet">
+
 
         <title>iRENTA HUB</title>
  

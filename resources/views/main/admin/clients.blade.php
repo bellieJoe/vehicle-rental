@@ -1,7 +1,7 @@
 @extends("main.layouts.master")
 @section("content")
     <div >
-        <h4>Clients</h4>
+        <h4 class="h4">Clients</h4>
 
         <div class="card">
             <div class="card-header">Accounts</div>
@@ -12,20 +12,18 @@
                             <th scope="col">Name</th>
                             <th scope="col">Email</th>
                             <th scope="col">Phone</th>
-                            <th scope="col">Address</th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($clients as $client)
-                            <tr>
-                                <th scope="row">{{$client->id}}</th>
+                            <tr> 
                                 <td>{{$client->name}}</td>
                                 <td>{{$client->email}}</td>
-                                <td>{{$client->phone}}</td>
+                                <td>{{ $client->phone ?? 'N/A' }}</td>
                                 <td>
-                                    <a href="{{route('admin.client.edit', $client->id)}}" class="btn btn-primary">Edit</a>
-                                    @include('main.admin.clients._delete')
+                                    {{-- <a href="{{route('admin.client.edit', $client->id)}}" class="btn btn-primary">Edit</a>
+                                    @include('main.admin.clients._delete') --}}
                                 </td>
                             </tr>
                         @empty
