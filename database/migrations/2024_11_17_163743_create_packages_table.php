@@ -13,20 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('vehicles', function (Blueprint $table) {
+        Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('vehicle_category_id')->constrained();
-            $table->string('brand');
-            $table->string('model');
-            $table->string('plate_number');
-            $table->enum('rent_options', ["With Driver", "Without Driver", "Both"])->default("Both");
-            $table->string('image')->nullable();
+            $table->string('package_name');
+            $table->string('package_price');
+            $table->string('package_duration');
+            $table->text('package_description', 60000);
+            $table->string('package_image');
             $table->boolean('is_available')->default(false);
-            $table->float('rate')->default(0)->nullable();
-            $table->float('rate_w_driver')->default(0)->nullable();
-            $table->timestamps();
+            $table->foreignId('vehicle_id')->constrained();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 
@@ -37,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('vehicles');
+        Schema::dropIfExists('packages');
     }
 };

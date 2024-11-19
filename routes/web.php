@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\OrgController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleCategoryController;
 use App\Http\Controllers\VehicleController;
@@ -46,6 +49,8 @@ Route::prefix('auth')->group(function () {
     Route::view('/signup', 'auth.signup')->name('auth.signup'); 
 });
 
+
+// ADMIN ROUTES
 Route::prefix('admin')
 ->middleware(['auth', 'role:admin', 'verified'])
 ->group(function () {
@@ -56,6 +61,7 @@ Route::prefix('admin')
     Route::post('orgs', [UserController::class, 'registerOrg'])->name('admin.register-org');
 });
 
+// ORG ROUTES
 Route::prefix('org')
 ->middleware(['auth', 'role:org', 'verified'])
 ->group(function () {
@@ -74,17 +80,41 @@ Route::prefix('org')
             Route::put('', [VehicleCategoryController::class, 'update'])->name('org.vehicles.category.update');
         });
     });
+
     Route::prefix('packages')->group(function () {
+        Route::get('', [PackageController::class, 'index'])->name('org.packages.index');
+        Route::get('create', [PackageController::class, 'create'])->name('org.packages.create');
+        Route::post('', [PackageController::class, 'store'])->name('org.packages.store');
+    });
+
+    Route::prefix("bookings")->group(function () {
+        Route::get('', [OrgController::class, 'bookings'])->name('org.bookings.index');    
+        Route::get('edit/{booking_id}', [OrgController::class, 'editBooking'])->name('org.bookings.edit');    
+        Route::put('update/{booking_id}', [OrgController::class, 'updateBooking'])->name('org.bookings.update');    
+    });
+
+});
+
+// CLIENT ROUTES
+Route::prefix('client')
+->middleware(['auth', 'role:client', 'verified'])
+->group( function () {
+    Route::redirect("", "/client/vehicles");
+    Route::prefix("vehicles")->group(function () {
+        Route::get('', [ClientController::class, 'vehicles'])->name('client.vehicles');
+        Route::get('rent/{vehicle_id}', [ClientController::class, 'rentView'])->name('client.vehicles.rentView');   
+        Route::post('rent', [ClientController::class, 'rentStore'])->name('client.vehicles.rentStore'); 
+    });
+    Route::prefix("bookings")->group(function () {
+        Route::get('', [ClientController::class, 'bookings'])->name('client.bookings');
     });
 });
 
-
-Route::prefix('client')->group( function () {
-    Route::view('', 'main.client.index')->name('client.index')->middleware(['auth', 'verified']);
-});
-
+// API
 Route::prefix('api')->group(function () {
-    
+    Route::prefix("vehicles")->group(function () {
+        Route::get('query-by-user/{user_id}', [VehicleController::class, 'apiQuery'])->name('api.vehicles.apiQueryByUser');
+    });
 });
 
 

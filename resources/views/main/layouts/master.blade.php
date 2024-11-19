@@ -17,6 +17,11 @@
     <!-- Custom styles for this template-->
     <link href="{{ mix('assets/css/app.css') }}" rel="stylesheet">
     {{-- <link href="{{ mix('assets/css/sb-admin-2.min.css') }}" rel="stylesheet"> --}}
+    
+    
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <title>iRENTA HUB</title>
 </head>
@@ -51,12 +56,12 @@
 
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>asd
+        <i class="fas fa-angle-up"></i>
     </a>
     <!-- End Scroll to Top Button-->
 
     <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('sb-admin-vendor/jquery/jquery.min.js')}}"></script>
+    {{-- <script src="{{ asset('sb-admin-vendor/jquery/jquery.min.js')}}"></script> --}}
     <script src="{{ asset('sb-admin-vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 
     <!-- Core plugin JavaScript-->

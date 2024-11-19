@@ -22,9 +22,16 @@ class VehicleController extends Controller
                     ->orWhere('brand', 'LIKE', "%{$_query}%")
                     ->orWhere('plate_number', 'LIKE', "%{$_query}%");
             })
-            ->with('vehicleCategory')
+            ->with([
+                'vehicleCategory',
+                'user.organisation'
+            ])
+            ->withCount([
+                'bookings'
+            ])
             ->paginate(10);
         $categories = VehicleCategory::where("user_id", auth()->user()->id)->get();
+
         return view('main.org.vehicles.vehicles')->with([
             'vehicles'=> $vehicles,
             "categories" => $categories
@@ -40,9 +47,8 @@ class VehicleController extends Controller
                 "vehicle_category_id" => "required|exists:vehicle_categories,id",
                 "image" => "required|image|mimes:jpeg,png,jpg|max:2048",
                 "rent_options" => "required|in:With Driver,Without Driver,Both",
-                "price_computation" => "required|in:Hourly,Daily,Both",
-                "hourly_price" => "nullable|required_if:price_computation,Hourly,Both|numeric|min:0",
-                "daily_price" => "nullable|required_if:price_computation,Daily,Both|numeric|min:0"
+                "rate" => "required|numeric|min:0",
+                "rate_w_driver" => "nullable|required_if:rent_options,With Driver,Both|numeric|min:0",
             ]);
     
             $imageName = time().'.'.$request->image->extension();
@@ -55,9 +61,8 @@ class VehicleController extends Controller
                 "vehicle_category_id" => $request->vehicle_category_id,
                 "image" => $imageName,
                 "rent_options" => $request->rent_options,
-                "price_computation" => $request->price_computation,
-                "hourly_price" => $request->price_computation === 'Hourly' || $request->price_computation === 'Both' ? $request->hourly_price : null,
-                "daily_price" => $request->price_computation === 'Daily' || $request->price_computation === 'Both' ? $request->daily_price : null,
+                "rate" => $request->rate,
+                "rate_w_driver" => $request->rent_options === 'Without Driver' ? null : $request->rate_w_driver,
                 "user_id" => auth()->user()->id,
             ]);
     
@@ -78,21 +83,22 @@ class VehicleController extends Controller
 
     public function update(Request $request){
         return DB::transaction(function () use ($request) {
-            $request->validateWithBag('vehicle_create', [
+            $request->validateWithBag('vehicle_update', [
                 "brand" => "required",
                 "model" => "required",
-                "plate_number" => ["required", 
-                        Rule::unique('vehicles', 'plate_number')->ignore($request->id), 
+                "plate_number" => [
+                    "required", 
+                    Rule::unique('vehicles', 'plate_number')->ignore($request->id), 
                 ],
                 "vehicle_category_id" => "required|exists:vehicle_categories,id",
                 "image" => "nullable|image|mimes:jpeg,png,jpg|max:2048",
                 "rent_options" => "required|in:With Driver,Without Driver,Both",
-                "price_computation" => "required|in:Hourly,Daily,Both",
-                "hourly_price" => "nullable|required_if:price_computation,Hourly,Both|numeric|min:0",
-                "daily_price" => "nullable|required_if:price_computation,Daily,Both|numeric|min:0"
+                "rate" => "required|numeric|min:0",
+                "rate_w_driver" => "nullable|required_if:rent_options,With Driver,Both|numeric|min:0"
             ]);
     
             $vehicle = Vehicle::find($request->id); 
+
             if ($request->hasFile('image')) {
                 $imageName = time().'.'.$request->image->extension();
                 $request->image->move(public_path('images/vehicles'), $imageName);
@@ -107,9 +113,8 @@ class VehicleController extends Controller
                 "plate_number" => $request->plate_number,
                 "vehicle_category_id" => $request->vehicle_category_id,
                 "rent_options" => $request->rent_options,
-                "price_computation" => $request->price_computation,
-                "hourly_price" => $request->price_computation === 'Hourly' || $request->price_computation === 'Both' ? $request->hourly_price : null,
-                "daily_price" => $request->price_computation === 'Daily' || $request->price_computation === 'Both' ? $request->daily_price : null
+                "rate" => $request->rate,
+                "rate_w_driver" => $request->rent_options === 'Without Driver' ? null : $request->rate_w_driver,
             ]);
 
             return redirect()->back()->with('success', 'Vehicle updated successfully');
@@ -124,5 +129,20 @@ class VehicleController extends Controller
         $vehicle = Vehicle::find($request->id);
         $vehicle->delete();
         return redirect()->back()->with('success', 'Vehicle deleted successfully');
+    }
+
+    public function apiQuery(Request $request, $user_id) {
+        $query = $request->query('query');
+    
+        $vehicles = Vehicle::where('user_id', $user_id)
+            ->where(function($q) use ($query) {
+                $q->where('plate_number', 'like', '%' . $query . '%')
+                  ->orWhere('model', 'like', '%' . $query . '%')
+                  ->orWhere('brand', 'like', '%' . $query . '%');
+            })
+            ->addSelect(DB::raw("CONCAT(brand, ' ', model, ' ', plate_number) as text"))
+            ->get();
+    
+        return $vehicles;
     }
 }

@@ -20,7 +20,7 @@ class UserController extends Controller
             return redirect()->route('admin.index'); 
         }
         if(Auth::user()->role == 'client') {
-            return redirect()->route('client.index'); 
+            return redirect()->route('client.vehicles'); 
         }
         if(Auth::user()->role == 'org') {
             return redirect()->route('org.index'); 
