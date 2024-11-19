@@ -13,14 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('booking_details', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
-            $table->dateTime('start_datetime');
-            $table->integer('number_of_days');
-            $table->boolean('with_driver');
-            $table->string('pickup_location')->nullable();
-
+            $table->boolean('is_downpayment')->default(false);
+            $table->float('amount');
+            $table->string('payment_status');
+            $table->string('payment_method')->nullable();
+            $table->dateTime('payment_exp');
+            $table->dateTime('date_paid')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -33,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('booking_details');
+        Schema::dropIfExists('payments');
     }
 };

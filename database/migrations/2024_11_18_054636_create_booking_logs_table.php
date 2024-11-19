@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('booking_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booking_id')->constrained();
+            $table->foreignId('booking_id')->constrained()->onDelete('cascade');
             $table->string('log', 5000);
+            $table->string('reason', 5000)->nullable();
 
             $table->softDeletes();
             $table->timestamps();

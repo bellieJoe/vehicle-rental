@@ -78,7 +78,7 @@
 </div>
 
 <x-org.create-vehicle-modal :categories="$categories"></x-org.create-vehicle-modal>
-<x-org.update-vehicle-modal :categories="$categories" :vehicle="$vehicle"></x-org.update-vehicle-modal>
+<x-org.update-vehicle-modal :categories="$categories" ></x-org.update-vehicle-modal>
 <x-vehicle-details></x-vehicle-details>
 
 

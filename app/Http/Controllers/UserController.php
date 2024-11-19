@@ -136,4 +136,36 @@ class UserController extends Controller
             return redirect()->back()->with('message', 'Organization registered successfully!');
         });
     }
+
+    public function updateProfile(Request $request) {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $imageName = time().'.'.$request->profile_picture->extension();
+        $request->profile_picture->move(public_path('images/profile'), $imageName);
+
+        $user = User::find(auth()->user()->id);
+        $user->profile_picture = $imageName;
+        $user->save();
+
+        return redirect()->back()->with('message', 'Profile picture updated successfully!');
+    }
+
+    public function updatePassword(Request $request) {
+        $request->validateWithBag('reset_passsword', [
+            'old_password' => 'required',
+            'new_password' => 'required|min:8',
+            'confirm_new_password' => 'required|same:new_password',
+        ]);
+
+        $user = User::find(auth()->user()->id);
+        if (Hash::check($request->old_password, $user->password)) {
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+            return redirect()->back()->with('message', 'Password updated successfully!');
+        } else {
+            return redirect()->back()->with('message', 'Old password is incorrect!');
+        }
+    }
 }

@@ -13,14 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('booking_details', function (Blueprint $table) {
+        Schema::create('refunds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
-            $table->dateTime('start_datetime');
-            $table->integer('number_of_days');
-            $table->boolean('with_driver');
-            $table->string('pickup_location')->nullable();
-
+            $table->float('amount');
+            $table->string('gcash_number');
+            $table->string('gcash_name');
+            $table->string('email');
+            $table->string('gcash_transaction_number');
+            $table->string('status');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -33,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('booking_details');
+        Schema::dropIfExists('refunds');
     }
 };

@@ -28,8 +28,8 @@ return new class extends Migration
             // payment details
             $table->float('computed_price');    
             $table->float('paid_amount')->default(0);
-            $table->enum('payment_status', ['Paid', 'Unpaid', 'Partially Paid'])->default('Unpaid');
-            $table->enum('payment_method', ['Cash', "Online"]);
+            $table->string('payment_status');
+            // $table->enum('payment_method', ['Cash', "Online"]);
             $table->dateTime('payment_datetime')->nullable();
 
             // status

@@ -60,7 +60,15 @@
           </div>
 
           <div class="form-group">
-            <x-forms.select name="payment_method" label="Payment Method" placeholder="Please Payment Method" :options="['Cash' => 'Cash', 'Online' => 'Online']"  required />
+            <x-forms.input name="pickup_location" label="Pickup Location" placeholder="Enter pickup location"  />
+          </div>
+
+          {{-- <div class="form-group">
+            <x-forms.select name="payment_method" label="Payment Method" placeholder="Please Payment Method" :options="['Cash' => 'Cash', 'Gcash' => 'Gcash', 'Debit' => 'Debit Card']"  required />
+          </div> --}}
+
+          <div class="form-group">
+            <x-forms.select name="payment_option" label="Payment Option" placeholder="Select Payment Schedule" :options="['Full' => 'Pay in full', 'Installment' => 'Pay in Installment']" />
           </div>
 
           <hr>
@@ -99,12 +107,17 @@
       if(["With Driver"].includes($rentOptions.val())) {
         const rate = parseInt("{{$vehicle->rate_w_driver}}");
         $computedPrice.text(`Php ${$numberOfDays.val() * rate}`);
+        $('input[name="pickup_location"]').closest('.form-group').show();
       }
       else {
         const rate = {{$vehicle->rate}};
         $computedPrice.text(`Php ${$numberOfDays.val() * rate}`);
+        $('input[name="pickup_location"]').closest('.form-group').hide();
       }
     });
+
+
+
   });
 </script>
 @endsection

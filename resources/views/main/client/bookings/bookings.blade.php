@@ -43,6 +43,8 @@
                                                     <dd class="col-sm-8">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
                                                     <dt class="col-sm-4 tw-font-bold">Rent Option</dt>
                                                     <dd class="col-sm-8">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
+                                                    <dt class="col-sm-4 tw-font-bold">Pickup Location</dt>
+                                                    <dd class="col-sm-8">{{ $booking->bookingDetail->pickup_location }}</dd>
                                                 </dl>
                                             </div>
                                         @endif
@@ -69,29 +71,22 @@
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             @if(in_array($booking->status, ['Pending', 'To Pay']))
-                                                <a class="dropdown-item" href="#">Cancel</a>
+                                                <a class="dropdown-item" href="{{ route('client.bookings.cancelView', $booking->id)}}"><i class="fa-solid fa-circle-xmark mr-2 tw-text-gray-400"></i>Cancel</a>
                                             @endif
                                             
-                                            @if($booking->status == 'To Pay')
-                                                @if ($booking->payment_method == 'Online')
-                                                
-                                                @endif
-                                                @if ($booking->payment_method == 'Cash')
-                                                    <a class="dropdown-item" href="#"><i class="fas fa-credit-card mr-2 tw-text-gray-400"></i> View Payments</a>
-                                                @endif
+                                            @if(!in_array($booking->status, ['Pending', 'Rejected']))
+                                                <a class="dropdown-item" href="{{ route('client.bookings.payments', $booking->id) }}"><i class="fas fa-credit-card mr-2 tw-text-gray-400" ></i> View Payments</a>
                                             @endif
-                                            
                                             <hr>
-                                            <a class="dropdown-item" href="#"><i class="fas fa-list mr-2 tw-text-gray-400"></i> View Logs</a>
+                                            <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})"><i class="fas fa-list mr-2 tw-text-gray-400"></i> View Logs</button>
                                         </div>
                                     </div>
-                                    
                                     
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="2" class="text-center">No Bookings</td>
+                                <td colspan="7" class="text-center">No Bookings</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -103,4 +98,5 @@
 </div>
 
 <x-vehicle-details  />
+<x-bookings.view-logs-modal />
 </x-master>

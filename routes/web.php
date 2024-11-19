@@ -29,6 +29,10 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'welcome')->name('home');
 Route::view('/home', 'welcome');
 Route::get('/app', [UserController::class, 'app'])->name('app')->middleware('auth');
+Route::view('/profile', 'main.profile')->name('profile')->middleware(['auth', 'verified']);
+Route::view('/settings', 'main.settings')->name('settings')->middleware(['auth', 'verified']);
+Route::put('/update-password', [UserController::class , 'updatePassword'])->name('updatePassword')->middleware(['auth', 'verified']);
+Route::put('/update-profile', [UserController::class , 'updateProfile'])->name('updateProfile')->middleware(['auth', 'verified']);
 
 Route::prefix('/email')->group(function () {
     Route::get('/verify', [UserController::class, 'verificationNotice'])
@@ -107,6 +111,11 @@ Route::prefix('client')
     });
     Route::prefix("bookings")->group(function () {
         Route::get('', [ClientController::class, 'bookings'])->name('client.bookings');
+        Route::get('cancel/{booking_id}', [ClientController::class, 'cancelBookingView'])->name('client.bookings.cancelView');
+        Route::put('cancel/{booking_id}', [ClientController::class, 'cancelBooking'])->name('client.bookings.cancel');
+        Route::prefix("payments")->group(function () {
+            Route::get('{booking_id}', [ClientController::class, 'paymentsView'])->name('client.bookings.payments');
+        });
     });
 });
 

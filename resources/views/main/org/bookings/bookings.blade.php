@@ -25,8 +25,30 @@
                                         <h5>{{$booking->contact_number}}</h5>
                                     </td>
                                     <td>
-                                        <div class="badge {{$booking->booking_type == 'Vehicle' ? 'badge-primary' : 'badge-secondary'}}">{{$booking->booking_type}}</div>
-                                        <button class="btn btn-sm btn-outline-secondary " onclick="showVehicleDetails({{$booking->vehicle}})">{{ $booking->vehicle->model}} #{{$booking->vehicle->plate_number}}</button>
+                                        <div class="d-flex flex-column">
+                                            <div class="badge tw-w-fit {{$booking->booking_type == 'Vehicle' ? 'badge-primary' : 'badge-secondary'}}">{{$booking->booking_type}}</div>
+                                            @if ($booking->booking_type == 'Vehicle')
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-outline-secondary " onclick="showVehicleDetails({{$booking->vehicle}})">
+                                                        {{ $booking->vehicle->model}} #{{$booking->vehicle->plate_number}}
+                                                    </button>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <dl class="row tw-max-w-md">
+                                                        <dt class="col-sm-4 tw-font-bold">No. of Days :</dt>
+                                                        <dd class="col-sm-8">{{$booking->bookingDetail->number_of_days}} Day/s</dd>
+                                                        <dt class="col-sm-4 tw-font-bold">Start Date :</dt>
+                                                        <dd class="col-sm-8">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
+                                                        <dt class="col-sm-4 tw-font-bold"></dt>
+                                                        <dd class="col-sm-8">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
+                                                        <dt class="col-sm-4 tw-font-bold">Rent Option</dt>
+                                                        <dd class="col-sm-8">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
+                                                        <dt class="col-sm-4 tw-font-bold">Pickup Location</dt>
+                                                        <dd class="col-sm-8">{{ $booking->bookingDetail->pickup_location }}</dd>
+                                                    </dl>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td>
                                         <h5 class="tw-font-bold text-primary">PHP {{ number_format($booking->computed_price, 2) }} </h5>

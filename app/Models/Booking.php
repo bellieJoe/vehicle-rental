@@ -11,21 +11,18 @@ class Booking extends Model
     use HasFactory, SoftDeletes;
 
     // Define possible statuses for Vehicle Rental bookings
-    const STATUS_PENDING_VEHICLE = 'Pending';
-    const STATUS_REJECTED_VEHICLE = 'Rejected';
-    const STATUS_TO_PAY_VEHICLE = 'To Pay';
-    const STATUS_COMPLETED_VEHICLE = 'Completed';
-    const STATUS_CANCELLED_VEHICLE = 'Cancelled';
-    
-    // Define possible statuses for Package bookings
-    const STATUS_PENDING_PACKAGE = 'Pending';
-    const STATUS_REJECTED_PACKAGE = 'Rejected';
-    const STATUS_TO_PAY_PACKAGE = 'To Pay';
-    const STATUS_BOOKED_PACKAGE = 'Booked'; // More statuses specific to packages
-    const STATUS_COMPLETED_PACKAGE = 'Completed';
-    const STATUS_CANCELLED_PACKAGE = 'Cancelled';
+    const STATUS_PENDING = 'Pending';
+    const STATUS_REJECTED = 'Rejected';
+    const STATUS_TO_PAY = 'To Pay';
+    const STATUS_BOOKED = 'Booked';
+    const STATUS_FOR_PICKUP = 'For Pickup';
+    const STATUS_IN_PROGRESS = 'In Progress';
+    const STATUS_COMPLETED = 'Completed';
+    const STATUS_CANCELLED = 'Cancelled';
 
     protected $guarded = [];
+
+    protected $dates = ['start_date'];
 
     public function user()
     {
@@ -39,6 +36,22 @@ class Booking extends Model
 
     public function bookingDetail(){
         return $this->hasOne(BookingDetail::class);
+    }
+
+    public function package(){
+        return $this->belongsTo(Package::class);
+    }
+
+    
+    public function bookingLogs(){
+        return $this->hasMany(BookingLog::class)
+            ->orderBy('created_at', 'DESC');
+    }
+
+    public function payments(){
+        return $this->hasMany(Payment::class)
+            ->orderBy('payment_exp', 'ASC');
+
     }
 
 

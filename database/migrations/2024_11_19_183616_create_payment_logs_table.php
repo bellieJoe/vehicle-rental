@@ -13,14 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('payment_histories', function (Blueprint $table) {
+        Schema::create('payment_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booking_id')->constrained();
-            $table->float('amount_paid');
-            $table->float('remaining_balance')->default(0);
-            $table->enum('payment_method', ['Cash', "Online"]);
-            $table->dateTime('payment_datetime');
-
+            $table->foreignId('payment_id')->constrained();
+            $table->string('log', 5000);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payment_histories');
+        Schema::dropIfExists('payment_logs');
     }
 };

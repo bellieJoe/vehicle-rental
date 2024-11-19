@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BookingUpdate;
 use App\Models\Booking;
 use App\Models\BookingLog;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrgController extends Controller
 {
@@ -57,6 +59,7 @@ class OrgController extends Controller
                 ]);
 
                 // add mail
+                Mail::to($booking->user->email)->send(new BookingUpdate($booking, "Congratulations! Your booking has been approved. To secure your reservation, please proceed with the payment at your earliest convenience. You can view your booking details and make a payment by visiting your bookings dashboard.", $booking->user, route('client.bookings')));
             }
             if($action === "REJECT"){
                 $booking->update([

@@ -9,3 +9,7 @@
 @if (session('error'))    
     <x-alert type="danger" message="{{ session('error') }}" />    
 @endif
+
+@error('others')
+    <x-alert type="danger" message="{{ $message }}" />
+@enderror

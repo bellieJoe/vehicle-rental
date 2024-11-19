@@ -17,7 +17,7 @@
                 @csrf
                 @method('PUT')
                 <div class="row mb-3">
-                    <x-forms.input type="hidden" name="id" value="{{$vehicle->id}}" placeholder="Enter brand" errorBag="vehicle_update" required></x-forms.input>
+                    <x-forms.input type="hidden" name="id" value="{{old('vehicle_id')}}" placeholder="Enter brand" errorBag="vehicle_update" required></x-forms.input>
                     <div class="col">
                         <x-forms.input name="brand" label="Brand" placeholder="Enter brand" errorBag="vehicle_update" required></x-forms.input>
                     </div>
