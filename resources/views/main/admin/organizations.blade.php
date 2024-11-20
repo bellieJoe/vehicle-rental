@@ -35,7 +35,15 @@
                                 <td>{{$org->organisation->gcash_number}}</td>
                                 <td>{{$org->organisation->address}}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-danger">Ban</button>
+                                    @if ($org->is_banned)
+                                        <form action="{{ route('admin.unban-account', $org->id) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="user_id" value="{{$org->id}}">
+                                            <button type="submit" class="btn btn-sm btn-success">Unban</button>
+                                        </form>
+                                    @else
+                                        <button class="btn btn-sm btn-danger" onclick="showBanAccountModal({{$org->id}})">Ban</button>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
@@ -121,6 +129,8 @@
             </div>
         </form>
     </div>
+
+    <x-ban-account-modal />
 
     <script>
         $(document).ready(function() {

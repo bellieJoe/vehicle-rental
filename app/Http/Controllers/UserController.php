@@ -168,4 +168,27 @@ class UserController extends Controller
             return redirect()->back()->with('message', 'Old password is incorrect!');
         }
     }
+
+    public function banAccount(Request $request) {
+
+        $user = User::find($request->user_id);
+
+        $user->update([
+            'is_banned' => 1
+        ]); 
+
+        return redirect()->back()->with('message', 'Account banned successfully!');
+    }
+
+
+    public function unbanAccount(Request $request) {
+
+        $user = User::find($request->user_id);
+
+        $user->update([
+            'is_banned' => 0
+        ]); 
+
+        return redirect()->back()->with('message', 'Account unbanned successfully!');
+    }
 }

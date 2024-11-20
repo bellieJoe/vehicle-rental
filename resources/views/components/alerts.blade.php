@@ -10,6 +10,12 @@
     <x-alert type="danger" message="{{ session('error') }}" />    
 @endif
 
+@if ($errors->has('error')) 
+    @foreach ($errors->get('error') as $message)
+        <x-alert type="danger" message="{!! $message !!}" />    
+    @endforeach 
+@endif
+
 @error('others')
     <x-alert type="danger" message="{{ $message }}" />
 @enderror

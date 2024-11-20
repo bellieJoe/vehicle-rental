@@ -2,7 +2,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
   <!-- Sidebar - Brand -->
-  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home') }}">
       {{-- <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
       </div> --}}
@@ -14,16 +14,11 @@
 
   <!-- Nav Item - Dashboard -->
   <li class="nav-item active">
-      <a class="nav-link" href="index.html"><i class="fas fa-fw fa-tachometer-alt"></i><span>Dashboard</span></a>
+      <a class="nav-link" href="#"><span>Admin Interface</span></a>
   </li>
 
   <!-- Divider -->
   <hr class="sidebar-divider">
-
-  <!-- Heading -->
-  <div class="sidebar-heading">
-      Admin Interface
-  </div>
 
   <!-- Nav Item - Pages Collapse Menu -->
   <li class="nav-item">

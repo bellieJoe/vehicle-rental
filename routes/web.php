@@ -7,14 +7,6 @@ use App\Http\Controllers\PackageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleCategoryController;
 use App\Http\Controllers\VehicleController;
-use App\Mail\OrgRegistered;
-use App\Models\Inquiry;
-use App\Models\Organisation;
-use App\Models\User;
-use App\Models\Vehicle;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,20 +39,27 @@ Route::prefix('/email')->group(function () {
     ->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 });
 
+
+include 'password_reset.php';
+
 Route::prefix('auth')->group(function () {
     Route::view('/signin', 'auth.signin')->name('auth.signin')->middleware('guest'); 
     Route::post('/register-client', [UserController::class, 'registerClient'])->name('auth.register-client')->middleware('guest'); 
     Route::post('/logout', [UserController::class, 'logout'])->name('auth.logout'); 
     Route::post('/try', [UserController::class, 'try'])->name('auth.try');
     Route::view('/signup', 'auth.signup')->name('auth.signup'); 
+    Route::view('account-banned', 'auth.account-banned')->name('auth.account-banned')->middleware(['auth', 'verified']);
+    
 });
 
 // ADMIN ROUTES
 Route::prefix('admin')
-->middleware(['auth', 'role:admin', 'verified'])
+->middleware(['auth', 'role:admin', 'verified', 'is_banned'])
 ->group(function () {
-    Route::view('', 'main.admin.index')->name('admin.index');
+    Route::get('', [UserController::class, 'orgs'])->name('admin.index');
     Route::get('clients', [UserController::class, 'clients'])->name('admin.clients');
+    Route::post('ban-account', [UserController::class, 'banAccount'])->name('admin.ban-account');
+    Route::post('unban-account', [UserController::class, 'unbanAccount'])->name('admin.unban-account');
 
     Route::get('orgs', [UserController::class, 'orgs'])->name('admin.orgs');
     Route::post('orgs', [UserController::class, 'registerOrg'])->name('admin.register-org');
@@ -69,11 +68,13 @@ Route::prefix('admin')
         Route::get('', [InquiryController::class, 'index'])->name('admin.inquiries.index');
         Route::post('reply', [InquiryController::class, 'reply'])->name('admin.inquiries.reply');
     });
+
+
 });
 
 // ORG ROUTES
 Route::prefix('org')
-->middleware(['auth', 'role:org', 'verified'])
+->middleware(['auth', 'role:org', 'verified', 'is_banned'])
 ->group(function () {
     Route::view('', 'main.org.index')->name('org.index');
     Route::prefix('vehicles')->group(function () {
@@ -115,7 +116,7 @@ Route::prefix('org')
 
 // CLIENT ROUTES
 Route::prefix('client')
-->middleware(['auth', 'role:client', 'verified'])
+->middleware(['auth', 'role:client', 'verified',  'is_banned'])
 ->group( function () {
     Route::redirect("", "/client/vehicles");
     Route::prefix("vehicles")->group(function () {

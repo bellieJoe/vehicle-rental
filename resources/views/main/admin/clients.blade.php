@@ -22,8 +22,15 @@
                                 <td>{{$client->email}}</td>
                                 <td>{{ $client->phone ?? 'N/A' }}</td>
                                 <td>
-                                    {{-- <a href="{{route('admin.client.edit', $client->id)}}" class="btn btn-primary">Edit</a>
-                                    @include('main.admin.clients._delete') --}}
+                                    @if ($client->is_banned)
+                                        <form action="{{ route('admin.unban-account', $client->id) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="user_id" value="{{$client->id}}">
+                                            <button type="submit" class="btn btn-sm btn-success">Unban</button>
+                                        </form>
+                                    @else
+                                        <button class="btn btn-sm btn-danger" onclick="showBanAccountModal({{$client->id}})">Ban</button>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
@@ -37,4 +44,6 @@
             </div>
         </div>
     </div>
+
+    <x-ban-account-modal />
 @endsection

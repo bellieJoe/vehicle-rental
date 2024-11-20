@@ -1,5 +1,8 @@
 @extends('auth.layouts.master')
 @section('content')
+    <div class="d-flex justify-content-center my-5">
+        <x-brand />
+    </div>
     <div class="card o-hidden border-0 shadow-lg my-5 tw-max-w-md mx-auto">
         <div class="card-body p-0">
             <!-- Nested Row within Card Body -->
