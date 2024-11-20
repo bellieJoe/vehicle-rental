@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\OrgController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleCategoryController;
 use App\Http\Controllers\VehicleController;
 use App\Mail\OrgRegistered;
+use App\Models\Inquiry;
 use App\Models\Organisation;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -53,7 +55,6 @@ Route::prefix('auth')->group(function () {
     Route::view('/signup', 'auth.signup')->name('auth.signup'); 
 });
 
-
 // ADMIN ROUTES
 Route::prefix('admin')
 ->middleware(['auth', 'role:admin', 'verified'])
@@ -97,6 +98,14 @@ Route::prefix('org')
         Route::put('update/{booking_id}', [OrgController::class, 'updateBooking'])->name('org.bookings.update');    
     });
 
+    Route::prefix("galleries")->group(function () { 
+        Route::get('', [OrgController::class, 'galleries'])->name('org.galleries.index');
+        Route::post('', [OrgController::class, 'galleryStore'])->name('org.galleries.store');
+        Route::get('create', [OrgController::class, 'galleryCreate'])->name('org.galleries.create');
+        Route::get('edit/{gallery_id}', [OrgController::class, 'galleryEdit'])->name('org.galleries.edit');
+        Route::put('update/{gallery_id}', [OrgController::class, 'galleryUpdate'])->name('org.galleries.update');
+    });
+
 });
 
 // CLIENT ROUTES
@@ -132,3 +141,8 @@ Route::get('/mailable', function () {
     // return new OrgRegistered();
 });
 
+
+// Inquiry
+Route::prefix('inquiry')->group(function () {
+    Route::post('', [InquiryController::class, 'store'])->name('inquiry.store');
+});

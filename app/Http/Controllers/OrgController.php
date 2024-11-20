@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\BookingUpdate;
 use App\Models\Booking;
 use App\Models\BookingLog;
+use App\Models\Gallery;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -75,6 +76,78 @@ class OrgController extends Controller
             $booking->save();
 
             return redirect()->route('org.bookings.index')->with('success', 'Booking updated successfully');
+        });
+    }
+
+    public function galleries(Request $request)
+    {
+        $galleries = Gallery::where('organisation_id', auth()->user()->organisation->id)->paginate(10);
+        return view('main.org.galleries.index')
+            ->with([
+                'galleries' => $galleries
+            ]);
+    }
+
+    public function galleryStore(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'description' => 'required'
+        ]);
+
+        $image = $request->file('image');
+        $image_name = time() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('/images/galleries'), $image_name);    
+
+        Gallery::create([
+            'title' => $request->title,
+            'image' => $image_name,
+            'description' => $request->description,
+            'organisation_id' => auth()->user()->organisation->id
+        ]); 
+
+        return redirect()->route('org.galleries.index')->with('success', 'Gallery created successfully');
+    }
+
+    public function galleryCreate(Request $request)
+    {
+        return view('main.org.galleries.create');
+    }
+
+    public function galleryEdit(Request $request, $gallery_id)
+    {
+        $gallery = Gallery::find($gallery_id);
+        return view('main.org.galleries.edit')
+            ->with([
+                'gallery' => $gallery
+            ]);
+    }
+
+    public function galleryUpdate(Request $request, $gallery_id)
+    {
+        return DB::transaction(function () use ($request, $gallery_id) {
+            $request->validate([
+                'title' => 'required',
+                'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'description' => 'required'
+            ]);
+    
+            $image = $request->file('image');
+            if($image){
+                $image_name = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('/images/galleries'), $image_name);    
+                Gallery::find($gallery_id)->update([
+                    'image' => $image_name
+                ]);
+            }
+    
+            Gallery::find($gallery_id)->update([
+                'title' => $request->title,
+                'description' => $request->description
+            ]); 
+    
+            return redirect()->route('org.galleries.index')->with('success', 'Gallery updated successfully');
         });
     }
 }
