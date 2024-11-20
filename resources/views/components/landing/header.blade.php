@@ -20,18 +20,18 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav  ">
-                <li class="nav-item active">
-                    <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                <li class="nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('home') }}">Home <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="service.html">Services</a>
+                <li class="nav-item {{ request()->routeIs('galleries') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('galleries') }}">Galleries</a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link" href="about.html"> About</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="contact.html">Contact Us</a>
-                </li>
+                </li> --}}
                 @guest
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('auth.signin') }}"> <i class="fa-regular fa-user"></i> Sign In</a>

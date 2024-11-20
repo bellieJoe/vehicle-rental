@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\OrgController;
 use App\Http\Controllers\PackageController;
@@ -27,6 +28,7 @@ Route::view('/profile', 'main.profile')->name('profile')->middleware(['auth', 'v
 Route::view('/settings', 'main.settings')->name('settings')->middleware(['auth', 'verified']);
 Route::put('/update-password', [UserController::class , 'updatePassword'])->name('updatePassword')->middleware(['auth', 'verified']);
 Route::put('/update-profile', [UserController::class , 'updateProfile'])->name('updateProfile')->middleware(['auth', 'verified']);
+Route::get("/galleries", [GalleryController::class, 'index'])->name('galleries');
 
 Route::prefix('/email')->group(function () {
     Route::get('/verify', [UserController::class, 'verificationNotice'])
@@ -139,6 +141,7 @@ Route::prefix('api')->group(function () {
     Route::prefix("vehicles")->group(function () {
         Route::get('query-by-user/{user_id}', [VehicleController::class, 'apiQuery'])->name('api.vehicles.apiQueryByUser');
     });
+
 });
 
 

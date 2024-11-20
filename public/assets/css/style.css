@@ -378,9 +378,9 @@ a:focus {
   transition: all .3s;
   border: none;
 }
-
+/* #304584 */
 .slider_section .detail-box .btn-box .btn1:hover {
-  background-color: #065968;
+  background-color: #304584;
 }
 
 .slider_section .detail-box .btn-box .btn2 {
@@ -533,7 +533,7 @@ a:focus {
 }
 
 .about_section .detail-box a:hover {
-  background-color: #065968;
+  background-color: #304584;
 }
 
 .track_section {
@@ -633,7 +633,7 @@ a:focus {
 }
 
 .track_section form button:hover {
-  background-color: #065968;
+  background-color: #304584;
 }
 
 .client_section .client_container {
@@ -787,7 +787,7 @@ a:focus {
 }
 
 .contact_section .form_container button:hover {
-  background-color: #065968;
+  background-color: #304584;
 }
 
 .contact_section .map_container {
@@ -947,7 +947,7 @@ a:focus {
 }
 
 .info_section form button:hover {
-  background-color: #065968;
+  background-color: #304584;
 }
 
 /* footer section*/

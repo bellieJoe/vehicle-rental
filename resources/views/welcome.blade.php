@@ -1,42 +1,6 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<x-landing.master>
 
-        <!-- Site Metas -->
-        <meta name="keywords" content="" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <link rel="shortcut icon" href="images/fevicon.png" type="">
-
-        <title> iRENTA HUB </title>
-
-
-        <!-- bootstrap core css -->
-        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/bootstrap.css')}}" />
-
-        <!-- fonts style -->
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-        <!--owl slider stylesheet -->
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-
-        <!-- font awesome style -->
-        <script src="https://kit.fontawesome.com/2a90b2a25f.js" crossorigin="anonymous"></script>
-
-        <!-- Custom styles for this template -->
-        <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet" />
-        <!-- responsive style -->
-        <link href="{{ asset('assets/css/responsive.css') }}" rel="stylesheet" />
-
-        <title>Veihicle Rental</title>
- 
-    </head>
-    <body >
     <div class="hero_area">
-        
-        @include('landing.header')
 
         <!-- slider section -->
         <section class="slider_section ">
@@ -59,7 +23,7 @@
                             iRENTA HUB offers a wide range of vehicles for rent, with experienced and professional drivers who know Marinduque's roads. We also provide airport transfers, city tours, and outdoor activities to make your trip more enjoyable.
                             </p>
                             <div class="btn-box">
-                            <a href="" class="btn1">
+                            <a href="{{ route('client.vehicles')}}" class="btn1">
                                 Book Now
                             </a>
                             </div>
@@ -87,89 +51,53 @@
                 There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration
             </p>
             </div>
-            <div class="row">
-            <div class="col-md-6 ">
-                <div class="box ">
-                <div class="img-box">
-                    <img src="{{asset('assets/images/s1.png')}}" alt="">
+            <div class="row ">
+                <div class="col-md-6 d-flex align-items-stretch mb-4">
+                    <div class="box h-100">
+                        <div class="img-box">
+                            <i class="fa-solid fa-car" style="font-size: 64px; color: #4e73df;"></i>
+                        </div>
+                        <div class="detail-box">
+                            <h5>
+                                Wide Range of Vehicles & Tour Packages
+                            </h5>
+                            <p>
+                                We offer a range of vehicles and tour packages from trusted partners. From short trips to long-term rentals and guided tours, we've got you covered. Our vehicles are regularly maintained for your safety and comfort.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="detail-box">
-                    <h5>
-                    Air Transport
-                    </h5>
-                    <p>
-                    fact that a reader will be distracted by the readable content of a page when looking at its layout.
-                    The
-                    point of using
-                    </p>
-                    <a href="">
-                    Read More
-                    </a>
+                <div class="col-md-6 d-flex align-items-stretch mb-4">
+                    <div class="box h-100">
+                        <div class="img-box">
+                            <i class="fa-solid fa-laptop" style="font-size: 64px; color: #4e73df;"></i>
+                        </div>
+                        <div class="detail-box">
+                            <h5>
+                                User-Friendly Booking
+                            </h5>
+                            <p>
+                                Book easily and conveniently on our platform. Browse and select vehicles or tours from our partners, and experience hassle-free bookings.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                </div>
-            </div>
-            <div class="col-md-6 ">
-                <div class="box ">
-                <div class="img-box">
-                    <img src="{{asset('assets/images/s2.png')}}" alt="">
-                </div>
-                <div class="detail-box">
-                    <h5>
-                    Cargo Transport
-                    </h5>
-                    <p>
-                    fact that a reader will be distracted by the readable content of a page when looking at its layout.
-                    The
-                    point of using
-                    </p>
-                    <a href="">
-                    Read More
-                    </a>
-                </div>
-                </div>
-            </div>
-            <div class="col-md-6 ">
-                <div class="box ">
-                <div class="img-box">
-                    <img src="{{asset('assets/images/s3.png')}}" alt="">
-                </div>
-                <div class="detail-box">
-                    <h5>
-                    Trucks Transport
-                    </h5>
-                    <p>
-                    fact that a reader will be distracted by the readable content of a page when looking at its layout.
-                    The
-                    point of using
-                    </p>
-                    <a href="">
-                    Read More
-                    </a>
-                </div>
+                <div class="col-md-6 d-flex align-items-stretch mb-4">
+                    <div class="box h-100">
+                        <div class="img-box">
+                            <i class="fa-solid fa-calendar-days" style="font-size: 64px; color: #4e73df;"></i>
+                        </div>
+                        <div class="detail-box">
+                            <h5>
+                                Flexible Rental Plans
+                            </h5>
+                            <p>
+                                We offer customizable rental plans from our partners, that fit your schedule and budget. Choose daily, weekly, or monthly plans and adjust based on your travel needs. Enjoy full control over your rental experience.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6 ">
-                <div class="box ">
-                <div class="img-box">
-                    <img src="{{asset('assets/images/s4.png')}}" alt="">
-                </div>
-                <div class="detail-box">
-                    <h5>
-                    Train Transport
-                    </h5>
-                    <p>
-                    fact that a reader will be distracted by the readable content of a page when looking at its layout.
-                    The
-                    point of using
-                    </p>
-                    <a href="">
-                    Read More
-                    </a>
-                </div>
-                </div>
-            </div>
-            </div>
-        </div>
         </div>
     </section>
 
@@ -179,7 +107,7 @@
     <!-- about section -->
 
     <section class="about_section layout_padding-bottom">
-        <div class="container  ">
+        <div class="container  py-5">
         <div class="row">
             <div class="col-md-6">
             <div class="detail-box">
@@ -189,10 +117,11 @@
                 </h2>
                 </div>
                 <p>
-                There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration
-                in some form, by injected humour, or randomised words which don't look even slightly believable. If you
-                are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in
-                the middle of text. All
+                iRENTA HUB is a car rental and tour platform that provides a convenient and hassle-free experience for
+                travelers visiting Marinduque. We offer a wide range of vehicles and tour packages from trusted partners.
+                Our vehicles are regularly maintained for your safety and comfort. We also provide airport transfers and
+                city tours to make your trip more enjoyable. With iRENTA HUB, you can easily book and customize your rental
+                experience to fit your schedule and budget.
                 </p>
                 <a href="">
                 Read More
@@ -211,40 +140,10 @@
 
     <!-- end about section -->
 
-    <!-- track section -->
-
-    <section class="track_section layout_padding">
-        <div class="track_bg_box">
-        <img src="{{asset('assets/images/track-bg.jpg')}}" alt="">
-        </div>
-        <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-            <div class="heading_container">
-                <h2>
-                Track Your Shipment
-                </h2>
-            </div>
-            <p>
-                Iste reprehenderit maiores facilis saepe cumque molestias. Labore iusto excepturi, laborum aliquid pariatur veritatis autem, mollitia sint nesciunt hic error porro.
-                Deserunt officia unde repellat beatae ipsum sed. Aperiam tempora consectetur voluptas magnam maxime asperiores quas similique repudiandae, veritatis reiciendis harum fuga atque.
-            </p>
-            <form action="">
-                <input type="text" placeholder="Enter Your Tracking Number" />
-                <button type="submit">
-                Track
-                </button>
-            </form>
-            </div>
-        </div>
-        </div>
-    </section>
-
-    <!-- end track section -->
 
     <!-- client section -->
 
-    <section class="client_section layout_padding">
+    {{-- <section class="client_section layout_padding">
         <div class="container">
         <div class="heading_container">
             <h2>
@@ -346,125 +245,11 @@
             </div>
         </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- end client section -->
 
-    @include('landing.contact-us')
+    <x-landing.contact-us />
 
-    <!-- info section -->
-
-    <section class="info_section layout_padding2">
-        <div class="container">
-        <div class="row">
-            <div class="col-md-6 col-lg-3 info_col">
-            <div class="info_contact">
-                <h4>
-                Address
-                </h4>
-                <div class="contact_link_box">
-                <a href="">
-                    <i class="fa fa-map-marker" aria-hidden="true"></i>
-                    <span>
-                    Location
-                    </span>
-                </a>
-                <a href="">
-                    <i class="fa fa-phone" aria-hidden="true"></i>
-                    <span>
-                    Call +01 1234567890
-                    </span>
-                </a>
-                <a href="">
-                    <i class="fa fa-envelope" aria-hidden="true"></i>
-                    <span>
-                    demo@gmail.com
-                    </span>
-                </a>
-                </div>
-            </div>
-            <div class="info_social">
-                <a href="">
-                <i class="fa fa-facebook" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                <i class="fa fa-twitter" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                <i class="fa fa-linkedin" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                <i class="fa fa-instagram" aria-hidden="true"></i>
-                </a>
-            </div>
-            </div>
-            <div class="col-md-6 col-lg-3 info_col">
-            <div class="info_detail">
-                <h4>
-                Info
-                </h4>
-                <p>
-                necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful
-                </p>
-            </div>
-            </div>
-            <div class="col-md-6 col-lg-2 mx-auto info_col">
-            <div class="info_link_box">
-                <h4>
-                Links
-                </h4>
-                <div class="info_links">
-                <a class="active" href="index.html">
-                    <img src="{{asset('assets/images/nav-bullet.png')}}" alt="">
-                    Home
-                </a>
-                <a class="" href="about.html">
-                    <img src="{{asset('assets/images/nav-bullet.png')}}" alt="">
-                    About
-                </a>
-                <a class="" href="service.html">
-                    <img src="{{asset('assets/images/nav-bullet.png')}}" alt="">
-                    Services
-                </a>
-                <a class="" href="contact.html">
-                    <img src="{{asset('assets/images/nav-bullet.png')}}" alt="">
-                    Contact Us
-                </a>
-                </div>
-            </div>
-            </div>
-        </div>
-        </div>
-    </section>
-t
-    <!-- end info section -->
-
-    <!-- footer section -->
-    <section class="footer_section">
-        <div class="container">
-        <p>
-            &copy; <span id="displayYear"></span> All Rights Reserved By
-            <a href="https://html.design/">Free Html Templates</a>
-        </p>
-        </div>
-    </section>
-    <!-- footer section -->
-
-    <!-- jQery -->
-    <script type="text/javascript" src="{{asset('assets/js/jquery-3.4.1.min.js')}}"></script>
-    <!-- popper js -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-    </script>
-    <!-- bootstrap js -->
-    <script type="text/javascript" src="{{asset('assets/js/bootstrap.js')}}"></script>
-    <!-- owl slider -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js">
-    </script>
-    <!-- custom js -->
-    <script type="text/javascript" src="{{asset('assets/js/custom.js')}}"></script>
-    <!-- Google Map -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap">
-    </script>
-    <!-- End Google Map -->
-    </body>
-</html>
+    
+</x-landing.master>

@@ -1,5 +1,6 @@
 {
     "/assets/css/app.css": "/assets/css/app.css",
     "/assets/css/sb-admin-2.min.css": "/assets/css/sb-admin-2.min.css",
-    "/assets/css/sb-admin-2.css": "/assets/css/sb-admin-2.css"
+    "/assets/css/sb-admin-2.css": "/assets/css/sb-admin-2.css",
+    "/assets/css/tailwind.css": "/assets/css/tailwind.css"
 }

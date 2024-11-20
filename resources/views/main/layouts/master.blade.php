@@ -7,8 +7,6 @@
     
     <script src="https://kit.fontawesome.com/2a90b2a25f.js" crossorigin="anonymous"></script>
 
-    
-
     {{-- JQuery --}}
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 

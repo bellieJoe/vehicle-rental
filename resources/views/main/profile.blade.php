@@ -8,7 +8,7 @@
                         $profile = auth()->user()->profile_picture;
                         $user = auth()->user();
                     @endphp
-                    <img src="{{ auth()->user()->profile_picture ? asset("images/profiles/$profile") : "https://api.dicebear.com/9.x/fun-emoji/svg?seed=$user->name" }}" class="img-fluid " width="200" height="200" alt="">
+                    <img src="{{ auth()->user()->profile_picture ? asset("images/profile/$profile") : "https://api.dicebear.com/9.x/fun-emoji/svg?seed=$user->name" }}" class="img-fluid " width="200" height="200" alt="">
                 </div>
                 <dl class="row mt-4 p-3 ">
                     <dt class="col-sm-3">Name :</dt>
