@@ -39,6 +39,13 @@
       </div>
   </li>
 
+  <li class="nav-item {{ (request()->is('admin/inquiries/*') || request()->routeIs('admin.inquiries.index') ? 'active' : '') }}" >
+      <a class="nav-link " href="{{ route('admin.inquiries.index') }}"  aria-expanded="true" >
+        <i class="fas fa-fw fa-envelope"></i>
+        <span>Inquiries</span>
+      </a>
+  </li>
+
 
   <!-- Divider -->
   <hr class="sidebar-divider d-none d-md-block">

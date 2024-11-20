@@ -13,14 +13,21 @@ class SendInquiry extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $name;
+    public $message;
+    public $title;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($name, $message, $title)
     {
         //
+        $this->name = $name;
+        $this->message = $message;
+        $this->title = $title;
     }
 
     /**
@@ -43,7 +50,7 @@ class SendInquiry extends Mailable
     public function content()
     {
         return new Content(
-            view: 'view.name',
+            markdown: 'mail.send-inquiry',
         );
     }
 

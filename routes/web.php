@@ -64,6 +64,11 @@ Route::prefix('admin')
 
     Route::get('orgs', [UserController::class, 'orgs'])->name('admin.orgs');
     Route::post('orgs', [UserController::class, 'registerOrg'])->name('admin.register-org');
+
+    Route::prefix('inquiries')->group(function () {
+        Route::get('', [InquiryController::class, 'index'])->name('admin.inquiries.index');
+        Route::post('reply', [InquiryController::class, 'reply'])->name('admin.inquiries.reply');
+    });
 });
 
 // ORG ROUTES

@@ -11,4 +11,8 @@ class Inquiry extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
+    public function replies(){
+        return $this->hasMany(Reply::class);
+    }
 }

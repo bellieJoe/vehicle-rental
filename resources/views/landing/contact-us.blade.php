@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-lg-4 col-md-5 offset-md-1">
             <div class="form_container contact-form">
-                <form action="" method="POST">
+                <form action="{{ route('inquiry.store') }}" method="POST">
                     @csrf
                     <div>
                         <input name="name" type="text" placeholder="Your Name" />
@@ -28,7 +28,7 @@
                         @enderror
                     </div>
                     <div>
-                        <input message="message" type="text" class="message-box" placeholder="Message" />
+                        <input name="message" type="text" class="message-box" placeholder="Message" />
                         @error('message', 'inquiry_create')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror

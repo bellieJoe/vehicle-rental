@@ -1,7 +1,6 @@
 @props([
     'name', 
     "label" => "",
-    "type" => "text",
     "value" => "", 
     "placeholder" => "", 
     "required" => false,
@@ -19,16 +18,15 @@
 </label>
 
 <textarea 
-    class="form-control{{ $type == 'file' ? '-file' : '' }}"
+    class="form-control"
     id="{{ $name }}" 
-    type="{{ $type }}"
     name="{{ $name }}" 
     placeholder="{{ $placeholder }}" 
     {{ $required ? 'required' : '' }} 
     accept="{{$accept}}"
     {{ $disabled ? 'disabled' : '' }} 
     {{ $readonly ? 'readonly' : '' }}
->{{ old($name, $value) }}</textarea>
+>{{ old($name) }}</textarea>
 
 @error($name, $errorBag)
     <span class="text-danger">{{ $message }}</span>
