@@ -15,8 +15,8 @@ class Booking extends Model
     const STATUS_REJECTED = 'Rejected';
     const STATUS_TO_PAY = 'To Pay';
     const STATUS_BOOKED = 'Booked';
-    const STATUS_FOR_PICKUP = 'For Pickup';
-    const STATUS_IN_PROGRESS = 'In Progress';
+    // const STATUS_FOR_PICKUP = 'For Pickup';
+    // const STATUS_IN_PROGRESS = 'In Progress';
     const STATUS_COMPLETED = 'Completed';
     const STATUS_CANCELLED = 'Cancelled';
 

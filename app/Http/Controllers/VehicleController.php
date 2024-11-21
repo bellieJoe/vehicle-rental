@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Vehicle;
 use App\Models\VehicleCategory;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -144,5 +146,30 @@ class VehicleController extends Controller
             ->get();
     
         return $vehicles;
+    }
+
+    public function getVehicleBookings($vehicle_id)
+    {
+        $bookings = Booking::where('vehicle_id', $vehicle_id)
+            ->where('status', 'Booked')
+            ->where('start_datetime', '>=', now())
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
+            ->select('booking_details.start_datetime', 'booking_details.number_of_days')
+            ->get();
+
+        $events = $bookings->map(function ($booking) {
+            $start = Carbon::parse($booking->start_datetime);
+            $end = $start->copy()->addDays($booking->number_of_days - 1);
+
+            return [
+                'title' => 'Booked',
+                'start' => $start->toDateString(),
+                'end' => $end->toDateString(),
+                'backgroundColor' => '#ff0000', // Red color for booked dates
+                'borderColor' => '#ff0000',
+            ];
+        });
+
+        return response()->json($events);
     }
 }

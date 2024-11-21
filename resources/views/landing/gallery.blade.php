@@ -1,15 +1,15 @@
 
 <x-landing.master>
     <div class="container">
-        <div class="text-center tw-bg-blue-50 tw-py-6 tw-mb-8">
-            <h1 class="tw-text-4xl tw-font-extrabold tw-text-gray-800">Marinduque Famous Tourist Spots</h1>
-            <p class="tw-text-lg tw-text-gray-700">
+        <div class="text-center tw-bg-[#4e73df] tw-text-white tw-py-6 tw-mb-8 tw-rounded-lg">
+            <h1 class="tw-text-4xl tw-font-extrabold">Marinduque Famous Tourist Spots</h1>
+            <p class="tw-text-lg">
                 Want to explore the "heart of the Philippines" but don't have a complete itinerary? <br>
                 Take a look at Marinduque's Gallery and spot some scenery to tour!
             </p>
-            <p class="tw-text-lg tw-text-gray-700 tw-mt-4">Aba'y parine na!</p>
+            <p class="tw-text-lg tw-mt-4">Aba'y parine na!</p>
         </div>
-        <div class="row">
+        <div class="row my-5">
             @forelse ($galleries as $gallery)
                 <div class="col-md-4">
                     <div class="card overflow-hidden shadow-md mb-3">

@@ -2,4 +2,6 @@
 @section('content')
     <x-alerts></x-alerts>
     {{ $slot }}
+
+    
 @endsection

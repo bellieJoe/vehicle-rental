@@ -21,8 +21,8 @@
                             <tr>
                                 <td class="tw-text-gray-400 ">{{$booking->transaction_number}}</td>
                                 <td>
-                                    <h5 class="tw-font-bold">{{$booking->name}}</h5>
-                                    <h5>{{$booking->contact_number}}</h5>
+                                    <p class="tw-font-bold">{{$booking->name}}</p>
+                                    <p>{{$booking->contact_number}}</p>
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column">
@@ -35,16 +35,16 @@
                                             </div>
                                             <div class="mt-2">
                                                 <dl class="row tw-max-w-md">
-                                                    <dt class="col-sm-4 tw-font-bold">No. of Days :</dt>
-                                                    <dd class="col-sm-8">{{$booking->bookingDetail->number_of_days}} Day/s</dd>
-                                                    <dt class="col-sm-4 tw-font-bold">Start Date :</dt>
-                                                    <dd class="col-sm-8">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
-                                                    <dt class="col-sm-4 tw-font-bold"></dt>
-                                                    <dd class="col-sm-8">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
+                                                    <dt class="col-sm-4 mb-0 tw-font-bold">No. of Days :</dt>
+                                                    <dd class="col-sm-8 mb-0">{{$booking->bookingDetail->number_of_days}} Day/s</dd>
+                                                    <dt class="col-sm-4 mb-0 tw-font-bold">Start Date :</dt>
+                                                    <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
+                                                    <dt class="col-sm-4 mb-0 tw-font-bold"></dt>
+                                                    <dd class="col-sm-8 mb-0">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
                                                     <dt class="col-sm-4 tw-font-bold">Rent Option</dt>
-                                                    <dd class="col-sm-8">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
+                                                    <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
                                                     <dt class="col-sm-4 tw-font-bold">Pickup Location</dt>
-                                                    <dd class="col-sm-8">{{ $booking->bookingDetail->pickup_location }}</dd>
+                                                    <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->pickup_location }}</dd>
                                                 </dl>
                                             </div>
                                         @endif
@@ -59,7 +59,8 @@
                                         {{ $booking->status == 'To Pay' ? 'tw-bg-orange-500' : '' }}
                                         {{ $booking->status == 'Rejected' ? 'tw-bg-red-500' : '' }}
                                         {{ $booking->status == 'Completed' ? 'tw-bg-green-500' : '' }}
-                                        {{ $booking->status == 'Cancelled' ? 'tw-bg-red-500' : '' }}">
+                                        {{ $booking->status == 'Cancelled' ? 'tw-bg-red-500' : '' }}
+                                        {{ $booking->status == 'Booked' ? 'tw-bg-cyan-500' : '' }}">
                                          {{$booking->status}}
                                     </div>
                                 </td>

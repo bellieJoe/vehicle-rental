@@ -21,8 +21,8 @@
                                 <tr>
                                     <td>{{$booking->transaction_number}}</td>
                                     <td>
-                                        <h5 class="tw-font-bold">{{$booking->name}}</h5>
-                                        <h5>{{$booking->contact_number}}</h5>
+                                        <p class="tw-font-bold">{{$booking->name}}</p>
+                                        <p>{{$booking->contact_number}}</p>
                                     </td>
                                     <td>
                                         <div class="d-flex flex-column">
@@ -60,8 +60,8 @@
                                             {{ $booking->status == 'Rejected' ? 'tw-bg-red-500' : '' }}
                                             {{ $booking->status == 'Completed' ? 'tw-bg-green-500' : '' }}
                                             {{ $booking->status == 'Cancelled' ? 'tw-bg-red-500' : '' }}
-                                            ">
-                                            {{$booking->status}}
+                                            {{ $booking->status == 'Booked' ? 'tw-bg-cyan-500' : '' }}">
+                                            {{$booking->status == 'Pending' ? "Pending for Approval" : $booking->status }}
                                         </div>
                                     </td>
                                     <td>{{$booking->created_at->diffForHumans()}}</td>
@@ -72,8 +72,11 @@
                                             </button>
                                             <div class="dropdown-menu">
                                                 <a class="dropdown-item" href="{{ route('org.bookings.edit', $booking->id)}}">Update</a>
-                                                <a class="dropdown-item" href="#">View Payments</a>
+                                                @if(!in_array($booking->status, ["Pending", "Rejected"]))
+                                                    <a class="dropdown-item" href="{{ route('org.bookings.payments', $booking->id)}}">View Payments</a>
+                                                @endif
                                                 <a class="dropdown-item" href="#">View Logs</a>
+
                                             </div>
                                         </div>
                                         {{-- <button class="btn btn-sm btn-primary">Update</button> --}}

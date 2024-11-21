@@ -2,7 +2,7 @@
 
 <!-- info section -->
 
-<section class="info_section layout_padding2">
+<section class="info_section layout_padding2 tw-bg-sky-950">
     <div class="container">
     <div class="row">
         <div class="col-md-6 col-lg-3 info_col">

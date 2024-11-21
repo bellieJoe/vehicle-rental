@@ -52,6 +52,22 @@ class ClientController extends Controller
             'pickup_location' => 'requiredIf:rent_options,With Driver',
         ]);
 
+        // check if vehicle is available
+        if(!$this->isVehicleAvailable($request->vehicle_id, $request->start_date, $request->number_of_days, Booking::STATUS_BOOKED)){
+            return redirect()
+            ->back()
+            ->with('error', "Sorry, this vehicle is already booked from ".Carbon::parse($request->start_date)->format('M d, Y')." to ".Carbon::parse($request->start_date)->addDays($request->number_of_days)->format('M d, Y').". Please choose a different date or vehicle.")
+            ->withInput();
+        }
+
+        // check if has double booking
+        if(!$this->checkDoubleBooking($request->vehicle_id, $request->start_date, $request->number_of_days, Booking::STATUS_PENDING)){
+            return redirect()
+            ->back()
+            ->withErrors(['error' => "It appears you already have a booking for these dates."])
+            ->withInput();
+        }
+
         return DB::transaction(function () use ($request) {
 
             // check for double booking
@@ -68,7 +84,7 @@ class ClientController extends Controller
                 'vehicle_id' => $request->vehicle_id,
                 'computed_price' => $computed_price,
                 'status' => Booking::STATUS_PENDING,
-                'payment_status' => Payment::STATUS_PENDING
+                // 'payment_status' => Payment::STATUS_PENDING
             ]);
 
             BookingDetail::create([
@@ -176,6 +192,35 @@ class ClientController extends Controller
             ]);
     }
 
+    public function payGcash(Request $request) {
+
+        $request->validate([
+            'payment_id' => 'required|exists:payments,id',
+            'gcash_transaction_no' => 'required',
+            'toc' => 'required|in:on',
+        ]);
+
+        $payment = Payment::find($request->payment_id);
+
+        $payment->update([
+            'gcash_transaction_no' => $request->gcash_transaction_no,
+            'payment_status' => Payment::STATUS_GCASH_APPROVAL,
+            'attempts' => $payment->attempts + 1,
+            'payment_method' => Payment::METHOD_GCASH
+        ]);
+
+        $orgUser = $payment->booking->vehicle ? $payment->booking->vehicle->user : $payment->booking->package->user;
+
+        Mail::to($orgUser->email)->send(new BookingUpdate(
+            $payment->booking, 
+            "Payment from ".auth()->user()->name." has been made via gcash", 
+            $orgUser,
+            back()->getTargetUrl())
+        );
+
+        return redirect()->back()->with('success', 'Gcash payment successfully added, please wait for the business owner to approve your payment.');
+    }
+
 
     // other functions
     function _createPayments(Booking $booking, Request $request){
@@ -206,5 +251,51 @@ class ClientController extends Controller
             ]);
         }
     }
+
+    function isVehicleAvailable($vehicle_id, $start_datetime, $number_of_days, $status) {
+        $end_datetime = Carbon::parse($start_datetime)->addDays($number_of_days);
+    
+        $overlappingBookings = DB::table('bookings')
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
+            ->where('bookings.vehicle_id', $vehicle_id)
+            ->where('bookings.status', $status)
+            ->where(function ($query) use ($start_datetime, $end_datetime) {
+                $query->where(function ($q) use ($start_datetime) {
+                    $q->where('booking_details.start_datetime', '<=', $start_datetime)
+                      ->whereRaw('DATE_ADD(booking_details.start_datetime, INTERVAL booking_details.number_of_days DAY) > ?', [$start_datetime]);
+                })
+                ->orWhere(function ($q) use ($end_datetime) {
+                    $q->where('booking_details.start_datetime', '<', $end_datetime)
+                      ->whereRaw('DATE_ADD(booking_details.start_datetime, INTERVAL booking_details.number_of_days DAY) >= ?', [$end_datetime]);
+                });
+            })
+            ->exists();
+    
+        return !$overlappingBookings; // Returns true if no overlap, meaning the vehicle is available
+    }
+
+    function checkDoubleBooking($vehicle_id, $start_datetime, $number_of_days, $status) {
+        $end_datetime = Carbon::parse($start_datetime)->addDays($number_of_days);
+    
+        $overlappingBookings = DB::table('bookings')
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
+            ->where('bookings.vehicle_id', $vehicle_id)
+            ->where('bookings.user_id', auth()->user()->id)
+            ->where('bookings.status', $status)
+            ->where(function ($query) use ($start_datetime, $end_datetime) {
+                $query->where(function ($q) use ($start_datetime) {
+                    $q->where('booking_details.start_datetime', '<=', $start_datetime)
+                      ->whereRaw('DATE_ADD(booking_details.start_datetime, INTERVAL booking_details.number_of_days DAY) > ?', [$start_datetime]);
+                })
+                ->orWhere(function ($q) use ($end_datetime) {
+                    $q->where('booking_details.start_datetime', '<', $end_datetime)
+                      ->whereRaw('DATE_ADD(booking_details.start_datetime, INTERVAL booking_details.number_of_days DAY) >= ?', [$end_datetime]);
+                });
+            })
+            ->exists();
+    
+        return !$overlappingBookings; // Returns true if no overlap, meaning the vehicle is available
+    }
+
 
 }

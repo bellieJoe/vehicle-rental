@@ -6,6 +6,7 @@ use App\Mail\BookingUpdate;
 use App\Models\Booking;
 use App\Models\BookingLog;
 use App\Models\Gallery;
+use App\Models\Payment;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -148,6 +149,88 @@ class OrgController extends Controller
             ]); 
     
             return redirect()->route('org.galleries.index')->with('success', 'Gallery updated successfully');
+        });
+    }
+
+    public function paymentsView(Request $request, $booking_id) {
+
+        $booking = Booking::find($booking_id);
+
+        return view('main.org.bookings.payments')
+            ->with([
+                'booking' => $booking
+            ]);
+    }
+
+    public function approvePayment(Request $request, $payment_id) {
+        return DB::transaction(function () use ($request, $payment_id) {
+
+            $payment = Payment::find($payment_id);
+            
+            $payment->update([
+                'payment_status' => Payment::STATUS_PAID,
+                'date_paid' => now()
+            ]);
+            
+            $client = $payment->booking->user;
+
+            Mail::to($client->email)->send(new BookingUpdate($payment->booking, "Your payment of " . $payment->amount . " through " . $payment->payment_method . " has been successfully approved.", $client, route('client.bookings')));
+
+            $booking = $payment->booking;
+            if($payment->is_downpayment || $booking->payments_count == 0){
+                $booking->update([
+                    'status' => Booking::STATUS_BOOKED,
+                ]); 
+            }
+
+            Mail::to($client->email)->send(new BookingUpdate($payment->booking, "Your booking has been secured.", $client, route('client.bookings')));
+
+            return redirect()->back()->with('success', 'Payment updated successfully');
+        });
+    }
+
+    public function invalidPayment(Request $request, $payment_id) {
+        return DB::transaction(function () use ($request, $payment_id) {
+    
+            $payment = Payment::find($payment_id);
+            
+            $payment->update([
+                'payment_status' => Payment::STATUS_GCASH_INVALID
+            ]);
+            
+            $client = $payment->booking->user;
+
+            Mail::to($client->email)->send(new BookingUpdate($payment->booking, "Your payment of " . $payment->amount . " through " . $payment->payment_method . " is invalid. Please make sure to send the correct Gcash transaction number.", $client, route('client.bookings')));
+
+            return redirect()->back()->with('success', 'Payment updated successfully');
+        });
+    }
+
+    public function approveCashPayment(Request $request, $payment_id){
+        return DB::transaction(function () use ($request, $payment_id) {
+
+            $payment = Payment::find($payment_id);
+            
+            $payment->update([
+                'payment_status' => Payment::STATUS_PAID,
+                'date_paid' => now(),
+                'payment_method' => Payment::METHOD_CASH
+            ]);
+            
+            $client = $payment->booking->user;
+
+            Mail::to($client->email)->send(new BookingUpdate($payment->booking, "Your payment of " . $payment->amount ." through cash"." has been successfully approved.", $client, route('client.bookings')));
+
+            $booking = $payment->booking;
+            if($payment->is_downpayment || $booking->payments_count == 0){
+                $booking->update([
+                    'status' => Booking::STATUS_BOOKED,
+                ]); 
+            }
+
+            Mail::to($client->email)->send(new BookingUpdate($payment->booking, "Your booking has been secured.", $client, route('client.bookings')));
+
+            return redirect()->back()->with('success', 'Payment updated successfully');
         });
     }
 }

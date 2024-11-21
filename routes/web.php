@@ -8,6 +8,8 @@ use App\Http\Controllers\PackageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleCategoryController;
 use App\Http\Controllers\VehicleController;
+use App\Models\VehicleCategory;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -103,7 +105,13 @@ Route::prefix('org')
     Route::prefix("bookings")->group(function () {
         Route::get('', [OrgController::class, 'bookings'])->name('org.bookings.index');    
         Route::get('edit/{booking_id}', [OrgController::class, 'editBooking'])->name('org.bookings.edit');    
-        Route::put('update/{booking_id}', [OrgController::class, 'updateBooking'])->name('org.bookings.update');    
+        Route::put('update/{booking_id}', [OrgController::class, 'updateBooking'])->name('org.bookings.update');
+        Route::prefix("payments")->group(function () {
+            Route::get('{booking_id}', [OrgController::class, 'paymentsView'])->name('org.bookings.payments');
+            Route::post('approve/{payment_id}', [OrgController::class, 'approvePayment'])->name('org.bookings.payments.approve');
+            Route::post('invalid/{payment_id}', [OrgController::class, 'invalidPayment'])->name('org.bookings.payments.invalid');
+            Route::post('approve-cash/{payment_id}', [OrgController::class, 'approveCashPayment'])->name('org.bookings.payments.approve-cash');
+        });
     });
 
     Route::prefix("galleries")->group(function () { 
@@ -132,6 +140,7 @@ Route::prefix('client')
         Route::put('cancel/{booking_id}', [ClientController::class, 'cancelBooking'])->name('client.bookings.cancel');
         Route::prefix("payments")->group(function () {
             Route::get('{booking_id}', [ClientController::class, 'paymentsView'])->name('client.bookings.payments');
+            Route::post('pay-gcash', [ClientController::class, 'payGcash'])->name('client.bookings.payments.gcash');
         });
     });
 });
@@ -140,6 +149,7 @@ Route::prefix('client')
 Route::prefix('api')->group(function () {
     Route::prefix("vehicles")->group(function () {
         Route::get('query-by-user/{user_id}', [VehicleController::class, 'apiQuery'])->name('api.vehicles.apiQueryByUser');
+        Route::get('get-schedule/{vehicle_id}', [VehicleController::class, 'getVehicleBookings'])->name('api.vehicles.booking-schedule');
     });
 
 });
@@ -154,4 +164,36 @@ Route::get('/mailable', function () {
 // Inquiry
 Route::prefix('inquiry')->group(function () {
     Route::post('', [InquiryController::class, 'store'])->name('inquiry.store');
+});
+
+
+
+
+Route::get("pay", function () {
+    $client = new Client();
+    $paymongoSecretKey = 'sk_test_qM7PNrU7tD3EqQskRWAsaTym';
+    $response = $client->request('POST', 'https://api.paymongo.com/v1/payment_intents', [
+        'json' => [
+            'data' => [
+                'attributes' => [
+                    'amount' => 20000, // Amount in cents
+                    'currency' => 'PHP',
+                    'redirect' => [
+                        'success' => route('home'), // Redirect URL after success
+                        'failed' => route('galleries'),   // Redirect URL after failure
+                    ],
+                ],
+            ],
+        ],
+        'headers' => [
+            'Authorization' => 'Bearer ' . $paymongoSecretKey,
+            'Content-Type' => 'application/json',
+        ],
+    ]);
+
+    $responseBody = json_decode($response->getBody(), true);
+    $paymentLink = $responseBody['data']['attributes']['url']; // The payment link to send to the user
+
+    // You can now redirect the user to the payment link
+    echo 'Redirect the user to this link: ' . $paymentLink;
 });

@@ -1,3 +1,6 @@
+@php
+    $org = $booking->vehicle ? $booking->vehicle->user->organisation : $booking->package->user->organasation;
+@endphp
 <x-master>
     <div class="d-flex justify-content-between mb-4">
         <a href="{{url()->previous()}}" class="btn btn-sm btn-secondary"><i class="fa-solid fa-chevron-left mr-2"></i>Back</a>
@@ -5,13 +8,6 @@
     <h5 class="h4">Payments</h5>
     <div class="card mb-4">
         <div class="card-body">
-            <div class="alert alert-info" role="alert">
-                @php
-                    $org = $booking->vehicle ? $booking->vehicle->user->organisation : $booking->package->user->organasation;
-                @endphp
-                <h5 class="h6 tw-font-bold" >Payment Options</h5>
-                <p>You can pay through the office <span class="tw-font-bold">{{ $org->org_name }}</span> at <span class="tw-font-bold">{{ $org->address }}</span> or you can pay via Gcash or Debit Card.</p>
-            </div>
             <div class="card mt-4">
                 <div class="card-header">
                     Booking Information
@@ -50,6 +46,7 @@
                                     <th>Expiration</th>
                                     <th>Status</th>
                                     <th>Attempts Left</th>
+                                    <th>Payment Method</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -68,39 +65,38 @@
                                     ">{{ $payment->payment_status }}</td>
                                     <td>{{ 3 - $payment->attempts >= 0 ? 3 - $payment->attempts : 0 }}</td>
                                     <td>
-                                        @php
-                                            $is_disabled = true;
-                                            $can_pay = false;
-                                            $attempts = $payment->attempts;
-                                            if($payment->booking->status == 'To Pay'){
-                                                $can_pay = true;
-                                                // check if downpayment is payed 
-                                                if(in_array($payment->payment_status, ["Pending", "Payment Invalid"]) && count($booking->payments) == 2 && $payment->is_downpayment == 1 ){
-                                                    $is_disabled = false;
-                                                }
-                                            }
-                                            if($payment->booking->status == 'Booked'){
-                                                $can_pay = true;
-                                                if(in_array($payment->payment_status, ["Pending", "Payment Invalid"]) && count($booking->payments) == 2 && $payment->is_downpayment == 0 ){
-                                                    $is_disabled = false;
-                                                }
-                                            }
-                                            
-                                            
-
-                                        @endphp
-                                        {{-- {{ $is_disabled ? "disabled" : "not disabled" }}
-                                        {{ $payment->is_downpayment }}
-                                        {{ count($booking->payments) }} --}}
-
-                                        @if($can_pay && $attempts < 3)
-                                            <button class="btn btn-sm btn-primary m-1 " {{ $is_disabled ? 'disabled' : '' }} onclick="showPayViaGCashModal({{ $payment->id }}, {{$payment->amount}}, {{ $org->gcash_number}})" >Pay Via Gcash</button>
-                                            <button class="btn btn-sm btn-primary m-1" {{ $is_disabled ? 'disabled' : '' }} >Pay Via Debit Card</button>
+                                        @if($payment->payment_method == 'GCash')
+                                            <p>GCash</p>
+                                            <dt>Gcash Transaction Id<dd>#{{ $payment->gcash_transaction_no }}</dd>
+                                        @elseif($payment->payment_method == 'Debit')
+                                            Debit
+                                        @else
+                                            N/A
                                         @endif
-                                        @if($attempts >= 3)
-                                            <div class="tw-max-w-[300px] small tw-block">
-                                                <p class="text-danger">You have reached the maximum allowed attempts for payment. If you have any concerns, please contact the business owner to assist you further.</p>
-                                            </div>
+                                    </td>
+                                    <td>
+                                        @if($payment->payment_status == 'For Approval' && $payment->payment_method == 'GCash')
+                                            <form action="{{ route('org.bookings.payments.approve', $payment->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-primary tw-w-full mb-2">Approve Payment</button>
+                                            </form>
+                                            <form action="{{ route('org.bookings.payments.invalid', $payment->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-danger tw-w-full mb-2">Invalid Payment</button>
+                                            </form>
+                                        @endif
+                                        @if($payment->attempts >= 3)
+                                            <form action="" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="payment_id" value="{{ $payment->id }}">
+                                                <button type="submit" class="btn btn-sm btn-success tw-w-full">Reset Attempts</button>
+                                            </form>
+                                        @endif
+                                        @if($payment->payment_status != "Paid")
+                                            <form action="{{ route('org.bookings.payments.approve-cash', $payment->id) }}" method="post">
+                                                @csrf
+                                                <button class="btn btn-sm btn-primary">Approve Cash Payment</button>
+                                            </form>
                                         @endif
                                     </td>
                                 </tr>

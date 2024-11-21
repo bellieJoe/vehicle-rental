@@ -110,7 +110,7 @@
         <div class="container  py-5">
         <div class="row">
             <div class="col-md-6">
-            <div class="detail-box">
+            <div class="detail-box py-5">
                 <div class="heading_container">
                 <h2>
                     About <span>Us</span>
@@ -123,15 +123,16 @@
                 city tours to make your trip more enjoyable. With iRENTA HUB, you can easily book and customize your rental
                 experience to fit your schedule and budget.
                 </p>
-                <a href="">
+                {{-- <a href="">
                 Read More
-                </a>
+                </a> --}}
             </div>
             </div>
             <div class="col-md-6 ">
-            <div class="img-box">
-                <img src="{{asset('assets/images/about-img.png')}}" alt="">
-            </div>
+                <div class="">
+                    <img class="img-fluid rounded-circle" src="{{asset('assets/images/irenta_hub_logo.png')}}" alt="">
+                    {{-- <img src="{{asset('assets/images/about-img.png')}}" alt=""> --}}
+                </div>
             </div>
 
         </div>

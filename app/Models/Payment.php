@@ -18,6 +18,8 @@ class Payment extends Model
     const OPTION_FULL_PAYMENT = 'Full';
 
     const STATUS_PENDING = 'Pending';
+    const STATUS_GCASH_APPROVAL = 'For Approval';
+    const STATUS_GCASH_INVALID = 'Payment Invalid';
     const STATUS_PAID = 'Paid';
     const STATUS_FAILED = 'Failed';
 
@@ -25,6 +27,10 @@ class Payment extends Model
     const METHOD_GCASH = 'GCash';
     const METHOD_DEBIT = 'Debit';
 
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class);
+    }
 
     // The check if expired method
     public function checkIfExpiredAndSetStatus()

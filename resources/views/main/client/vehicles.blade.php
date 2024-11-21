@@ -5,6 +5,21 @@
 
 <div class="">
     <h4 class="h4">Rent Vehicles</h4>
+    <form action="" method="GET" class="form-inline mb-3">
+        <div class="form-group mr-2">
+            <label for="start_date" class="mr-2">Start Date</label>
+            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request()->query('start_date') }}">
+        </div>
+        <div class="form-group mr-2">
+            <label for="end_date" class="mr-2">End Date</label>
+            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request()->query('end_date') }}">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
+    
     <div class="row">
         @forelse ($vehicles as $vehicle)
             <div class="col-md-4">
@@ -15,7 +30,8 @@
                             <span class="badge badge-primary"><i class="fa-solid fa-user mr-2"></i>{{ $vehicle->user->organisation->org_name }}</span>
                             <span class="badge badge-secondary">{{ $vehicle->vehicleCategory->category_name }}</span>
                             <h5 class="card-title h5">{{ $vehicle->model }} #{{ $vehicle->plate_number }}</h5>
-                            <h5 class="card-subtitle">{{ $vehicle->brand }}</h5>
+                            <div class="card-subtitle">{{ $vehicle->brand }}</div>
+                            <div><span>Starts at </span><span class="text-primary">PHP {{ number_format($vehicle->rate, 2) }}</span></div>
                             <div class="row align-items-center">
                                 <div class="col">
                                     <button class="btn btn-sm btn-outline-primary my-2" onclick="showVehicleDetails({{$vehicle}})">Details</button>

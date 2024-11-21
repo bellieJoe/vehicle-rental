@@ -25,8 +25,9 @@
                 <dt class="col-sm-3">Plate Number :</dt><dd class="col-sm-9">{{$vehicle->plate_number}}</dd>
                 <dt class="col-sm-3">Category :</dt><dd class="col-sm-9">{{$vehicle->vehicleCategory->category_name}}</dd>
                 <dt class="col-sm-3">Owner :</dt><dd class="col-sm-9">{{$vehicle->user->organisation->org_name}}</dd>
-                <dt class="col-sm-3">Rate :</dt><dd class="col-sm-9">{{$vehicle->rate}}</dd>
-                <dt class="col-sm-3">Rate w/ driver :</dt><dd class="col-sm-9">{{$vehicle->rent_options == "Without Driver" ? "N/A" : $vehicle->rate_w_driver}}</dd>
+                <dt class="col-sm-3">Rate :</dt><dd class="col-sm-9">PHP {{$vehicle->rate}}</dd>
+                <dt class="col-sm-3">Rate w/ driver :</dt><dd class="col-sm-9">PHP {{$vehicle->rent_options == "Without Driver" ? "N/A" : $vehicle->rate_w_driver}}</dd>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="showVehicleSchedule({{ $vehicle->id }})">Show Schedule</button>
               </dl>
             </div>
           </div>
@@ -68,14 +69,14 @@
           </div> --}}
 
           <div class="form-group">
-            <x-forms.select name="payment_option" label="Payment Option" placeholder="Select Payment Schedule" :options="['Full' => 'Pay in full', 'Installment' => 'Pay in Installment']" />
+            <x-forms.select value="{{ old('payment_option') }}" name="payment_option" label="Payment Option" placeholder="Select Payment Schedule" :options="['Full' => 'Pay in full', 'Installment' => 'Pay in Installment']" />
           </div>
 
           <hr>
 
           <div class="tw-flex tw-justify-end">
             <div class="py-4 ">
-              <h1 >Computed Price</h1>
+              <h1 class="h5">Computed Price</h1>
               <p class="h4 mb-0 text-primary tw-font-bold" id="computed_price">Php 0.00</p>
             </div>
           </div>
@@ -86,6 +87,10 @@
     </div>
   </div>
 </div>
+
+<x-vehicle-bookings-modal />
+
+
 
 <script>
   $(document).ready(function() {
@@ -115,9 +120,6 @@
         $('input[name="pickup_location"]').closest('.form-group').hide();
       }
     });
-
-
-
   });
 </script>
 @endsection
