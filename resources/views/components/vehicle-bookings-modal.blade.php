@@ -31,6 +31,45 @@
                 right: 'dayGridMonth,dayGridWeek'
             },
             eventColor: '#ff0000', // Default color for events
+            eventTimeFormat: { // This ensures the time is displayed
+                hour: '2-digit',
+                minute: '2-digit',
+                meridiem: 'short'
+            },
+            // Hover effect to show event data
+            eventMouseEnter: function(info) {
+                var event = info.event;
+                var eventData = `
+                    <strong>Event:</strong> ${event.title}<br>
+                    <strong>Start:</strong> ${event.start.toLocaleString()}<br>
+                    <strong>End:</strong> ${event.end ? event.end.toLocaleString() : 'N/A'}
+                `;
+                
+                // Show the data in a tooltip or custom element
+                var tooltip = document.createElement('div');
+                tooltip.classList.add('event-tooltip');
+                tooltip.innerHTML = eventData;
+
+                document.body.appendChild(tooltip);
+
+                // Position the tooltip
+                var rect = info.el.getBoundingClientRect();
+                tooltip.style.position = 'absolute';
+                tooltip.style.left = `${rect.left}px`;
+                tooltip.style.top = `${rect.top + rect.height}px`;
+
+                tooltip.style.zIndex = '1060';
+
+                // Store the tooltip for later removal
+                info.el._tooltip = tooltip;
+            },
+            eventMouseLeave: function(info) {
+                // Remove the tooltip when mouse leaves the event
+                if (info.el._tooltip) {
+                    info.el._tooltip.remove();
+                    info.el._tooltip = null;
+                }
+            },
         });
 
         calendar.render();
@@ -38,3 +77,16 @@
         $('#vehicleBookingsModal').modal('show');
     }
 </script>
+
+<style>
+    /* Style for the event tooltip */
+    .event-tooltip {
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        max-width: 250px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>

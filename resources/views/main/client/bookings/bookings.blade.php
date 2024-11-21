@@ -1,6 +1,25 @@
 <x-master>
 <div class="">
     <h1 class="h4">My Bookings</h1>
+    <div class="d-flex justify-content-between my-3">
+        <form action="{{route('client.bookings')}}" method="GET" class="form-inline d-sm-flex align-items-sm-center justify-content-sm-end">
+            @csrf
+            <div class="form-group mr-sm-3">
+                <label for="status" class="mr-2 d-block d-sm-inline">Status</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="" {{request()->query('status') == '' ? 'selected' : ''}}>All</option>
+                    <option value="Pending" {{request()->query('status') == 'Pending' ? 'selected' : ''}}>Pending</option>
+                    <option value="To Pay" {{request()->query('status') == 'To Pay' ? 'selected' : ''}}>To Pay</option>
+                    <option value="Rejected" {{request()->query('status') == 'Rejected' ? 'selected' : ''}}>Rejected</option>
+                    {{-- <option value="Completed" {{request()->query('status') == 'Completed' ? 'selected' : ''}}>Completed</option> --}}
+                    <option value="Cancelled" {{request()->query('status') == 'Cancelled' ? 'selected' : ''}}>Cancelled</option>
+                    <option value="Booked" {{request()->query('status') == 'Booked' ? 'selected' : ''}}>Booked</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary d-sm-inline-block">Filter</button>
+        </form>
+    </div>
+    
     <div class="card">
         <div class="card-body p-0">
             <div class="table-responsive">

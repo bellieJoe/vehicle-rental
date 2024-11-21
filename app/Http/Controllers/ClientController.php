@@ -10,24 +10,55 @@ use App\Models\Payment;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
 
 class ClientController extends Controller
 {
     public function vehicles(Request $request)
     {
-        $vehicles = Vehicle::where('is_available', 1)
+        $request->validate([
+            'start_date' => 'nullable|date|required_with:end_date',
+            'end_date' => 'nullable|date|after_or_equal:start_date|required_with:start_date',
+        ]);
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $vehiclesQuery = Vehicle::where('is_available', 1)
         ->with([
-            'vehicleCategory',  
-            'user.organisation',   
-        ])
-        ->paginate(10);
+            'vehicleCategory',
+            'user.organisation',
+        ]);
+
+        // Apply the date filter only if both dates are provided
+        if ($startDate && $endDate) {
+            $startDateTime = Carbon::parse($startDate);
+            $endDateTime = Carbon::parse($endDate);
+
+            $vehiclesQuery->whereDoesntHave('bookings', function ($query) use ($startDateTime, $endDateTime) {
+                $query->where('status', 'Booked')
+                    ->whereHas('bookingDetail', function ($detailsQuery) use ($startDateTime, $endDateTime) {
+                        $detailsQuery->where(function ($query) use ($startDateTime, $endDateTime) {
+                            $query->where('start_datetime', '<', $endDateTime)
+                                ->whereRaw('DATE_ADD(start_datetime, INTERVAL number_of_days DAY) > ?', [$startDateTime]);
+                        });
+                    });
+            });
+        }
+
+        $vehicles = $vehiclesQuery->paginate(10);
 
         return view('main.client.vehicles', [
-            'vehicles' => $vehicles
+            'vehicles' => $vehicles,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ]);
     }
+
 
     public function rentView(Request $request, $vehicle_id)
     {
@@ -110,18 +141,22 @@ class ClientController extends Controller
 
     public function bookings(Request $request)
     {
-        $bookings = Booking::where('user_id', auth()->user()->id)
+        $status = $request->query('status');
+        $query = Booking::where('user_id', auth()->user()->id)
             ->with([
                 'vehicle.user.organisation',
                 'vehicle.vehicleCategory',
                 'bookingDetail',
                 'bookingLogs'
             ])
-            ->orderBy('created_at', 'DESC')
-            ->paginate(10);    
+            ->orderBy('created_at', 'DESC');
 
-        // return $bookings;
-        
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $bookings = $query->paginate(10);
+
         return view('main.client.bookings.bookings')
             ->with([
                 'bookings'=> $bookings
@@ -219,6 +254,84 @@ class ClientController extends Controller
         );
 
         return redirect()->back()->with('success', 'Gcash payment successfully added, please wait for the business owner to approve your payment.');
+    }
+
+    public function payDebit(Request $request, ) {
+        $request->validate([
+            'payment_id' => 'required|exists:payments,id',
+            'toc' => 'required|in:on',
+        ]);
+
+        $payment = Payment::find($request->payment_id);
+        $org = null;
+        
+        if($payment->booking->booking_type == "Vehicle"){
+            $org = $payment->booking->vehicle->user->organisation;
+        }
+        if($payment->booking->booking_type == "Package"){
+            $org = $payment->booking->package->user->organisation;
+        }
+        if (is_null($org)) {
+            return redirect()->back()->with("error", "Something went wrong while processing the payment.");
+        }
+
+        Stripe::setApiKey($org->stripe_secret_key);
+        $session = Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => "PHP",
+                    'product_data' => [
+                        'name' => "#".$payment->booking->transaction_number." Booking Payment",
+                    ],
+                    'unit_amount' => $payment->amount * 100,
+                ],
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => route('client.bookings.payments.debit-success', Crypt::encrypt($payment->id)),
+            'cancel_url' => route("client.bookings.payments.debit-failed", Crypt::encrypt($payment->id)),
+        ]);
+        return redirect($session->url);
+    }
+
+    public function debitSuccess(Request $request, $token){
+        $payment_id = Crypt::decrypt($token);
+        $payment = Payment::find($payment_id);
+        $payment->update([
+            "payment_status" => Payment::STATUS_PAID,
+            'attempts' => $payment->attempts + 1,
+            'payment_method' => Payment::METHOD_DEBIT,
+            'date_paid' => now(),
+        ]);
+        $orgUser = $payment->booking->vehicle ? $payment->booking->vehicle->user : $payment->booking->package->user;
+        Mail::to($orgUser->email)->send(new BookingUpdate(
+            $payment->booking, 
+            "Payment from ".auth()->user()->name." has been made via gcash", 
+            $orgUser,
+            back()->getTargetUrl())
+        );
+
+        $booking = $payment->booking;
+        if($payment->is_downpayment || $booking->payments_count == 0){
+            $booking->update([
+                'status' => Booking::STATUS_BOOKED,
+            ]); 
+        }
+
+        Mail::to(auth()->user()->email)->send(new BookingUpdate($payment->booking, "Your booking has been secured.", auth()->user(), route('client.bookings')));
+
+        return redirect()->route('client.bookings.payments', $payment->booking->id)->with('success', 'Debit payment successfully added.');
+    }
+
+    public function debitFailed(Request $request, $token){
+        $payment_id = Crypt::decrypt($token);
+        $payment = Payment::find($payment_id);
+        $payment->update([
+            'attempts' => $payment->attempts + 1,
+            'payment_method' => Payment::METHOD_DEBIT,
+        ]);
+        return redirect()->route('client.bookings.payments', $payment->booking->id)->with('success', 'Debit payment failed.');
     }
 
 

@@ -159,12 +159,12 @@ class VehicleController extends Controller
 
         $events = $bookings->map(function ($booking) {
             $start = Carbon::parse($booking->start_datetime);
-            $end = $start->copy()->addDays($booking->number_of_days - 1);
+            $end = $start->copy()->addDays($booking->number_of_days );
 
             return [
                 'title' => 'Booked',
-                'start' => $start->toDateString(),
-                'end' => $end->toDateString(),
+                'start' => $start->toIso8601String(),
+                'end' => $end->toIso8601String(),
                 'backgroundColor' => '#ff0000', // Red color for booked dates
                 'borderColor' => '#ff0000',
             ];

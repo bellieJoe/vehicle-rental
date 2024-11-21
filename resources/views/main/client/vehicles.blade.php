@@ -5,17 +5,20 @@
 
 <div class="">
     <h4 class="h4">Rent Vehicles</h4>
-    <form action="" method="GET" class="form-inline mb-3">
-        <div class="form-group mr-2">
-            <label for="start_date" class="mr-2">Start Date</label>
-            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request()->query('start_date') }}">
-        </div>
-        <div class="form-group mr-2">
-            <label for="end_date" class="mr-2">End Date</label>
-            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request()->query('end_date') }}">
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Filter</button>
+    <form action="" method="GET" class="mb-3">
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="start_date">Start Date</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request()->query('start_date') }}">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="end_date">End Date</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request()->query('end_date') }}">
+            </div>
+            <div class="form-group col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary mr-2">Filter</button>
+                <a href="{{ route('client.vehicles') }}" class="btn btn-secondary ">Clear</a>
+            </div>
         </div>
     </form>
 

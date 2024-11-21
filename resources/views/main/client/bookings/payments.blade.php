@@ -95,7 +95,7 @@
 
                                         @if($can_pay && $attempts < 3)
                                             <button class="btn btn-sm btn-primary m-1 " {{ $is_disabled ? 'disabled' : '' }} onclick="showPayViaGCashModal({{ $payment->id }}, {{$payment->amount}}, {{ $org->gcash_number}})" >Pay Via Gcash</button>
-                                            <button class="btn btn-sm btn-primary m-1" {{ $is_disabled ? 'disabled' : '' }} >Pay Via Debit Card</button>
+                                            <button class="btn btn-sm btn-primary m-1" {{ $is_disabled ? 'disabled' : '' }} onclick="showPayViaDebitModal({{ $payment->id }}, {{$payment->amount}})">Pay Via Debit Card</button>
                                         @endif
                                         @if($attempts >= 3)
                                             <div class="tw-max-w-[300px] small tw-block">
@@ -114,4 +114,5 @@
     </div>
 
     <x-payments.pay-gcash />
+    <x-payments.pay-debit />
 </x-master>

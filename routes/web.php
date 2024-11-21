@@ -11,6 +11,8 @@ use App\Http\Controllers\VehicleController;
 use App\Models\VehicleCategory;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Route;
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
 
 /*
 |--------------------------------------------------------------------------
@@ -141,6 +143,9 @@ Route::prefix('client')
         Route::prefix("payments")->group(function () {
             Route::get('{booking_id}', [ClientController::class, 'paymentsView'])->name('client.bookings.payments');
             Route::post('pay-gcash', [ClientController::class, 'payGcash'])->name('client.bookings.payments.gcash');
+            Route::post('pay-debit', [ClientController::class, 'payDebit'])->name('client.bookings.payments.debit');
+            Route::get('pay-debit-success/{token}', [ClientController::class, 'debitSuccess'])->name('client.bookings.payments.debit-success');
+            Route::get('pay-debit-failed/{token}', [ClientController::class, 'debitFailed'])->name('client.bookings.payments.debit-failed');
         });
     });
 });
@@ -164,36 +169,4 @@ Route::get('/mailable', function () {
 // Inquiry
 Route::prefix('inquiry')->group(function () {
     Route::post('', [InquiryController::class, 'store'])->name('inquiry.store');
-});
-
-
-
-
-Route::get("pay", function () {
-    $client = new Client();
-    $paymongoSecretKey = 'sk_test_qM7PNrU7tD3EqQskRWAsaTym';
-    $response = $client->request('POST', 'https://api.paymongo.com/v1/payment_intents', [
-        'json' => [
-            'data' => [
-                'attributes' => [
-                    'amount' => 20000, // Amount in cents
-                    'currency' => 'PHP',
-                    'redirect' => [
-                        'success' => route('home'), // Redirect URL after success
-                        'failed' => route('galleries'),   // Redirect URL after failure
-                    ],
-                ],
-            ],
-        ],
-        'headers' => [
-            'Authorization' => 'Bearer ' . $paymongoSecretKey,
-            'Content-Type' => 'application/json',
-        ],
-    ]);
-
-    $responseBody = json_decode($response->getBody(), true);
-    $paymentLink = $responseBody['data']['attributes']['url']; // The payment link to send to the user
-
-    // You can now redirect the user to the payment link
-    echo 'Redirect the user to this link: ' . $paymentLink;
 });
