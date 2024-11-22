@@ -6,6 +6,7 @@ use App\Mail\BookingUpdate;
 use App\Models\Booking;
 use App\Models\BookingLog;
 use App\Models\Gallery;
+use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
@@ -16,16 +17,29 @@ class OrgController extends Controller
 {
     public function bookings(Request $request)
     {
+        $status = $request->query('status');
         $vehicleIds = Vehicle::where('user_id', auth()->user()->id)->pluck('id');
-        $bookings = Booking::whereIn('vehicle_id', $vehicleIds)
-            ->with([
-                'vehicle.user.organisation',
-                'vehicle.vehicleCategory',
-            ])
-            ->orderBy('created_at', 'DESC')
-            ->paginate(10);    
+        $packageIds = Package::where('user_id', auth()->user()->id)->pluck('id');
 
-        // return $bookings;
+        $query = Booking::query();
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $query->where(function ($q) use ($vehicleIds, $packageIds) {
+            $q->whereIn('vehicle_id', $vehicleIds)
+              ->orWhereIn('package_id', $packageIds);
+        });
+
+        $query->with([
+            'vehicle.user.organisation',
+            'vehicle.vehicleCategory',
+        ])
+        ->orderBy('created_at', 'DESC');
+
+        $bookings = $query->paginate(10);
+
         return view('main.org.bookings.bookings')
             ->with([
                 'bookings'=> $bookings

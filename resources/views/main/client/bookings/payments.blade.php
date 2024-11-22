@@ -7,7 +7,7 @@
         <div class="card-body">
             <div class="alert alert-info" role="alert">
                 @php
-                    $org = $booking->vehicle ? $booking->vehicle->user->organisation : $booking->package->user->organasation;
+                    $org = $booking->booking_type == 'Vehicle' ? $booking->vehicle->user->organisation : $booking->package->user->organisation;
                 @endphp
                 <h5 class="h6 tw-font-bold" >Payment Options</h5>
                 <p>You can pay through the office <span class="tw-font-bold">{{ $org->org_name }}</span> at <span class="tw-font-bold">{{ $org->address }}</span> or you can pay via Gcash or Debit Card.</p>
@@ -23,7 +23,12 @@
                         <dt class="col-sm-3">Created At :</dt><dd class="col-sm-9">{{ $booking->created_at->diffForHumans() }}</dd>
                         <dt class="col-sm-3">Client Name :</dt><dd class="col-sm-9">{{ $booking->name }}</dd>
                         <dt class="col-sm-3">Client Contact # :</dt><dd class="col-sm-9">{{ $booking->contact_number }}</dd>
-                        <dt class="col-sm-3">Vehicle :</dt><dd class="col-sm-9">{{ $booking->vehicle->model }} #{{ $booking->vehicle->plate_number }}</dd>
+                        @if($booking->booking_type == 'Vehicle')
+                            <dt class="col-sm-3">Vehicle :</dt><dd class="col-sm-9">{{ $booking->vehicle->model }} #{{ $booking->vehicle->plate_number }}</dd>
+                        @endif
+                        @if($booking->booking_type == 'Package')
+                            <dt class="col-sm-3">Package :</dt><dd class="col-sm-9">{{ $booking->package->package_name }}</dd>
+                        @endif
                         <dt class="col-sm-3">Computed Price :</dt><dd class="col-sm-9">PHP {{ number_format($booking->computed_price, 2) }}</dd>
                         <dt class="col-sm-3">Status :</dt>
                         <dd class="col-sm-9 tw-font-bold
@@ -78,10 +83,16 @@
                                                 if(in_array($payment->payment_status, ["Pending", "Payment Invalid"]) && count($booking->payments) == 2 && $payment->is_downpayment == 1 ){
                                                     $is_disabled = false;
                                                 }
+                                                if(in_array($payment->payment_status, ["Pending", "Payment Invalid"]) && count($booking->payments) == 1  ){
+                                                    $is_disabled = false;
+                                                }
                                             }
-                                            if($payment->booking->status == 'Booked'){
+                                            if($payment->booking->status == 'Booked' && count($booking->payments) == 2){
                                                 $can_pay = true;
                                                 if(in_array($payment->payment_status, ["Pending", "Payment Invalid"]) && count($booking->payments) == 2 && $payment->is_downpayment == 0 ){
+                                                    $is_disabled = false;
+                                                }
+                                                if(in_array($payment->payment_status, ["Pending", "Payment Invalid"]) && count($booking->payments) == 1 ){
                                                     $is_disabled = false;
                                                 }
                                             }

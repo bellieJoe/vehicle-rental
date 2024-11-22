@@ -105,7 +105,7 @@
                             <span class="text-danger">{{ $message }}</span> 
                         @enderror
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col">
                             <label for="address"><span class="tw-text-red-500">*</span>Password</label>
                             <input type="text" class="form-control" name="password" id="password" placeholder="Address">
@@ -120,6 +120,14 @@
                                 <span class="text-danger">{{ $message }}</span> 
                             @enderror
                         </div>
+                    </div>
+                    <p>Payment Info</p>
+                    <div class="form-group">
+                        <label for="address"><span class="tw-text-red-500">*</span>Stripe Secret Key</label>
+                        <input type="text" class="form-control" name="stripe_secret_key" id="stripe_secret_key" value="{{ old('stripe_secret_key') }}" placeholder="Address">
+                        @error('stripe_secret_key', 'org_register')
+                            <span class="text-danger">{{ $message }}</span> 
+                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer">

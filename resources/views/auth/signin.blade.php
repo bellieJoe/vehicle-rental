@@ -32,6 +32,16 @@
                             @enderror
                         </div>
                         
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox small">
+                                <input type="checkbox" class="custom-control-input" id="terms" name="terms" required>
+                                <label class="custom-control-label" for="terms">I agree to the <a href="{{ route('toc.registration') }}" target="_blank">Terms and Conditions</a></label>
+                            </div>
+                            @error('terms')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        
                         <button type="submit" class="btn btn-primary btn-user btn-block mb-3">
                             Login
                         </button>

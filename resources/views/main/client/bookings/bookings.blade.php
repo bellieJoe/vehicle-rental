@@ -1,6 +1,7 @@
 <x-master>
 <div class="">
     <h1 class="h4">My Bookings</h1>
+    
     <div class="d-flex justify-content-between my-3">
         <form action="{{route('client.bookings')}}" method="GET" class="form-inline d-sm-flex align-items-sm-center justify-content-sm-end">
             @csrf
@@ -60,10 +61,29 @@
                                                     <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
                                                     <dt class="col-sm-4 mb-0 tw-font-bold"></dt>
                                                     <dd class="col-sm-8 mb-0">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
-                                                    <dt class="col-sm-4 tw-font-bold">Rent Option</dt>
+                                                    <dt class="col-sm-4 tw-font-bold">Rent Option :</dt>
                                                     <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
-                                                    <dt class="col-sm-4 tw-font-bold">Pickup Location</dt>
+                                                    <dt class="col-sm-4 tw-font-bold">Pickup Location:</dt>
+                                                    <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->pickup_location ?? "N/A" }}</dd>
+                                                </dl>
+                                            </div>
+                                        @endif
+                                        @if ($booking->booking_type == 'Package')
+                                            <div class="mt-2">
+                                                <button class="btn btn-sm btn-outline-secondary " onclick="setViewModal({{ $booking->package }})">
+                                                    {{ $booking->package->package_name }}
+                                                </button>
+                                            </div>
+                                            <div class="mt-2">
+                                                <dl class="row tw-max-w-md">
+                                                    <dt class="col-sm-4 mb-0 tw-font-bold">Start Date :</dt>
+                                                    <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
+                                                    <dt class="col-sm-4 mb-0 tw-font-bold"></dt>
+                                                    <dd class="col-sm-8 mb-0">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
+                                                    <dt class="col-sm-4 tw-font-bold">Pickup Location:</dt>
                                                     <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->pickup_location }}</dd>
+                                                    <dt class="col-sm-4 tw-font-bold">Number of Person :</dt>
+                                                    <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->number_of_persons }}</dd>
                                                 </dl>
                                             </div>
                                         @endif
@@ -118,5 +138,6 @@
 </div>
 
 <x-vehicle-details  />
+<x-packages.view-package-modal  />
 <x-bookings.view-logs-modal />
 </x-master>

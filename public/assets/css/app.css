@@ -11175,11 +11175,65 @@ body.sidebar-toggled footer.sticky-footer {
     --tw-contain-paint:  ;
     --tw-contain-style:  
 }
+.tw-container{
+    width: 100%
+}
+@media (min-width: 640px){
+    .tw-container{
+        max-width: 640px
+    }
+}
+@media (min-width: 768px){
+    .tw-container{
+        max-width: 768px
+    }
+}
+@media (min-width: 1024px){
+    .tw-container{
+        max-width: 1024px
+    }
+}
+@media (min-width: 1280px){
+    .tw-container{
+        max-width: 1280px
+    }
+}
+@media (min-width: 1536px){
+    .tw-container{
+        max-width: 1536px
+    }
+}
+.tw-fixed{
+    position: fixed
+}
+.tw-bottom-0{
+    bottom: 0px
+}
+.tw-left-0{
+    left: 0px
+}
+.tw-right-0{
+    right: 0px
+}
+.tw-top-0{
+    top: 0px
+}
+.tw-mx-auto{
+    margin-left: auto;
+    margin-right: auto
+}
+.tw-my-5{
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem
+}
 .tw-mb-8{
     margin-bottom: 2rem
 }
 .tw-mt-4{
     margin-top: 1rem
+}
+.tw-mb-4{
+    margin-bottom: 1rem
 }
 .tw-block{
     display: block
@@ -11189,6 +11243,9 @@ body.sidebar-toggled footer.sticky-footer {
 }
 .tw-h-full{
     height: 100%
+}
+.tw-h-screen{
+    height: 100vh
 }
 .tw-w-fit{
     width: -moz-fit-content;
@@ -11206,18 +11263,35 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-max-w-md{
     max-width: 28rem
 }
-.tw-max-w-36{
-    max-width: 9rem
+.tw-max-w-4xl{
+    max-width: 56rem
 }
-.tw-max-w-sm{
-    max-width: 24rem
+.tw-max-w-2xl{
+    max-width: 42rem
+}
+.tw-list-inside{
+    list-style-position: inside
+}
+.tw-list-disc{
+    list-style-type: disc
+}
+.tw-items-center{
+    align-items: center
 }
 .tw-justify-end{
     justify-content: flex-end
 }
+.tw-justify-center{
+    justify-content: center
+}
 .tw-gap-x-2{
     -moz-column-gap: 0.5rem;
          column-gap: 0.5rem
+}
+.tw-space-y-2 > :not([hidden]) ~ :not([hidden]){
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
 }
 .tw-overflow-y-auto{
     overflow-y: auto
@@ -11253,9 +11327,31 @@ body.sidebar-toggled footer.sticky-footer {
     --tw-bg-opacity: 1;
     background-color: rgb(8 47 73 / var(--tw-bg-opacity, 1))
 }
+.tw-bg-gray-50{
+    --tw-bg-opacity: 1;
+    background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1))
+}
+.tw-bg-gray-100{
+    --tw-bg-opacity: 1;
+    background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1))
+}
+.tw-p-6{
+    padding: 1.5rem
+}
 .tw-py-6{
     padding-top: 1.5rem;
     padding-bottom: 1.5rem
+}
+.tw-px-6{
+    padding-left: 1.5rem;
+    padding-right: 1.5rem
+}
+.tw-py-16{
+    padding-top: 4rem;
+    padding-bottom: 4rem
+}
+.tw-pt-24{
+    padding-top: 6rem
 }
 .tw-text-4xl{
     font-size: 2.25rem;
@@ -11273,11 +11369,22 @@ body.sidebar-toggled footer.sticky-footer {
     font-size: 1.25rem;
     line-height: 1.75rem
 }
+.tw-text-2xl{
+    font-size: 1.5rem;
+    line-height: 2rem
+}
+.tw-text-base{
+    font-size: 1rem;
+    line-height: 1.5rem
+}
 .tw-font-bold{
     font-weight: 700
 }
 .tw-font-extrabold{
     font-weight: 800
+}
+.tw-leading-6{
+    line-height: 1.5rem
 }
 .tw-text-gray-400{
     --tw-text-opacity: 1;
@@ -11310,4 +11417,25 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-text-white{
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+}
+.tw-text-gray-900{
+    --tw-text-opacity: 1;
+    color: rgb(17 24 39 / var(--tw-text-opacity, 1))
+}
+.tw-text-blue-600{
+    --tw-text-opacity: 1;
+    color: rgb(37 99 235 / var(--tw-text-opacity, 1))
+}
+.tw-text-green-600{
+    --tw-text-opacity: 1;
+    color: rgb(22 163 74 / var(--tw-text-opacity, 1))
+}
+.tw-text-slate-700{
+    --tw-text-opacity: 1;
+    color: rgb(51 65 85 / var(--tw-text-opacity, 1))
+}
+.tw-shadow-md{
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
 }

@@ -16,7 +16,7 @@
     <h4 class="h4">Vehicles</h4>
     <div class="row justify-content-center">
         <div class="col ">
-            <button data-toggle="modal" data-target="#addVehicleModal" class="btn  btn-primary mb-3">Add Vehicle</button>
+            <a href="{{ route('org.vehicles.createView') }}" class="btn  btn-primary mb-3">Add Vehicle</a>
         </div>
         <div class="col ">
             <form class="form-inline w-100" action="" method="GET">

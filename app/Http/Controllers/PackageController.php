@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Package;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -84,6 +86,41 @@ class PackageController extends Controller
 
             return redirect()->route('org.packages.index')->with('success', 'Package updated successfully');
         });
+    }
+
+    public function getPackageBookings($package_id)
+    {
+        $bookings = Booking::where('package_id', $package_id)
+            ->where('status', 'Booked')
+            ->where('start_datetime', '>=', now())
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
+            ->select('booking_details.start_datetime', 'booking_details.number_of_days')
+            ->get();
+
+        $events = $bookings->map(function ($booking) {
+            $start = Carbon::parse($booking->start_datetime);
+            $end = $start->copy()->addDays($booking->number_of_days )->subHours(9);
+
+            return [
+                'title' => 'Booked',
+                'start' => $start->toIso8601String(),
+                'end' => $end->toIso8601String(),
+                'backgroundColor' => '#ff0000', // Red color for booked dates
+                'borderColor' => '#ff0000',
+            ];
+        });
+
+        return response()->json($events);
+    }
+
+    public function setAvailability(Request $request, $package_id) {
+        $package = Package::find($package_id);
+
+        $package->update([
+            "is_available" => $request->is_available === 'true' ? 1 : 0
+        ]);
+
+        return redirect()->back()->with('success', 'Package availability updated successfully');
     }
 
 }

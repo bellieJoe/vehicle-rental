@@ -60,16 +60,31 @@
             @endif
           </div>
 
-          <div class="form-group">
-            <x-forms.input name="pickup_location" label="Pickup Location" placeholder="Enter pickup location"  />
-          </div>
-
           {{-- <div class="form-group">
             <x-forms.select name="payment_method" label="Payment Method" placeholder="Please Payment Method" :options="['Cash' => 'Cash', 'Gcash' => 'Gcash', 'Debit' => 'Debit Card']"  required />
           </div> --}}
 
           <div class="form-group">
             <x-forms.select value="{{ old('payment_option') }}" name="payment_option" label="Payment Option" placeholder="Select Payment Schedule" :options="['Full' => 'Pay in full', 'Installment' => 'Pay in Installment']" />
+          </div>
+
+          <div class="form-group">
+            <label for="additional_rate">Additional Rate</label>
+            <select name="additional_rate" class="form-control" id="additional_rate">
+              <option value="">No Additional Rate</option>
+              @foreach ($additional_rates as $additionalRate)
+                <option {{ old('additional_rate') == $additionalRate->id ? 'selected' : ''}} value="{{$additionalRate->id}}">{{$additionalRate->name}} (Php {{$additionalRate->rate}})</option>
+              @endforeach
+            </select>
+            @error('additional_rate')
+              <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+              </span>
+            @enderror
+          </div>
+
+          <div class="form-group">
+            <x-forms.input name="pickup_location" label="Pickup/Delivery Location or Landmark" placeholder="Enter pickup location"  />
           </div>
 
           <hr>
@@ -80,9 +95,7 @@
               <p class="h4 mb-0 text-primary tw-font-bold" id="computed_price">Php 0.00</p>
             </div>
           </div>
-
           <button type="submit" class="btn btn-primary tw-block ml-auto mr-0">Book</button>
-
       </form>
     </div>
   </div>
@@ -97,29 +110,38 @@
     $numberOfDays = $('#number_of_days');
     $rentOptions = $('#rent_options');
     $computedPrice = $('#computed_price');
+    $additionalRate = $('#additional_rate');
 
     $numberOfDays.on('input', function(e) {
-      if(["With Driver"].includes($rentOptions.val())) {
-        const rate = parseInt("{{$vehicle->rate_w_driver}}");
-        $computedPrice.text(`Php ${$numberOfDays.val() * rate}`);
-      }
-      else {
-        const rate = {{$vehicle->rate}};
-        $computedPrice.text(`Php ${$numberOfDays.val() * rate}`);
-      }
+      computePrice();
     });
     $rentOptions.on('change', function(e) {
-      if(["With Driver"].includes($rentOptions.val())) {
-        const rate = parseInt("{{$vehicle->rate_w_driver}}");
-        $computedPrice.text(`Php ${$numberOfDays.val() * rate}`);
-        $('input[name="pickup_location"]').closest('.form-group').show();
-      }
-      else {
-        const rate = {{$vehicle->rate}};
-        $computedPrice.text(`Php ${$numberOfDays.val() * rate}`);
-        $('input[name="pickup_location"]').closest('.form-group').hide();
-      }
+      computePrice();
     });
+    $additionalRate.on('change', function(e) {
+      computePrice();
+    });
+
+    computePrice();
+
+    function computePrice() {
+        // Fetch rates dynamically
+        const additionalRates = @json($additional_rates->pluck('rate', 'id'));
+
+        const addRate = parseInt(additionalRates[$additionalRate.val()] ?? 0); // Fetch additional rate dynamically
+        const numberOfDays = parseInt($numberOfDays.val() || 0); // Handle empty value
+        
+        let rate = 0;
+        if ($rentOptions.val() === "With Driver") {
+            rate = parseInt("{{$vehicle->rate_w_driver}}");
+        } else {
+            rate = parseInt("{{$vehicle->rate}}");
+        }
+
+        const computedPrice = (numberOfDays * rate) + addRate;
+        $computedPrice.text(`Php ${computedPrice.toLocaleString()}`); // Add locale formatting
+    }
+
   });
 </script>
 @endsection

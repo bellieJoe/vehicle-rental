@@ -24,8 +24,8 @@
                         <h5 class="card-title h5 tw-font-bold">{{ $category->category_name }}</h5>
                         <p class="card-text">{{ $category->vehicles_count }} Vehicle/s</p>
                         <div class="mt-3">
-                            <button class="btn-sm btn-danger" onclick="setDeleteModal({{$category->id}})">Delete</button>
-                            <button class="btn-sm btn-primary" onclick="setUpdateModal({{$category->id}}, {{$category}})">Update</button>
+                            <button class="btn btn-sm btn-danger" onclick="setDeleteModal({{$category->id}})">Delete</button>
+                            <button class="btn btn-sm btn-primary" onclick="setUpdateModal({{$category->id}}, {{$category}})">Update</button>
                         </div>
                     </div>
                 </div>

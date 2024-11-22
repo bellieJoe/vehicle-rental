@@ -115,6 +115,7 @@ class UserController extends Controller
                 'address' => 'required',
                 'org_name' => 'required',
                 'gcash_number' => 'required',
+                'stripe_secret_key' => 'required'
             ]);
 
             $user = User::create([
@@ -129,6 +130,7 @@ class UserController extends Controller
                 'org_name' => $request->org_name,
                 'address' => $request->address,
                 'gcash_number' => $request->gcash_number,
+                'stripe_secret_key' => $request->stripe_secret_key
             ]);
 
             Mail::to($user->email)->send(new OrgRegistered($user, $organisation, $request->password));

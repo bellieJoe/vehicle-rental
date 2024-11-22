@@ -5,7 +5,7 @@
         <!-- slider section -->
         <section class="slider_section ">
         <div class="slider_bg_box">
-            <img src="{{ asset('assets/images/vehicle.jpg') }}" alt="">
+            <img src="{{ asset('assets/images/hero.jpg') }}" alt="">
         </div>
         <div id="customCarousel1" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">

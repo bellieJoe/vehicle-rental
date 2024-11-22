@@ -16,7 +16,7 @@
                         <div class="form-group ">
                             <input type="text" name="name" value="{{ old('name') }}" class="form-control form-control-user" placeholder="Full Name">
                             @error('name')
-                            asd
+                            
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
@@ -39,6 +39,16 @@
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox small">
+                                <input type="checkbox" class="custom-control-input" id="terms" name="terms" required>
+                                <label class="custom-control-label" for="terms">I agree to the <a href="{{ route('toc.registration') }}" target="_blank">Terms and Conditions</a></label>
+                            </div>
+                            @error('terms')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <button type="submit" class="btn btn-primary mb-3 btn-user btn-block">
                             Register Account

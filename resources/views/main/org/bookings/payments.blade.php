@@ -1,5 +1,5 @@
 @php
-    $org = $booking->vehicle ? $booking->vehicle->user->organisation : $booking->package->user->organasation;
+    $org = $booking->booking_type == 'Vehicle' ? $booking->vehicle->user->organisation : $booking->package->user->organisation;
 @endphp
 <x-master>
     <div class="d-flex justify-content-between mb-4">
@@ -19,7 +19,12 @@
                         <dt class="col-sm-3">Created At :</dt><dd class="col-sm-9">{{ $booking->created_at->diffForHumans() }}</dd>
                         <dt class="col-sm-3">Client Name :</dt><dd class="col-sm-9">{{ $booking->name }}</dd>
                         <dt class="col-sm-3">Client Contact # :</dt><dd class="col-sm-9">{{ $booking->contact_number }}</dd>
-                        <dt class="col-sm-3">Vehicle :</dt><dd class="col-sm-9">{{ $booking->vehicle->model }} #{{ $booking->vehicle->plate_number }}</dd>
+                        @if($booking->booking_type == 'Vehicle')
+                            <dt class="col-sm-3">Vehicle :</dt><dd class="col-sm-9">{{ $booking->vehicle->model }} #{{ $booking->vehicle->plate_number }}</dd>
+                        @endif
+                        @if($booking->booking_type == 'Package')
+                            <dt class="col-sm-3">Package :</dt><dd class="col-sm-9">{{ $booking->package->package_name }}</dd>
+                        @endif
                         <dt class="col-sm-3">Computed Price :</dt><dd class="col-sm-9">PHP {{ number_format($booking->computed_price, 2) }}</dd>
                         <dt class="col-sm-3">Status :</dt>
                         <dd class="col-sm-9 tw-font-bold

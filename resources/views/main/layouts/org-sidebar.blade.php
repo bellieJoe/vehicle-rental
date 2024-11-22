@@ -33,13 +33,14 @@
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item {{ (request()->is('org/vehicles/*') || request()->routeIs('org.vehicles.index') ? 'active' : '') }}">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-        <i class="fas fa-car"></i><span>Vehicles</span>
+            <i class="fas fa-car"></i><span>Vehicles</span>
         </a>
         <div id="collapseTwo" class="collapse {{ (request()->is('org/vehicles/*') || request()->routeIs('org.vehicles.index') ? 'show' : '') }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 {{-- <h6 class="collapse-header">Custom Components:</h6> --}}
                 <a class="collapse-item {{ request()->routeIs('org.vehicles.category.index') ? 'active' : '' }}" href="{{ route('org.vehicles.category.index') }}">Categories</a>
                 <a class="collapse-item {{ request()->routeIs('org.vehicles.index') ? 'active' : '' }}" href="{{ route('org.vehicles.index') }}">Vehicles</a>
+                <a class="collapse-item {{ request()->routeIs('org.additional-rates.index') || request()->is('org/vehicles/additional-rates/*') ? 'active' : '' }}" href="{{ route('org.additional-rates.index') }}">Additional Rates</a>
             </div>
         </div>
     </li>

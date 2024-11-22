@@ -1,6 +1,27 @@
 <x-master>
     <div class="">
+
         <h1 class="h4">Bookings</h1>
+
+        <div class="d-flex justify-content-between my-3">
+            <form action="{{route('org.bookings.index')}}" method="GET" class="form-inline d-sm-flex align-items-sm-center justify-content-sm-end">
+                @csrf
+                <div class="form-group mr-sm-3">
+                    <label for="status" class="mr-2 d-block d-sm-inline">Status</label>
+                    <select name="status" id="status" class="form-control">
+                        <option value="" {{request()->query('status') == '' ? 'selected' : ''}}>All</option>
+                        <option value="Pending" {{request()->query('status') == 'Pending' ? 'selected' : ''}}>Pending</option>
+                        <option value="To Pay" {{request()->query('status') == 'To Pay' ? 'selected' : ''}}>To Pay</option>
+                        <option value="Rejected" {{request()->query('status') == 'Rejected' ? 'selected' : ''}}>Rejected</option>
+                        {{-- <option value="Completed" {{request()->query('status') == 'Completed' ? 'selected' : ''}}>Completed</option> --}}
+                        <option value="Cancelled" {{request()->query('status') == 'Cancelled' ? 'selected' : ''}}>Cancelled</option>
+                        <option value="Booked" {{request()->query('status') == 'Booked' ? 'selected' : ''}}>Booked</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary d-sm-inline-block">Filter</button>
+            </form>
+        </div>
+
         <div class="card">
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -35,16 +56,35 @@
                                                 </div>
                                                 <div class="mt-2">
                                                     <dl class="row tw-max-w-md">
-                                                        <dt class="col-sm-4 tw-font-bold">No. of Days :</dt>
-                                                        <dd class="col-sm-8">{{$booking->bookingDetail->number_of_days}} Day/s</dd>
-                                                        <dt class="col-sm-4 tw-font-bold">Start Date :</dt>
-                                                        <dd class="col-sm-8">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
-                                                        <dt class="col-sm-4 tw-font-bold"></dt>
-                                                        <dd class="col-sm-8">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
-                                                        <dt class="col-sm-4 tw-font-bold">Rent Option</dt>
-                                                        <dd class="col-sm-8">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
-                                                        <dt class="col-sm-4 tw-font-bold">Pickup Location</dt>
-                                                        <dd class="col-sm-8">{{ $booking->bookingDetail->pickup_location }}</dd>
+                                                        <dt class="col-sm-4 mb-0 tw-font-bold">No. of Days :</dt>
+                                                        <dd class="col-sm-8 mb-0">{{$booking->bookingDetail->number_of_days}} Day/s</dd>
+                                                        <dt class="col-sm-4 mb-0 tw-font-bold">Start Date :</dt>
+                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
+                                                        <dt class="col-sm-4 mb-0 tw-font-bold"></dt>
+                                                        <dd class="col-sm-8 mb-0">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
+                                                        <dt class="col-sm-4 mb-0 tw-font-bold">Rent Option :</dt>
+                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
+                                                        <dt class="col-sm-4 mb-0 tw-font-bold">Pickup Location :</dt>
+                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->pickup_location ?? 'N/A' }}</dd>
+                                                    </dl>
+                                                </div>
+                                            @endif
+                                            @if ($booking->booking_type == 'Package')
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-outline-secondary " onclick="setViewModal({{ $booking->package }})">
+                                                        {{ $booking->package->package_name }}
+                                                    </button>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <dl class="row tw-max-w-md">
+                                                        <dt class="col-sm-4 mb-0 tw-font-bold">Start Date :</dt>
+                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
+                                                        <dt class="col-sm-4 mb-0 tw-font-bold"></dt>
+                                                        <dd class="col-sm-8 mb-0">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
+                                                        <dt class="col-sm-4 tw-font-bold">Pickup Location :</dt>
+                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->pickup_location }}</dd>
+                                                        <dt class="col-sm-4 tw-font-bold">Number of Person :</dt>
+                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->number_of_persons }}</dd>
                                                     </dl>
                                                 </div>
                                             @endif
@@ -75,7 +115,7 @@
                                                 @if(!in_array($booking->status, ["Pending", "Rejected"]))
                                                     <a class="dropdown-item" href="{{ route('org.bookings.payments', $booking->id)}}">View Payments</a>
                                                 @endif
-                                                <a class="dropdown-item" href="#">View Logs</a>
+                                                <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})">View Logs</button>
 
                                             </div>
                                         </div>
@@ -96,4 +136,6 @@
     </div>
 
     <x-vehicle-details  />
+    <x-packages.view-package-modal  />
+    <x-bookings.view-logs-modal />
 </x-master>

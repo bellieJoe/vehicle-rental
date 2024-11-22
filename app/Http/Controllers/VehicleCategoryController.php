@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Vehicle;
 use App\Models\VehicleCategory;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -39,6 +40,10 @@ class VehicleCategoryController extends Controller
         $request->validateWithBag('category_delete', [
             'id' => 'required|exists:vehicle_categories,id',
         ]);
+
+        if(Vehicle::where('category_id', $request->id)->exists()){
+            return back()->with('error', 'Category has associated vehicles and cannot be deleted.')->withInput();
+        }
 
         $category = VehicleCategory::find($request->id);
 

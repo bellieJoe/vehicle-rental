@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdditionalRateController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InquiryController;
@@ -33,6 +34,8 @@ Route::view('/settings', 'main.settings')->name('settings')->middleware(['auth',
 Route::put('/update-password', [UserController::class , 'updatePassword'])->name('updatePassword')->middleware(['auth', 'verified']);
 Route::put('/update-profile', [UserController::class , 'updateProfile'])->name('updateProfile')->middleware(['auth', 'verified']);
 Route::get("/galleries", [GalleryController::class, 'index'])->name('galleries');
+Route::view("/toc-bookings", "toc.bookings-toc")->name("toc.bookings");
+Route::view("/toc", "toc.registration-toc")->name("toc.registration");
 
 Route::prefix('/email')->group(function () {
     Route::get('/verify', [UserController::class, 'verificationNotice'])
@@ -84,25 +87,37 @@ Route::prefix('org')
     Route::view('', 'main.org.index')->name('org.index');
     Route::prefix('vehicles')->group(function () {
         Route::get('', [VehicleController::class, 'index'])->name('org.vehicles.index'); 
+        Route::get('create', [VehicleController::class, 'createView'])->name('org.vehicles.createView'); 
         Route::post('', [VehicleController::class, 'create'])->name('org.vehicles.create'); 
         Route::put('', [VehicleController::class, 'update'])->name('org.vehicles.update'); 
         Route::delete('', [VehicleController::class, 'delete'])->name('org.vehicles.delete'); 
         Route::post('set-availability/{vehicle_id}', [VehicleController::class, 'setAvailability'])->name('org.vehicles.set-availability'); 
-
+        
         Route::prefix('categories')->group(function () {
             Route::get('', [VehicleCategoryController::class, 'index'])->name('org.vehicles.category.index');
             Route::post('', [VehicleCategoryController::class, 'create'])->name('org.vehicles.category.create');
             Route::delete('', [VehicleCategoryController::class, 'delete'])->name('org.vehicles.category.delete');
             Route::put('', [VehicleCategoryController::class, 'update'])->name('org.vehicles.category.update');
         });
+        
+        Route::prefix("additional-rates")->group(function () {
+            Route::get('', [AdditionalRateController::class, 'index'])->name('org.additional-rates.index');
+            Route::get('create', [AdditionalRateController::class, 'create'])->name('org.additional-rates.create');
+            Route::post('create', [AdditionalRateController::class, 'store'])->name('org.additional-rates.store');
+            Route::get('edit/{additional_rate_id}', [AdditionalRateController::class, 'edit'])->name('org.additional-rates.edit');
+            Route::post('edit/{additional_rate_id}', [AdditionalRateController::class, 'update'])->name('org.additional-rates.update');
+            Route::delete('delete/{additional_rate_id}', [AdditionalRateController::class, 'delete'])->name('org.additional-rates.delete');
+        });
     });
 
+    
     Route::prefix('packages')->group(function () {
         Route::get('', [PackageController::class, 'index'])->name('org.packages.index');
         Route::get('create', [PackageController::class, 'create'])->name('org.packages.create');
         Route::post('', [PackageController::class, 'store'])->name('org.packages.store');
         Route::get('edit/{package_id}', [PackageController::class, 'edit'])->name('org.packages.edit');
         Route::post('update/{package_id}', [PackageController::class, 'update'])->name('org.packages.update');
+        Route::post('set-availability/{package_id}', [PackageController::class, 'setAvailability'])->name('org.package.set-availability'); 
     });
 
     Route::prefix("bookings")->group(function () {
@@ -137,6 +152,11 @@ Route::prefix('client')
         Route::get('rent/{vehicle_id}', [ClientController::class, 'rentView'])->name('client.vehicles.rentView');   
         Route::post('rent', [ClientController::class, 'rentStore'])->name('client.vehicles.rentStore'); 
     });
+    Route::prefix("packages")->group(function () {
+        Route::get('', [ClientController::class, 'packages'])->name('client.packages');
+        Route::get('book/{package_id}', [ClientController::class, 'bookPackageView'])->name('client.packages.bookView');
+        Route::post('book', [ClientController::class, 'bookStore'])->name('client.vehicles.bookStore'); 
+    });
     Route::prefix("bookings")->group(function () {
         Route::get('', [ClientController::class, 'bookings'])->name('client.bookings');
         Route::get('cancel/{booking_id}', [ClientController::class, 'cancelBookingView'])->name('client.bookings.cancelView');
@@ -156,6 +176,10 @@ Route::prefix('api')->group(function () {
     Route::prefix("vehicles")->group(function () {
         Route::get('query-by-user/{user_id}', [VehicleController::class, 'apiQuery'])->name('api.vehicles.apiQueryByUser');
         Route::get('get-schedule/{vehicle_id}', [VehicleController::class, 'getVehicleBookings'])->name('api.vehicles.booking-schedule');
+    });
+
+    Route::prefix("package")->group(function () {
+        Route::get('get-schedule/{package_id}', [PackageController::class, 'getPackageBookings'])->name('api.packages.booking-schedule');
     });
 
 });

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Mail\BookingUpdate;
+use App\Models\AdditionalRate;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BookingLog;
+use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
@@ -63,9 +65,13 @@ class ClientController extends Controller
     public function rentView(Request $request, $vehicle_id)
     {
         $vehicle = Vehicle::find($vehicle_id);
+        $additional_rates = $vehicle->user->additionalRates;
         
         return view('main.client.rent')
-            ->with(['vehicle' => $vehicle]);
+            ->with([
+                'vehicle' => $vehicle,
+                'additional_rates' => $additional_rates
+            ]);
     }
 
     public function rentStore(Request $request)
@@ -79,8 +85,9 @@ class ClientController extends Controller
             'number_of_days' => 'required|integer|min:1',
             'rent_options' => 'required|in:With Driver,Without Driver',
             // 'payment_method' => 'required|in:Cash,Gcash,Debit',
+            'additional_rate' => 'nullable|exists:additional_rates,id',
             'payment_option' => 'required|in:'.Payment::OPTION_FULL_PAYMENT.','.Payment::OPTION_INSTALLMENT,
-            'pickup_location' => 'requiredIf:rent_options,With Driver',
+            'pickup_location' => 'required',
         ]);
 
         // check if vehicle is available
@@ -102,9 +109,13 @@ class ClientController extends Controller
         return DB::transaction(function () use ($request) {
 
             // check for double booking
+            $additional_rate = null;
+            if($request->additional_rate){
+                $additional_rate = AdditionalRate::find($request->additional_rate);
+            }
 
             $vehicle = Vehicle::find($request->vehicle_id);
-            $computed_price = $request->rent_options === 'Without Driver' ? $vehicle->rate * $request->number_of_days : $vehicle->rate_w_driver * $request->number_of_days;
+            $computed_price = ($vehicle->rate * $request->number_of_days) + ($additional_rate ? $additional_rate->rate : 0);
 
             $booking = Booking::create([
                 'transaction_number' => time().auth()->user()->id,
@@ -334,6 +345,127 @@ class ClientController extends Controller
         return redirect()->route('client.bookings.payments', $payment->booking->id)->with('success', 'Debit payment failed.');
     }
 
+    public function packages(Request $request){
+        $request->validate([
+            'start_date' => 'nullable|date|required_with:end_date',
+            'end_date' => 'nullable|date|after_or_equal:start_date|required_with:start_date',
+        ]);
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $packagesQuery = Package::where('is_available', 1)
+        ->with([
+            'user.organisation'
+        ]);
+
+        // Apply the date filter only if both dates are provided
+        if ($startDate && $endDate) {
+            $startDateTime = Carbon::parse($startDate);
+            $endDateTime = Carbon::parse($endDate);
+
+            $packagesQuery->whereDoesntHave('bookings', function ($query) use ($startDateTime, $endDateTime) {
+                $query->where('status', 'Booked')
+                    ->whereHas('bookingDetail', function ($detailsQuery) use ($startDateTime, $endDateTime) {
+                        $detailsQuery->where(function ($query) use ($startDateTime, $endDateTime) {
+                            $query->where('start_datetime', '<', $endDateTime)
+                                ->whereRaw('DATE_ADD(start_datetime, INTERVAL number_of_days DAY) > ?', [$startDateTime]);
+                        });
+                    });
+            });
+        }
+
+        $packages = $packagesQuery->paginate(10);
+
+        return view('main.client.packages', [
+            'packages' => $packages,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ]);
+    }
+
+    public function bookPackageView(Request $request, $package_id){
+        $package = Package::find($package_id);
+        
+        return view('main.client.book-package')
+            ->with(['package' => $package]);
+    }
+
+    public function bookStore(Request $request){
+        $request->validate([
+            'package_id' => 'required|exists:packages,id'
+        ]);
+
+        $package = Package::find($request->package_id);
+
+        $request->validate([
+            'package_id' => 'required|exists:packages,id',
+            'booking_type' => 'required|in:Vehicle,Package',
+            'contact_number' => 'required|regex:/^09\d{9}$/',
+            'name' => 'required',
+            'start_date' => 'required|date|after:'.now()->addDay(),
+            'payment_option' => 'required|in:'.Payment::OPTION_FULL_PAYMENT.','.Payment::OPTION_INSTALLMENT,
+            'pickup_location' => 'requiredIf:rent_options,With Driver',
+            'number_of_person' => 'required|integer|gte:'.$package->minimum_pax
+        ]);
+
+        $start_date = Carbon::parse($request->start_date)->addHour(7);
+        
+
+        // check if package is available
+        if(!$this->isPackageAvailable($request->package_id, $start_date, $request->number_of_days, Booking::STATUS_BOOKED)){
+            return redirect()
+            ->back()
+            ->with('error', "Sorry, this package is already booked from ".Carbon::parse($request->start_date)->format('M d, Y h:i A')." to ".Carbon::parse($request->start_date)->addDays($request->number_of_days)->format('M d, Y h:i A').". Please choose a different date or package.")
+            ->withInput();
+        }
+
+        // check if has double booking
+        if(!$this->checkPackageDoubleBooking($request->vehicle_id, Carbon::parse($request->start_date)->addHours(1)->toDateTime(), $request->number_of_days, Booking::STATUS_PENDING)){
+            return redirect()
+            ->back()
+            ->withErrors(['error' => "It appears you already have a booking for these dates."])
+            ->withInput();
+        }
+
+        return DB::transaction(function () use ($request, $package, $start_date) {
+
+            
+            $computed_price = $package->price_per_person * $request->number_of_person;
+
+            $booking = Booking::create([
+                'transaction_number' => time().auth()->user()->id,
+                'booking_type' => $request->booking_type,
+                'user_id' => auth()->user()->id,
+                'contact_number' => $request->contact_number,
+                'name' => $request->name,
+                'package_id' => $request->package_id,
+                'computed_price' => $computed_price,
+                'status' => Booking::STATUS_PENDING,
+                // 'payment_status' => Payment::STATUS_PENDING
+            ]);
+
+            BookingDetail::create([
+                'booking_id' => $booking->id,
+                'start_datetime' => $start_date,
+                'number_of_days' => $package->package_duration,
+                'pickup_location' => $request->pickup_location,
+                'number_of_persons' => $request->number_of_person
+            ]);
+
+            BookingLog::create([
+                'booking_id' => $booking->id,
+                'log' => auth()->user()->name.' Created the booking',
+            ]);
+
+            $this->_createPayments($booking, $request);
+
+            Mail::to($package->user->email)->send(new BookingUpdate($booking, 'You have new vehicle booking.', $package->user, route('org.bookings.index')));
+            
+            return redirect()->route('client.bookings');   
+        });
+    }
+
 
     // other functions
     function _createPayments(Booking $booking, Request $request){
@@ -387,12 +519,57 @@ class ClientController extends Controller
         return !$overlappingBookings; // Returns true if no overlap, meaning the vehicle is available
     }
 
+    function isPackageAvailable($package_id, $start_datetime, $number_of_days, $status) {
+        $end_datetime = Carbon::parse($start_datetime)->addDays($number_of_days);
+    
+        $overlappingBookings = DB::table('bookings')
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
+            ->where('bookings.package_id', $package_id)
+            ->where('bookings.status', $status)
+            ->where(function ($query) use ($start_datetime, $end_datetime) {
+                $query->where(function ($q) use ($start_datetime) {
+                    $q->where('booking_details.start_datetime', '<=', $start_datetime)
+                      ->whereRaw('DATE_SUB(DATE_ADD(booking_details.start_datetime, INTERVAL booking_details.number_of_days DAY), INTERVAL 9 HOUR) > ?', [$start_datetime]);
+                })
+                ->orWhere(function ($q) use ($end_datetime) {
+                    $q->where('booking_details.start_datetime', '<', $end_datetime)
+                      ->whereRaw('DATE_SUB(DATE_ADD(booking_details.start_datetime, INTERVAL booking_details.number_of_days DAY), INTERVAL 9 HOUR) >= ?', [$end_datetime]);
+                });
+            })
+            ->exists();
+    
+        return !$overlappingBookings; // Returns true if no overlap, meaning the vehicle is available
+    }
+
     function checkDoubleBooking($vehicle_id, $start_datetime, $number_of_days, $status) {
         $end_datetime = Carbon::parse($start_datetime)->addDays($number_of_days);
     
         $overlappingBookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
             ->where('bookings.vehicle_id', $vehicle_id)
+            ->where('bookings.user_id', auth()->user()->id)
+            ->where('bookings.status', $status)
+            ->where(function ($query) use ($start_datetime, $end_datetime) {
+                $query->where(function ($q) use ($start_datetime) {
+                    $q->where('booking_details.start_datetime', '<=', $start_datetime)
+                      ->whereRaw('DATE_ADD(booking_details.start_datetime, INTERVAL booking_details.number_of_days DAY) > ?', [$start_datetime]);
+                })
+                ->orWhere(function ($q) use ($end_datetime) {
+                    $q->where('booking_details.start_datetime', '<', $end_datetime)
+                      ->whereRaw('DATE_ADD(booking_details.start_datetime, INTERVAL booking_details.number_of_days DAY) >= ?', [$end_datetime]);
+                });
+            })
+            ->exists();
+    
+        return !$overlappingBookings; // Returns true if no overlap, meaning the vehicle is available
+    }
+
+    function checkPackageDoubleBooking($package_id, $start_datetime, $number_of_days, $status) {
+        $end_datetime = Carbon::parse($start_datetime)->addDays($number_of_days)->subHours(2);
+    
+        $overlappingBookings = DB::table('bookings')
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
+            ->where('bookings.package_id', $package_id)
             ->where('bookings.user_id', auth()->user()->id)
             ->where('bookings.status', $status)
             ->where(function ($query) use ($start_datetime, $end_datetime) {

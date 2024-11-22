@@ -50,7 +50,7 @@ class VehicleController extends Controller
                 "image" => "required|image|mimes:jpeg,png,jpg|max:2048",
                 "rent_options" => "required|in:With Driver,Without Driver,Both",
                 "rate" => "required|numeric|min:0",
-                "rate_w_driver" => "nullable|required_if:rent_options,With Driver,Both|numeric|min:0",
+                // "rate_w_driver" => "nullable|required_if:rent_options,With Driver,Both|numeric|min:0",
             ]);
     
             $imageName = time().'.'.$request->image->extension();
@@ -64,7 +64,7 @@ class VehicleController extends Controller
                 "image" => $imageName,
                 "rent_options" => $request->rent_options,
                 "rate" => $request->rate,
-                "rate_w_driver" => $request->rent_options === 'Without Driver' ? null : $request->rate_w_driver,
+                // "rate_w_driver" => $request->rent_options === 'Without Driver' ? null : $request->rate_w_driver,
                 "user_id" => auth()->user()->id,
             ]);
     
@@ -128,6 +128,10 @@ class VehicleController extends Controller
             'id' => 'required|exists:vehicles,id',
         ]);
 
+        if(Booking::where('vehicle_id', $request->id)->exists()){
+           return redirect()->back()->with('error', 'Vehicle has active bookings')->withInput(); 
+        }
+
         $vehicle = Vehicle::find($request->id);
         $vehicle->delete();
         return redirect()->back()->with('success', 'Vehicle deleted successfully');
@@ -172,4 +176,13 @@ class VehicleController extends Controller
 
         return response()->json($events);
     }
+
+    public function createView(Request $request) {
+        $categories = VehicleCategory::where('user_id', auth()->user()->id)->get();
+
+        return view('main.org.vehicles.create')
+        ->with([
+            'categories' => $categories
+        ]);
+    }   
 }

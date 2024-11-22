@@ -25,15 +25,18 @@
                                         <button class="btn btn-sm btn-outline-primary mr-2" onclick="setViewModal({{$package}})">Details</button>
                                         <a class="btn btn-sm btn-primary" href="{{ route('org.packages.edit', $package->id) }}">Update</a>
                                     </div>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input pointer" id="package-{{ $package->id }}" {{ $package->is_available ? 'checked' : '' }} value="true">
+                                    <form id='availability-form-{{ $package->id }}' method="POST" action="{{ route('org.package.set-availability', $package->id) }}" class="custom-control custom-switch ">
+                                        @csrf
+                                        <input type="hidden" name="is_available" value="false">
+                                        <input name="is_available" type="checkbox" class="custom-control-input pointer" id="package-{{ $package->id }}" {{ $package->is_available ? 'checked' : '' }} value="true">
                                         <label class="custom-control-label" for="package-{{ $package->id }}">Available</label>
-                                    </div>
+                                    </form>
                                     <script>
-                                        const checkbox = document.getElementById('package-{{ $package->id }}');
-                                        checkbox.addEventListener('change', function() {
-                                            const form = document.getElementById('availability-form-{{ $package->id }}');
-                                            form.submit();
+                                        $(document).ready(function() {
+                                            $("#package-{{ $package->id }}").change(function() {
+                                                const form = document.getElementById('availability-form-{{ $package->id }}');
+                                                form.submit();
+                                            });
                                         });
                                     </script>
                                 </div>

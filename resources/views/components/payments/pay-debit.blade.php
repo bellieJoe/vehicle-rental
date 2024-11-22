@@ -21,7 +21,7 @@
 
                     <div class="form-group form-check">
                         <input name="toc" type="checkbox" class="form-check-input" id="termsCheckbox" required>
-                        <label class="form-check-label" for="termsCheckbox">I agree to the terms and conditions</label>
+                        <label class="form-check-label" for="termsCheckbox">I agree to the <a target="_blank" href="{{ route('toc.bookings') }}">Terms and Conditions</a></label>
                         @error('toc', 'pay_via_debit')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror

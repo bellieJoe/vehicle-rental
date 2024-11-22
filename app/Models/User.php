@@ -61,5 +61,9 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     {
         return $this->hasMany(VehicleCategory::class, 'user_id', 'id');
     }
+
+    public function additionalRates(){
+        return $this->hasMany(AdditionalRate::class);
+    }
 }
 

@@ -20,15 +20,15 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
 
-    <!-- Heading -->
-    <div class="sidebar-heading">
-        Client Interface
-    </div>
-
 
     <li class="nav-item {{ request()->is('client/vehicles/*') || request()->routeIs('client.vehicles') ? 'active' : '' }}">
         <a class="nav-link " href="{{ route('client.vehicles') }}">
         <i class="fa fa-car"></i><span>Rent Vehicles</span>
+        </a>
+    </li>
+    <li class="nav-item {{ request()->is('client/packages/*') || request()->routeIs('client.packages') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('client.packages') }}">
+        <i class="fa-solid fa-map-location-dot"></i><span>Book Tour Packages</span>
         </a>
     </li>
     <li class="nav-item {{ request()->is('client/bookings/*') || request()->routeIs('client.bookings') ? 'active' : '' }}">
