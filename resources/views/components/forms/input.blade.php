@@ -8,7 +8,8 @@
     "disabled" => false,
     "readonly" => false,
     "errorBag" => "default",
-    "accept" => ""
+    "accept" => "",
+    "min" => 0
 ])
 
 <label for="{{ $name }}">
@@ -24,11 +25,12 @@
     type="{{ $type }}"
     name="{{ $name }}" 
     placeholder="{{ $placeholder }}" 
-    value="{{ old($name, $value) }}"
+    value="{{ $value ? $value : old($name, $value) }}"
     {{ $required ? 'required' : '' }} 
     accept="{{$accept}}"
     {{ $disabled ? 'disabled' : '' }} 
     {{ $readonly ? 'readonly' : '' }}
+    min="{{$min}}"
 />
 
 @error($name, $errorBag)

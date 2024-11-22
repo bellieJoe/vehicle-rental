@@ -75,7 +75,6 @@ Route::prefix('admin')
         Route::post('reply', [InquiryController::class, 'reply'])->name('admin.inquiries.reply');
     });
 
-
 });
 
 // ORG ROUTES
@@ -102,6 +101,8 @@ Route::prefix('org')
         Route::get('', [PackageController::class, 'index'])->name('org.packages.index');
         Route::get('create', [PackageController::class, 'create'])->name('org.packages.create');
         Route::post('', [PackageController::class, 'store'])->name('org.packages.store');
+        Route::get('edit/{package_id}', [PackageController::class, 'edit'])->name('org.packages.edit');
+        Route::post('update/{package_id}', [PackageController::class, 'update'])->name('org.packages.update');
     });
 
     Route::prefix("bookings")->group(function () {

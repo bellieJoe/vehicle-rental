@@ -5,9 +5,10 @@
     <x-alerts></x-alerts>
 
     <div>
+        
         <h1 class="h4">Packages</h1>
         <div class="mt-3 mb-3">
-            <a href="{{ route('org.packages.create') }}" class="btn btn-primary btn-sm">Add Package</a>
+            <a href="{{ route('org.packages.create') }}" class="btn btn-primary ">Add Package</a>
         </div>
 
         <div class="row">
@@ -18,38 +19,37 @@
                             <div style="width: 100%; height: 200px; background-size: cover; background-position: center center; background-repeat: no-repeat; background-image: url({{ $package->package_image ? asset("images/packages/$package->package_image") : ''}}); border-radius: 0.25rem;"></div>
                             <div class="p-3">
                                 <h5 class="card-title h5">{{ $package->package_name }} </h5>
-                                {{-- <div class="row align-items-center">
-                                    <div class="col">
-                                        <button class="btn-sm btn-danger my-2" onclick="setDeleteModal({{$vehicle->id}})">Delete</button>
-                                        <button class="btn-sm btn-primary my-2" onclick="setUpdateModal({{$vehicle}})">Update</button>
+                                <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between">
+                                    <div class="mb-2 mb-sm-0">
+                                        <button class="btn btn-sm btn-danger mr-2">Delete</button>
+                                        <button class="btn btn-sm btn-outline-primary mr-2" onclick="setViewModal({{$package}})">Details</button>
+                                        <a class="btn btn-sm btn-primary" href="{{ route('org.packages.edit', $package->id) }}">Update</a>
                                     </div>
-                                    <div class="col ">
-                                        <form id='availability-form-{{ $vehicle->id }}' method="POST" action="{{ route('org.vehicles.set-availability', $vehicle->id) }}" class="custom-control custom-switch ">
-                                            @csrf
-                                            <input type="hidden" name="is_available" value="false">
-                                            <input name="is_available" type="checkbox" class="custom-control-input pointer" id="vehicle-{{ $vehicle->id }}" {{ $vehicle->is_available ? 'checked' : '' }} value="true">
-                                            <label class="custom-control-label" for="vehicle-{{ $vehicle->id }}">Available</label>
-                                        </form>
-                                        <script>
-                                            const checkbox = document.getElementById('vehicle-{{ $vehicle->id }}');
-                                            checkbox.addEventListener('change', function() {
-                                                const form = document.getElementById('availability-form-{{ $vehicle->id }}');
-                                                form.submit();
-                                            });
-                                        </script>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input pointer" id="package-{{ $package->id }}" {{ $package->is_available ? 'checked' : '' }} value="true">
+                                        <label class="custom-control-label" for="package-{{ $package->id }}">Available</label>
                                     </div>
-                                </div> --}}
+                                    <script>
+                                        const checkbox = document.getElementById('package-{{ $package->id }}');
+                                        checkbox.addEventListener('change', function() {
+                                            const form = document.getElementById('availability-form-{{ $package->id }}');
+                                            form.submit();
+                                        });
+                                    </script>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             @empty
                 <div class="col-md-12 text-center">
-                    <p class="lead">No Pcakages available.</p>
+                    <p class="lead">No Packages available.</p>
                 </div>
             @endforelse
         </div>
         {{ $packages->links() }}
     </div>
+
+    <x-packages.view-package-modal />
     
 @endsection
