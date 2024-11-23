@@ -12,4 +12,8 @@ class AdditionalRate extends Model
 
     protected $guarded = [];
 
+    public function vehicleCategory()
+    {
+        return $this->belongsTo(VehicleCategory::class);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdditionalRate;
+use App\Models\VehicleCategory;
 use Illuminate\Http\Request;
 
 class AdditionalRateController extends Controller
@@ -17,19 +18,25 @@ class AdditionalRateController extends Controller
     }
 
     public function create(){
-        return view('main.org.additional-rates.create');
+        $categories = VehicleCategory::where('user_id', auth()->user()->id)->get();
+        return view('main.org.additional-rates.create')
+        ->with([
+            'categories' => $categories
+        ]);
     }
 
     public function store(Request $request){
         $request->validate([
             'name' => 'required',
             'rate' => 'required',
+            'vehicle_category_id' => 'required|exists:vehicle_categories,id',
         ]); 
 
         AdditionalRate::create([
             'name' => $request->name,
             'rate' => $request->rate,
             'user_id' => auth()->user()->id,
+            'vehicle_category_id' => $request->vehicle_category_id
         ]);
 
         return redirect()->route('org.additional-rates.index')->with('success', 'Successfully added additional rate.');
@@ -37,21 +44,27 @@ class AdditionalRateController extends Controller
 
     public function edit(Request $request, $additional_rate_id){
         $additional_rate = AdditionalRate::find($additional_rate_id);
+        $categories = VehicleCategory::where('user_id', auth()->user()->id)->get();
 
         return view('main.org.additional-rates.edit')
-            ->with('additional_rate', $additional_rate);
+            ->with([
+                'additional_rate' => $additional_rate,
+                'categories' => $categories
+            ]);
     }
 
     public function update(Request $request, $additional_rate_id){
         $request->validate([
             'name' => 'required',
             'rate' => 'required',
+            'vehicle_category_id' => 'required|exists:vehicle_categories,id',
         ]); 
 
         AdditionalRate::where('id', $additional_rate_id)
             ->update([
                 'name' => $request->name,
                 'rate' => $request->rate,
+                'vehicle_category_id' => $request->vehicle_category_id
             ]);
 
         return redirect()->route('org.additional-rates.index')->with('success', 'Successfully updated additional rate.');

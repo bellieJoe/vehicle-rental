@@ -7,8 +7,10 @@ use App\Models\AdditionalRate;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BookingLog;
+use App\Models\Feedback;
 use App\Models\Package;
 use App\Models\Payment;
+use App\Models\Refund;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -65,7 +67,7 @@ class ClientController extends Controller
     public function rentView(Request $request, $vehicle_id)
     {
         $vehicle = Vehicle::find($vehicle_id);
-        $additional_rates = $vehicle->user->additionalRates;
+        $additional_rates = $vehicle->user->additionalRates->where('vehicle_category_id', $vehicle->vehicle_category_id);
         
         return view('main.client.rent')
             ->with([
@@ -115,7 +117,8 @@ class ClientController extends Controller
             }
 
             $vehicle = Vehicle::find($request->vehicle_id);
-            $computed_price = ($vehicle->rate * $request->number_of_days) + ($additional_rate ? $additional_rate->rate : 0);
+            $rate_per_day = $request->rent_options === 'With Driver' ? $vehicle->rate_with_driver : $vehicle->rate_without_driver;
+            $computed_price = ($rate_per_day * $request->number_of_days) + ($additional_rate ? $additional_rate->rate : 0);
 
             $booking = Booking::create([
                 'transaction_number' => time().auth()->user()->id,
@@ -160,6 +163,7 @@ class ClientController extends Controller
                 'bookingDetail',
                 'bookingLogs'
             ])
+            ->withCount('refunds')
             ->orderBy('created_at', 'DESC');
 
         if ($status) {
@@ -193,7 +197,7 @@ class ClientController extends Controller
                 return redirect()->back()->withErrors(['others' => 'Booking not found']);
             }
 
-            if(in_array($booking->status, [Booking::STATUS_CANCELLED, Booking::STATUS_REJECTED, Booking::STATUS_COMPLETED, Booking::STATUS_IN_PROGRESS])){
+            if(in_array($booking->status, [Booking::STATUS_CANCELLED, Booking::STATUS_REJECTED, Booking::STATUS_COMPLETED])){
                 return redirect()->back()->withErrors(['others' => 'Invalid booking action.']);
             }
 
@@ -463,6 +467,93 @@ class ClientController extends Controller
             Mail::to($package->user->email)->send(new BookingUpdate($booking, 'You have new vehicle booking.', $package->user, route('org.bookings.index')));
             
             return redirect()->route('client.bookings');   
+        });
+    }
+
+    public function refundView(Request $request, $booking_id){
+        $booking = Booking::find($booking_id);
+
+        if(!$booking){
+            return redirect()->back()->with('error', 'Invalid booking.');
+        }
+
+        $paid_amount = $booking->payments->where("payment_status", Payment::STATUS_PAID)->sum("amount");
+        $refundable_amount = $paid_amount - (($booking->computed_price / 2) * 0.05);
+
+        if($paid_amount <= 0){
+            return redirect()->back()->with('error', 'No payment has been made for this booking.');
+        }
+
+        return view('main.client.bookings.refund')
+            ->with([
+                'booking' => $booking,
+                'refundable_amount' => $refundable_amount,
+                'paid_amount' => $paid_amount
+            ]);
+    }
+
+    public function storeRefund(Request $request, $booking_id){
+
+        $request->validate([
+            'gcash_number' => 'required|numeric|digits:11|starts_with:09',
+            'gcash_name' => 'required',
+            'email' => 'required|email'
+        ]);
+
+        $booking = Booking::find($booking_id);
+
+        if(!$booking){
+            return redirect()->back()->with('error', 'Invalid booking.');
+        }
+
+        $paid_amount = $booking->payments->where("payment_status", Payment::STATUS_PAID)->sum("amount");
+        $refundable_amount = $paid_amount - (($booking->computed_price / 2) * 0.05);
+
+        if($paid_amount <= 0){
+            return redirect()->back()->with('error', 'No payment has been made for this booking.');
+        }
+
+        Refund::create([
+            'booking_id' => $booking->id,
+            'amount' => $refundable_amount,
+            'gcash_number' => $request->gcash_number,
+            'gcash_name' => $request->gcash_name,
+            'email' => $request->email,
+            'status' => Refund::STATUS_PENDING
+        ]);
+
+        return redirect()->route('client.bookings')->with('success', 'Refund request has been submitted.');
+        
+    }
+
+    public function storeFeedback(Request $request){
+        if(!$request->booking_id) {
+            return redirect()->back()->with('error', 'An unexpected error occurred while attempting to save your feedback. Please try again later.');
+        }
+
+        $booking = Booking::find($request->booking_id);
+
+        if(!$booking){
+            return redirect()->back()->with('error', 'Invalid booking.');
+        }
+
+        $request->validateWithBag('feedback_create',[
+            'review' => 'required',
+            'rating' => 'required'
+        ]);
+
+        if($booking->status != Booking::STATUS_COMPLETED){
+            return redirect()->back()->with('error', 'You cannot give feedback for this booking.');
+        }
+
+        return DB::transaction(function () use ($request, $booking) {
+            Feedback::create([
+                'booking_id' => $booking->id,
+                'review' => $request->review,
+                'rating' => $request->rating
+            ]);
+
+            return redirect()->back()->with('success', 'Feedback submitted successfully.');
         });
     }
 

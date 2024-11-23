@@ -49,8 +49,8 @@ class VehicleController extends Controller
                 "vehicle_category_id" => "required|exists:vehicle_categories,id",
                 "image" => "required|image|mimes:jpeg,png,jpg|max:2048",
                 "rent_options" => "required|in:With Driver,Without Driver,Both",
-                "rate" => "required|numeric|min:0",
-                // "rate_w_driver" => "nullable|required_if:rent_options,With Driver,Both|numeric|min:0",
+                "rate" => "nullable|required_if:rent_options,Without Driver,Both|numeric|min:0",
+                "rate_w_driver" => "nullable|required_if:rent_options,With Driver,Both|numeric|min:0",
             ]);
     
             $imageName = time().'.'.$request->image->extension();
@@ -63,8 +63,8 @@ class VehicleController extends Controller
                 "vehicle_category_id" => $request->vehicle_category_id,
                 "image" => $imageName,
                 "rent_options" => $request->rent_options,
-                "rate" => $request->rate,
-                // "rate_w_driver" => $request->rent_options === 'Without Driver' ? null : $request->rate_w_driver,
+                "rate" => $request->rent_options === 'With Driver' ? null : $request->rate,
+                "rate_w_driver" => $request->rent_options === 'Without Driver' ? null : $request->rate_w_driver,
                 "user_id" => auth()->user()->id,
             ]);
     

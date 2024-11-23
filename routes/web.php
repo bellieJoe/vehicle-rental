@@ -110,6 +110,11 @@ Route::prefix('org')
         });
     });
 
+    Route::prefix("refunds")->group(function () {
+        Route::get('', [OrgController::class, 'viewRefunds'])->name('org.refunds.index');
+        Route::put('process', [OrgController::class, 'processRefund'])->name('org.refunds.process');
+    });
+
     
     Route::prefix('packages')->group(function () {
         Route::get('', [PackageController::class, 'index'])->name('org.packages.index');
@@ -124,6 +129,7 @@ Route::prefix('org')
         Route::get('', [OrgController::class, 'bookings'])->name('org.bookings.index');    
         Route::get('edit/{booking_id}', [OrgController::class, 'editBooking'])->name('org.bookings.edit');    
         Route::put('update/{booking_id}', [OrgController::class, 'updateBooking'])->name('org.bookings.update');
+        Route::post('complete/{booking_id}', [OrgController::class, 'completeBooking'])->name('org.bookings.complete');
         Route::prefix("payments")->group(function () {
             Route::get('{booking_id}', [OrgController::class, 'paymentsView'])->name('org.bookings.payments');
             Route::post('approve/{payment_id}', [OrgController::class, 'approvePayment'])->name('org.bookings.payments.approve');
@@ -157,10 +163,21 @@ Route::prefix('client')
         Route::get('book/{package_id}', [ClientController::class, 'bookPackageView'])->name('client.packages.bookView');
         Route::post('book', [ClientController::class, 'bookStore'])->name('client.vehicles.bookStore'); 
     });
+
+    Route::prefix("refund")->group(function () {
+        Route::get("booking/{booking_id}", [ClientController::class, 'refundView'])->name('client.refund.view');
+        Route::post("booking/{booking_id}", [ClientController::class, 'storeRefund'])->name('client.refund.store');
+    });
+
+    Route::prefix("feedbacks")->group(function () {
+        Route::post('', [ClientController::class, 'storeFeedback'])->name('client.feedbacks.store'); 
+    });
+
     Route::prefix("bookings")->group(function () {
         Route::get('', [ClientController::class, 'bookings'])->name('client.bookings');
         Route::get('cancel/{booking_id}', [ClientController::class, 'cancelBookingView'])->name('client.bookings.cancelView');
         Route::put('cancel/{booking_id}', [ClientController::class, 'cancelBooking'])->name('client.bookings.cancel');
+
         Route::prefix("payments")->group(function () {
             Route::get('{booking_id}', [ClientController::class, 'paymentsView'])->name('client.bookings.payments');
             Route::post('pay-gcash', [ClientController::class, 'payGcash'])->name('client.bookings.payments.gcash');

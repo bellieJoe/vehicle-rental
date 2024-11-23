@@ -52,11 +52,11 @@
 
                 <div class="row  mb-3">
                     <div class="col-sm">
-                        <x-forms.input type="number" name="rate" label="Rate" placeholder="Enter rate (daily)" errorBag="vehicle_create" required></x-forms.input>
+                        <x-forms.input type="number" name="rate" label="Rate (daily)" placeholder="Enter rate (daily)" errorBag="vehicle_create" />
                     </div>
-                    {{-- <div class="col-sm">
-                        <x-forms.input type="number" name="rate_w_driver" label="Rate with driver (daily)" placeholder="Enter rate (daily)" errorBag="vehicle_create"></x-forms.input>
-                    </div> --}}
+                    <div class="col-sm">
+                        <x-forms.input type="number" name="rate_w_driver" label="Rate with driver (daily)" placeholder="Enter rate (daily)" errorBag="vehicle_create" />
+                    </div>
                 </div>
 
                 <hr>
@@ -71,16 +71,23 @@
     <script>
         $(document).ready(function() {
             $form = $('#addVehicleForm');
-            $c_priceComputation = $form.find('#price_computation');
+            
             $rent_options = $form.find('#rent_options');
+            $rate_w_driver = $form.find('#rate_w_driver');
+            $rate = $form.find('#rate');
     
             $rent_options.change(function(e) {
                 console.log(e.target.value);
-                if(['With Driver', 'Both'].includes(e.target.value)) {
-                    $form.find('#rate_w_driver').closest('.col-sm').show();
-                }
-                else {
-                    $form.find('#rate_w_driver').closest('.col-sm').hide();
+                if(e.target.value == 'With Driver') {
+                    $rate_w_driver.closest('div').show();
+                    $rate.closest('div').hide();
+                } 
+                else if(e.target.value == 'Without Driver') {
+                    $rate.closest('div').show();
+                    $rate_w_driver.closest('div').hide();
+                } else {
+                    $rate.closest('div').show();
+                    $rate_w_driver.closest('div').show();
                 }
             });
     

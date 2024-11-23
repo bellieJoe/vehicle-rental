@@ -42,9 +42,9 @@
                 <div class="card-header">
                     Payments
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body ">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover border">
                             <thead>
                                 <tr>
                                     <th>Amount</th>
@@ -109,6 +109,35 @@
                             </tbody>
                         </table>
                     </div>
+
+                    @if($booking->has("refunds") && $booking->refunds->count() > 0)
+                        @php
+                            $refund = $booking->refunds->first();
+                        @endphp
+                        <div class="table-responsive">
+                            <table class="table border">
+                                <thead>
+                                    <tr>
+                                        <th>Refund Amount</th>
+                                        <th>Refund Status</th>
+                                        <th>Date Refunded</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>PHP {{ number_format($refund->amount, 2) }}</td>
+                                        <td class="
+                                            {{ $refund->status == 'pending' ? 'tw-text-gray-500' : '' }}
+                                            {{ $refund->status == 'refunded' ? 'tw-text-green-500' : '' }}
+                                        ">
+                                            {{ ucfirst($refund->status) }}
+                                        </td>
+                                        <td>{{ $refund->refunded_at->diffForHumans() ?? 'N/A' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

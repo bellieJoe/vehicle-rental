@@ -57,6 +57,12 @@
         </a>
     </li>
 
+    <li class="nav-item {{ request()->is('org/refunds/*') || request()->routeIs('org.refunds.index') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('org.refunds.index') }}">
+          <i class="fa-solid fa-undo"></i><span>Refunds</span>
+        </a>
+    </li>
+
 
   <!-- Divider -->
   <hr class="sidebar-divider d-none d-md-block">

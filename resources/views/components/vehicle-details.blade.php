@@ -15,7 +15,7 @@
                     <dt class="col-sm-3" >Category :</dt><dd id="category" class="col-sm-9"></dd>
                     <dt class="col-sm-3" >Owner :</dt><dd id="owner" class="col-sm-9"></dd>
                     <dt class="col-sm-3" >Rate :</dt><dd id="rate" class="col-sm-9">PHP</dd>
-                    <dt class="col-sm-3" >Rate with driver :</dt><dd id="rate_w_driver" class="col-sm-9">PHP</dd>
+                    <dt class="col-sm-3" >Rate With Driver :</dt><dd id="rate_w_driver" class="col-sm-9">PHP</dd>
                 </dl>
                 <div class="">
                     <div class="alert alert-info"  role="alert">
@@ -41,7 +41,7 @@
         $('#vehicleDetailsModal').find('#plate_number').text(vehicle.plate_number);
         $('#vehicleDetailsModal').find('#category').text(vehicle.vehicle_category.category_name);
         $('#vehicleDetailsModal').find('#owner').text(vehicle.user.organisation.org_name);
-        $('#vehicleDetailsModal').find('#rate').text(`Php ${vehicle.rate}`);
+        $('#vehicleDetailsModal').find('#rate').text(`Php ${["Both", "Without Driver"].includes(vehicle.rent_options) ? vehicle.rate : "N/A"}`);
         $('#vehicleDetailsModal').find('#rate_w_driver').text(`Php ${["Both", "With Driver"].includes(vehicle.rent_options) ? vehicle.rate_w_driver : "N/A"}`);
         $('#vehicleDetailsModal').find('#rent_options').text(vehicle.rent_options == "Both" ? "Can be rented with or without driver" : `${vehicle.rent_options} only`);
         $('#vehicleDetailsModal').modal('show');

@@ -38,9 +38,9 @@
                         <div style="width: 100%; height: 200px; background-size: cover; background-position: center center; background-repeat: no-repeat; background-image: url({{ $vehicle->image ? asset("images/vehicles/$vehicle->image") : ''}}); border-radius: 0.25rem;"></div>
                         <div class="p-3">
                             <span class="badge badge-secondary">{{ $vehicle->vehicleCategory->category_name }}</span>
-                            <h5 class="card-title h5">{{ $vehicle->model }} #{{ $vehicle->plate_number }}</h5>
-                            <h5 class="card-subtitle">{{ $vehicle->brand }}</h5>
-                            <h5 class="">{{ $vehicle->bookings_count }} Bookings</h5>
+                            <h5 class="card-title h5">{{ $vehicle->model }}</h5>
+                            <h6 class="card-subtitle">{{ $vehicle->brand }}</h6>
+                            <h6 class="">{{ $vehicle->bookings_count }} Bookings</h6>
                             <div class="row align-items-center">
                                 <div class="col">
                                     <button class="btn btn-sm btn-danger my-2" onclick="setDeleteModal({{$vehicle->id}})">Delete</button>

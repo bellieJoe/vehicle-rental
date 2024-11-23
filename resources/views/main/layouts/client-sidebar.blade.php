@@ -28,7 +28,7 @@
     </li>
     <li class="nav-item {{ request()->is('client/packages/*') || request()->routeIs('client.packages') ? 'active' : '' }}">
         <a class="nav-link " href="{{ route('client.packages') }}">
-        <i class="fa-solid fa-map-location-dot"></i><span>Book Tour Packages</span>
+        <i class="fa-solid fa-map-location-dot"></i><span>Book Packages</span>
         </a>
     </li>
     <li class="nav-item {{ request()->is('client/bookings/*') || request()->routeIs('client.bookings') ? 'active' : '' }}">

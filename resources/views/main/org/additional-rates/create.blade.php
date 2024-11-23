@@ -2,6 +2,7 @@
     <div class="d-flex justify-content-between mb-4">
         <a href="{{url()->previous()}}" class="btn btn-sm btn-secondary"><i class="fa-solid fa-chevron-left mr-2"></i>Back</a>
     </div>
+    
     <h4 class="h4">Add Additional Rate</h4>
 
     <div class="card">
@@ -14,6 +15,15 @@
                     @error('name')
                         <span class="text-danger">{{ $message }}</span> 
                     @enderror
+                </div>
+                <div class="form-group">
+                    <label for="">Vehicle Category</label>
+                    <select name="vehicle_category_id" id="vehicle_category_id" class="form-control">
+                        <option value="">Select Vehicle Category</option>
+                        @foreach ($categories as $category)
+                            <option value="{{$category->id}}" {{ old('vehicle_category_id') == $category->id ? 'selected' : ''}}>{{$category->category_name}}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="rateValue">Rate Value (in PHP)</label>

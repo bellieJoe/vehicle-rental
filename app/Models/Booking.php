@@ -54,6 +54,36 @@ class Booking extends Model
 
     }
 
+    public function refunds() {
+        return $this->hasMany(Refund::class);
+    }
 
+    public function canBeCompleted() {
+        $end_datetime = null;
+        if($this->booking_type == "Vehicle"){
+            $end_datetime = $this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days);
+        }
+        else {
+            $end_datetime = $this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days)->subHours(9);
+        }
+
+        if(!$end_datetime) {
+            return false;
+        }
+
+        if($this->status != self::STATUS_BOOKED) {
+            return false;
+        }
+
+        if($this->payments->where("payment_status", Payment::STATUS_PAID)->sum("amount") < $this->computed_price) {
+            return false;
+        }
+        
+        return $end_datetime->isPast();
+    }
+
+    public function getAmountPaid(){
+        return $this->payments->where("payment_status", Payment::STATUS_PAID)->sum("amount");
+    }
 
 }

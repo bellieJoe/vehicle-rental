@@ -13,6 +13,7 @@
                         <tr>
                             <th>Rate Name</th>
                             <th>Rate Value</th>
+                            <th>Vehicle Category</th>
                             <th width="10%">Actions</th>
                         </tr>
                     </thead>
@@ -21,6 +22,7 @@
                             <tr>
                                 <td>{{ $rate->name }}</td>
                                 <td>Php {{ number_format($rate->rate, 2) }}</td>
+                                <td>{{ $rate->vehicleCategory->category_name }}</td>
                                 <td>
                                     <a href="{{ route('org.additional-rates.edit', $rate->id) }}" class="btn btn-sm btn-info tw-w-full tw-block mb-2">
                                         Edit

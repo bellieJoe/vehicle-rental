@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Mail\BookingUpdate;
+use App\Mail\RefundInvoice;
 use App\Models\Booking;
 use App\Models\BookingLog;
 use App\Models\Gallery;
 use App\Models\Package;
 use App\Models\Payment;
+use App\Models\Refund;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -245,6 +247,65 @@ class OrgController extends Controller
             Mail::to($client->email)->send(new BookingUpdate($payment->booking, "Your booking has been secured.", $client, route('client.bookings')));
 
             return redirect()->back()->with('success', 'Payment updated successfully');
+        });
+    }
+
+    public function viewRefunds(Request $request) {     
+        $package_ids = Package::where('user_id', auth()->user()->id)->pluck('id');
+        $vehicle_ids = Vehicle::where('user_id', auth()->user()->id)->pluck('id');
+        $bookings_ids = Booking::whereIn('package_id', $package_ids)
+        ->orWhereIn('vehicle_id', $vehicle_ids)
+        ->pluck('id'); 
+
+        $refunds = Refund::whereIn('booking_id', $bookings_ids)
+        ->orderBy('created_at', 'desc')
+        ->paginate();
+
+        return view('main.org.refunds.index')
+        ->with([
+            'refunds' => $refunds  
+        ]);
+    }
+
+    public function processRefund(Request $request) {
+        return DB::transaction(function () use ($request) {
+            if(!$request->has('refund_id') || !$request->has('gcash_transaction_number')){ 
+                return redirect()->back()->with('error', 'Something went wrong. Please try again.');
+            }
+    
+            $refund = Refund::find($request->refund_id);
+    
+            if(!$refund){
+                return redirect()->back()->with('error', 'Cannot find refund.');
+            }
+    
+            $refund->update([
+                'gcash_transaction_number' => $request->gcash_transaction_number,
+                'status' => Refund::STATUS_REFUNDED,
+                'refunded_at' => now()
+            ]);
+    
+            $booking = $refund->booking;
+    
+            Mail::to($refund->email)->send(new RefundInvoice($refund));
+    
+            return redirect()->back()->with('success', 'Refund processed successfully.');
+        });
+    }
+
+    public function completeBooking(Request $request, $booking_id) {
+        return DB::transaction(function () use ($request, $booking_id) {
+            $booking = Booking::find($booking_id);  
+
+            if(!$booking){
+                return redirect()->back()->with('error', 'Invalid booking.');
+            }
+
+            $booking->update([
+                'status' => Booking::STATUS_COMPLETED
+            ]);
+
+            return redirect()->back()->with('success', 'Booking completed successfully.');
         });
     }
 }

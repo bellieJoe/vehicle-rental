@@ -42,10 +42,10 @@ class Payment extends Model
     }
 
     // Running the check on model retrieval
-    protected static function booted()
-    {
-        static::retrieved(function ($payment) {
-            $payment->checkIfExpiredAndSetStatus();
-        });
-    }
+    // protected static function booted()
+    // {
+    //     static::retrieved(function ($payment) {
+    //         $payment->checkIfExpiredAndSetStatus();
+    //     });
+    // }
 }

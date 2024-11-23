@@ -110,12 +110,17 @@
                                             Actions
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            @if(in_array($booking->status, ['Pending', 'To Pay']))
+                                            @if(in_array($booking->status, ['Pending', 'To Pay', 'Booked']))
                                                 <a class="dropdown-item" href="{{ route('client.bookings.cancelView', $booking->id)}}"><i class="fa-solid fa-circle-xmark mr-2 tw-text-gray-400"></i>Cancel</a>
                                             @endif
-                                            
+                                            @if(in_array($booking->status, ['Cancelled']) && $booking->refunds_count <= 0)
+                                                <a class="dropdown-item" href="{{ route('client.refund.view', $booking->id) }}"><i class="fa-solid fa-arrow-rotate-left mr-2 tw-text-gray-400"></i>Ask Refund</a>
+                                            @endif
                                             @if(!in_array($booking->status, ['Pending', 'Rejected']))
                                                 <a class="dropdown-item" href="{{ route('client.bookings.payments', $booking->id) }}"><i class="fas fa-credit-card mr-2 tw-text-gray-400" ></i> View Payments</a>
+                                            @endif
+                                            @if(in_array($booking->status, ['Completed']))
+                                                <button class="dropdown-item" onclick="showCreateFeedbackModal({{$booking}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i> Rate</button>
                                             @endif
                                             <hr>
                                             <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})"><i class="fas fa-list mr-2 tw-text-gray-400"></i> View Logs</button>
@@ -140,4 +145,6 @@
 <x-vehicle-details  />
 <x-packages.view-package-modal  />
 <x-bookings.view-logs-modal />
+<x-feedbacks.create-modal />
+
 </x-master>

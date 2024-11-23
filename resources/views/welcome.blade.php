@@ -7,7 +7,7 @@
         <div class="slider_bg_box">
             <img src="{{ asset('assets/images/hero.jpg') }}" alt="">
         </div>
-        <div id="customCarousel1" class="carousel slide" data-ride="carousel">
+        {{-- <div id="customCarousel1" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <div class="container ">
@@ -33,7 +33,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         </section>
         <!-- end slider section -->

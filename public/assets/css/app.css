@@ -11203,21 +11203,6 @@ body.sidebar-toggled footer.sticky-footer {
         max-width: 1536px
     }
 }
-.tw-fixed{
-    position: fixed
-}
-.tw-bottom-0{
-    bottom: 0px
-}
-.tw-left-0{
-    left: 0px
-}
-.tw-right-0{
-    right: 0px
-}
-.tw-top-0{
-    top: 0px
-}
 .tw-mx-auto{
     margin-left: auto;
     margin-right: auto
@@ -11226,14 +11211,14 @@ body.sidebar-toggled footer.sticky-footer {
     margin-top: 1.25rem;
     margin-bottom: 1.25rem
 }
+.tw-mb-4{
+    margin-bottom: 1rem
+}
 .tw-mb-8{
     margin-bottom: 2rem
 }
 .tw-mt-4{
     margin-top: 1rem
-}
-.tw-mb-4{
-    margin-bottom: 1rem
 }
 .tw-block{
     display: block
@@ -11244,15 +11229,18 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-h-full{
     height: 100%
 }
-.tw-h-screen{
-    height: 100vh
-}
 .tw-w-fit{
     width: -moz-fit-content;
     width: fit-content
 }
 .tw-w-full{
     width: 100%
+}
+.tw-max-w-2xl{
+    max-width: 42rem
+}
+.tw-max-w-4xl{
+    max-width: 56rem
 }
 .tw-max-w-\[300px\]{
     max-width: 300px
@@ -11263,20 +11251,11 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-max-w-md{
     max-width: 28rem
 }
-.tw-max-w-4xl{
-    max-width: 56rem
-}
-.tw-max-w-2xl{
-    max-width: 42rem
-}
 .tw-list-inside{
     list-style-position: inside
 }
 .tw-list-disc{
     list-style-type: disc
-}
-.tw-items-center{
-    align-items: center
 }
 .tw-justify-end{
     justify-content: flex-end
@@ -11299,6 +11278,18 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-rounded-lg{
     border-radius: 0.5rem
 }
+.tw-border{
+    border-width: 1px
+}
+.tw-border-2{
+    border-width: 2px
+}
+.tw-border-4{
+    border-width: 4px
+}
+.tw-border-8{
+    border-width: 8px
+}
 .tw-bg-\[\#4e73df\]{
     --tw-bg-opacity: 1;
     background-color: rgb(78 115 223 / var(--tw-bg-opacity, 1))
@@ -11306,6 +11297,14 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-bg-cyan-500{
     --tw-bg-opacity: 1;
     background-color: rgb(6 182 212 / var(--tw-bg-opacity, 1))
+}
+.tw-bg-gray-100{
+    --tw-bg-opacity: 1;
+    background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1))
+}
+.tw-bg-gray-50{
+    --tw-bg-opacity: 1;
+    background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1))
 }
 .tw-bg-gray-500{
     --tw-bg-opacity: 1;
@@ -11327,20 +11326,8 @@ body.sidebar-toggled footer.sticky-footer {
     --tw-bg-opacity: 1;
     background-color: rgb(8 47 73 / var(--tw-bg-opacity, 1))
 }
-.tw-bg-gray-50{
-    --tw-bg-opacity: 1;
-    background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1))
-}
-.tw-bg-gray-100{
-    --tw-bg-opacity: 1;
-    background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1))
-}
 .tw-p-6{
     padding: 1.5rem
-}
-.tw-py-6{
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem
 }
 .tw-px-6{
     padding-left: 1.5rem;
@@ -11350,12 +11337,17 @@ body.sidebar-toggled footer.sticky-footer {
     padding-top: 4rem;
     padding-bottom: 4rem
 }
-.tw-pt-24{
-    padding-top: 6rem
+.tw-py-6{
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem
 }
 .tw-text-4xl{
     font-size: 2.25rem;
     line-height: 2.5rem
+}
+.tw-text-base{
+    font-size: 1rem;
+    line-height: 1.5rem
 }
 .tw-text-lg{
     font-size: 1.125rem;
@@ -11369,14 +11361,6 @@ body.sidebar-toggled footer.sticky-footer {
     font-size: 1.25rem;
     line-height: 1.75rem
 }
-.tw-text-2xl{
-    font-size: 1.5rem;
-    line-height: 2rem
-}
-.tw-text-base{
-    font-size: 1rem;
-    line-height: 1.5rem
-}
 .tw-font-bold{
     font-weight: 700
 }
@@ -11385,6 +11369,10 @@ body.sidebar-toggled footer.sticky-footer {
 }
 .tw-leading-6{
     line-height: 1.5rem
+}
+.tw-text-blue-600{
+    --tw-text-opacity: 1;
+    color: rgb(37 99 235 / var(--tw-text-opacity, 1))
 }
 .tw-text-gray-400{
     --tw-text-opacity: 1;
@@ -11406,6 +11394,10 @@ body.sidebar-toggled footer.sticky-footer {
     --tw-text-opacity: 1;
     color: rgb(34 197 94 / var(--tw-text-opacity, 1))
 }
+.tw-text-green-600{
+    --tw-text-opacity: 1;
+    color: rgb(22 163 74 / var(--tw-text-opacity, 1))
+}
 .tw-text-orange-500{
     --tw-text-opacity: 1;
     color: rgb(249 115 22 / var(--tw-text-opacity, 1))
@@ -11414,28 +11406,24 @@ body.sidebar-toggled footer.sticky-footer {
     --tw-text-opacity: 1;
     color: rgb(239 68 68 / var(--tw-text-opacity, 1))
 }
+.tw-text-slate-700{
+    --tw-text-opacity: 1;
+    color: rgb(51 65 85 / var(--tw-text-opacity, 1))
+}
 .tw-text-white{
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity, 1))
 }
-.tw-text-gray-900{
+.tw-text-blue-500{
     --tw-text-opacity: 1;
-    color: rgb(17 24 39 / var(--tw-text-opacity, 1))
-}
-.tw-text-blue-600{
-    --tw-text-opacity: 1;
-    color: rgb(37 99 235 / var(--tw-text-opacity, 1))
-}
-.tw-text-green-600{
-    --tw-text-opacity: 1;
-    color: rgb(22 163 74 / var(--tw-text-opacity, 1))
-}
-.tw-text-slate-700{
-    --tw-text-opacity: 1;
-    color: rgb(51 65 85 / var(--tw-text-opacity, 1))
+    color: rgb(59 130 246 / var(--tw-text-opacity, 1))
 }
 .tw-shadow-md{
     --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+}
+.hover\:tw-bg-gray-100:hover{
+    --tw-bg-opacity: 1;
+    background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1))
 }

@@ -100,7 +100,7 @@
                     </div>
                     <div class="form-group">
                         <label for="address"><span class="tw-text-red-500">*</span>Organization Name</label>
-                        <input type="text" class="form-control" name="org_name" id="org_name" value="{{ old('org_name') }}" placeholder="Address">
+                        <input type="text" class="form-control" name="org_name" id="org_name" value="{{ old('org_name') }}" placeholder="Orgaization Name">
                         @error('org_name', 'org_register')
                             <span class="text-danger">{{ $message }}</span> 
                         @enderror
@@ -108,14 +108,14 @@
                     <div class="row mb-3">
                         <div class="col">
                             <label for="address"><span class="tw-text-red-500">*</span>Password</label>
-                            <input type="text" class="form-control" name="password" id="password" placeholder="Address">
+                            <input type="text" class="form-control" name="password" id="password" placeholder="Password ">
                             @error('password', 'org_register')
                                 <span class="text-danger">{{ $message }}</span> 
                             @enderror
                         </div>
                         <div class="col">
                             <label for="address"><span class="tw-text-red-500">*</span>Password Confirmation</label>
-                            <input type="text" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Address">
+                            <input type="text" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Password Confirmation">
                             @error('password_confirmation', 'org_register')
                                 <span class="text-danger">{{ $message }}</span> 
                             @enderror
@@ -124,7 +124,7 @@
                     <p>Payment Info</p>
                     <div class="form-group">
                         <label for="address"><span class="tw-text-red-500">*</span>Stripe Secret Key</label>
-                        <input type="text" class="form-control" name="stripe_secret_key" id="stripe_secret_key" value="{{ old('stripe_secret_key') }}" placeholder="Address">
+                        <input type="text" class="form-control" name="stripe_secret_key" id="stripe_secret_key" value="{{ old('stripe_secret_key') }}" placeholder="Enter Secret Key">
                         @error('stripe_secret_key', 'org_register')
                             <span class="text-danger">{{ $message }}</span> 
                         @enderror

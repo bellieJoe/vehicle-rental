@@ -13,7 +13,7 @@
                         <option value="Pending" {{request()->query('status') == 'Pending' ? 'selected' : ''}}>Pending</option>
                         <option value="To Pay" {{request()->query('status') == 'To Pay' ? 'selected' : ''}}>To Pay</option>
                         <option value="Rejected" {{request()->query('status') == 'Rejected' ? 'selected' : ''}}>Rejected</option>
-                        {{-- <option value="Completed" {{request()->query('status') == 'Completed' ? 'selected' : ''}}>Completed</option> --}}
+                        <option value="Completed" {{request()->query('status') == 'Completed' ? 'selected' : ''}}>Completed</option>
                         <option value="Cancelled" {{request()->query('status') == 'Cancelled' ? 'selected' : ''}}>Cancelled</option>
                         <option value="Booked" {{request()->query('status') == 'Booked' ? 'selected' : ''}}>Booked</option>
                     </select>
@@ -25,20 +25,40 @@
         <div class="card">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">Transaction #</th>
-                                <th scope="col">Client Details</th>
-                                <th scope="col">Booking Type</th>
-                                <th scope="col">Computed Price</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Date Created</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($bookings as $booking)
+                    <table class="table ">
+                        @forelse ($bookings as $booking)
+                            <thead class="bg-primary text-white">
+                                <tr>
+                                    <th scope="col">Transaction #</th>
+                                    <th scope="col">Client Details</th>
+                                    <th scope="col">Booking Type</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Date Created</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tw-border-4 hover:tw-bg-gray-100 tw-border-8" >
+                                <tr>
+                                    <td colspan="5" class="p-1">
+                                        <div class="dropdown d-flex justify-content-end">
+                                            <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="{{ route('org.bookings.edit', $booking->id)}}">Update</a>
+                                                @if ($booking->canBeCompleted())
+                                                    <form action="{{ route('org.bookings.complete', $booking->id)}}" method="POST">
+                                                        @csrf
+                                                        <button class="dropdown-item" type="submit">Complete Booking</button>
+                                                    </form>
+                                                @endif
+                                                @if(!in_array($booking->status, ["Pending", "Rejected"]))
+                                                    <a class="dropdown-item" href="{{ route('org.bookings.payments', $booking->id)}}">View Payments</a>
+                                                @endif
+                                                <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})">View Logs</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td>{{$booking->transaction_number}}</td>
                                     <td>
@@ -91,9 +111,6 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <h5 class="tw-font-bold text-primary">PHP {{ number_format($booking->computed_price, 2) }} </h5>
-                                    </td>
-                                    <td>
                                         <div class="badge text-white
                                             {{ $booking->status == 'Pending' ? 'tw-bg-gray-500' : '' }}
                                             {{ $booking->status == 'To Pay' ? 'tw-bg-orange-500' : '' }}
@@ -104,33 +121,40 @@
                                             {{$booking->status == 'Pending' ? "Pending for Approval" : $booking->status }}
                                         </div>
                                     </td>
-                                    <td>{{$booking->created_at->diffForHumans()}}</td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                                                Actions
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('org.bookings.edit', $booking->id)}}">Update</a>
-                                                @if(!in_array($booking->status, ["Pending", "Rejected"]))
-                                                    <a class="dropdown-item" href="{{ route('org.bookings.payments', $booking->id)}}">View Payments</a>
-                                                @endif
-                                                <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})">View Logs</button>
-
-                                            </div>
-                                        </div>
-                                        {{-- <button class="btn btn-sm btn-primary">Update</button> --}}
+                                    <td>{{$booking->created_at->diffForHumans()}} {{ $booking->canBeCompleted() }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <dl>
+                                            <dt>Computed Price:</dt>
+                                            <dd class="tw-font-bold text-primary">PHP {{ number_format($booking->computed_price, 2) }}</dd>
+                                        </dl>
+                                    </td>
+                                    <td colspan="1">
+                                        <dl>
+                                            <dt>Amount Paid:</dt>
+                                            <dd>PHP {{ number_format($booking->getAmountPaid(), 2) }}</dd>
+                                        </dl>
+                                    </td>
+                                    <td colspan="3">
+                                        <h5 class="tw-font-bold {{ $booking->getAmountPaid() >= $booking->computed_price ? 'tw-text-green-500' : 'tw-text-red-500' }}">
+                                            {{ $booking->getAmountPaid() >= $booking->computed_price ? "Fully Paid" : "Not Fully Paid" }}
+                                        </h5>
                                     </td>
                                 </tr>
-                            @empty
+                            </tbody>
+                        @empty
+                            <tbody>
                                 <tr>
-                                    <td colspan="2" class="text-center">No Bookings</td>
+                                    <td  class="text-center">No Bookings</td>
                                 </tr>
-                            @endforelse
-                        </tbody>
+                            </tbody>
+                        @endforelse
                     </table>
                 </div>
-                {{ $bookings->links() }}
+                <div class="p-3">
+                    {{ $bookings->links() }}
+                </div>
             </div>
         </div>
     </div>

@@ -16,6 +16,15 @@
                     @enderror
                 </div>
                 <div class="form-group">
+                    <label for="">Vehicle Category</label>
+                    <select name="vehicle_category_id" id="vehicle_category_id" class="form-control">
+                        <option value="">Select Vehicle Category</option>
+                        @foreach ($categories as $category)
+                            <option value="{{$category->id}}" {{ old('vehicle_category_id', $additional_rate->vehicle_category_id) == $category->id ? 'selected' : ''}}>{{$category->category_name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="rateValue">Rate Value (in PHP)</label>
                     <input value="{{ old('rate', $additional_rate->rate)}}" type="number" class="form-control" id="rateValue" name="rate" placeholder="Enter rate value" min="0" required>
                     @error('rate')

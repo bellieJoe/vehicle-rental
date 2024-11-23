@@ -12,7 +12,7 @@
                 <h5 class="h6 tw-font-bold" >Payment Options</h5>
                 <p>You can pay through the office <span class="tw-font-bold">{{ $org->org_name }}</span> at <span class="tw-font-bold">{{ $org->address }}</span> or you can pay via Gcash or Debit Card.</p>
             </div>
-            <div class="card mt-4">
+            <div class="card mt-4 mb-3">
                 <div class="card-header">
                     Booking Information
                 </div>
@@ -42,13 +42,20 @@
                 </div>
             </div>
 
-            <div class="card mt-4">
+            {{-- @if($booking->status == 'Cancelled')
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-sm btn-primary">Refund</button>
+                </div>
+            @endif --}}
+
+            <div class="card mt-2">
                 <div class="card-header">
                     Payments
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body ">
+                    
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="border table table-hover">
                             <thead>
                                 <tr>
                                     <th>Amount</th>
@@ -70,7 +77,7 @@
                                         {{ $payment->payment_status == 'Paid' ? 'tw-text-green-500' : '' }}
                                         {{ $payment->payment_status == 'Failed' ? 'tw-text-red-500' : '' }}
                                         {{ $payment->payment_status == 'Pending' ? 'tw-text-gray-500' : '' }}
-                                    ">{{ $payment->payment_status }}</td>
+                                    ">{{ $payment->payment_status }} </td>
                                     <td>{{ 3 - $payment->attempts >= 0 ? 3 - $payment->attempts : 0 }}</td>
                                     <td>
                                         @php
@@ -119,8 +126,38 @@
                             </tbody>
                         </table>
                     </div>
+
+                    @if($booking->has("refunds") && $booking->refunds->count() > 0)
+                        @php
+                            $refund = $booking->refunds->first();
+                        @endphp
+                        <div class="table-responsive">
+                            <table class="table border">
+                                <thead>
+                                    <tr>
+                                        <th>Refund Amount</th>
+                                        <th>Refund Status</th>
+                                        <th>Date Refunded</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>PHP {{ number_format($refund->amount, 2) }}</td>
+                                        <td class="
+                                            {{ $refund->status == 'pending' ? 'tw-text-gray-500' : '' }}
+                                            {{ $refund->status == 'refunded' ? 'tw-text-green-500' : '' }}
+                                        ">
+                                            {{ ucfirst($refund->status) }}
+                                        </td>
+                                        <td>{{ $refund->refunded_at->diffForHumans() ?? 'N/A' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 </div>
             </div>
+
         </div>
     </div>
 
