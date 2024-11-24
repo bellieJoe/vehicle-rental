@@ -30,7 +30,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <x-forms.ckeditor name="package_description" label="Package Description" required></x-forms.ckeditor> 
+                        <x-forms.textarea name="package_description" label="Package Description" required></x-forms.textarea> 
                     </div>  
                     <div class="form-group">
                         <x-forms.input name="package_image"  type="file" accept="image/*" errorBag="package_create" label="Package Image" placeholder="Enter package Image" required></x-forms.input>

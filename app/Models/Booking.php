@@ -86,4 +86,8 @@ class Booking extends Model
         return $this->payments->where("payment_status", Payment::STATUS_PAID)->sum("amount");
     }
 
+    public function feedback(){
+        return $this->hasOne(Feedback::class);
+    }
+
 }

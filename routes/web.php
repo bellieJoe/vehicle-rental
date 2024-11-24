@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdditionalRateController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\OrgController;
@@ -84,7 +85,7 @@ Route::prefix('admin')
 Route::prefix('org')
 ->middleware(['auth', 'role:org', 'verified', 'is_banned'])
 ->group(function () {
-    Route::view('', 'main.org.index')->name('org.index');
+    Route::get('', [OrgController::class, 'index'])->name('org.index');
     Route::prefix('vehicles')->group(function () {
         Route::get('', [VehicleController::class, 'index'])->name('org.vehicles.index'); 
         Route::get('create', [VehicleController::class, 'createView'])->name('org.vehicles.createView'); 
@@ -123,6 +124,7 @@ Route::prefix('org')
         Route::get('edit/{package_id}', [PackageController::class, 'edit'])->name('org.packages.edit');
         Route::post('update/{package_id}', [PackageController::class, 'update'])->name('org.packages.update');
         Route::post('set-availability/{package_id}', [PackageController::class, 'setAvailability'])->name('org.package.set-availability'); 
+        Route::delete('delete', [PackageController::class, 'destroy'])->name('org.package.delete'); 
     });
 
     Route::prefix("bookings")->group(function () {
@@ -135,6 +137,7 @@ Route::prefix('org')
             Route::post('approve/{payment_id}', [OrgController::class, 'approvePayment'])->name('org.bookings.payments.approve');
             Route::post('invalid/{payment_id}', [OrgController::class, 'invalidPayment'])->name('org.bookings.payments.invalid');
             Route::post('approve-cash/{payment_id}', [OrgController::class, 'approveCashPayment'])->name('org.bookings.payments.approve-cash');
+            Route::post('reset-attempts/{payment_id}', [OrgController::class, 'resetAttempts'])->name('org.bookings.payments.reset-attempts');
         });
     });
 
@@ -199,6 +202,12 @@ Route::prefix('api')->group(function () {
         Route::get('get-schedule/{package_id}', [PackageController::class, 'getPackageBookings'])->name('api.packages.booking-schedule');
     });
 
+    Route::get('owner-bookings/{user_id}', [OrgController::class, 'getOwnerBookings'])->name('api.owner-bookings');
+});
+
+// feedbacks
+Route::prefix('feedbacks')->group(function () {
+    Route::get('{type}/{id}', [FeedbackController::class, 'index'])->name('feedbacks.index');
 });
 
 

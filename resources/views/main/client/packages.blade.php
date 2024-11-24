@@ -30,6 +30,9 @@
                     <div class="card-body p-0">
                         <div style="width: 100%; height: 200px; background-size: cover; background-position: center center; background-repeat: no-repeat; background-image: url({{ $package->package_image ? asset("images/packages/$package->package_image") : ''}}); border-radius: 0.25rem;"></div>
                         <div class="p-3">
+                            <a href="{{ route('feedbacks.index', ['type' => 'package', 'id' => $package->id]) }}" class="tw-text-yellow-500 small tw-block">
+                                <i class="fas fa-star"></i> {{ $package->computeFeedbackAverage() }} / 5 out of {{ $package->countFeedbacks() }} feedbacks
+                            </a>
                             <span class="badge badge-primary"><i class="fa-solid fa-user mr-2"></i>{{ $package->user->organisation->org_name }}</span>
                             <p class="tw-font-bold mb-0">{{ $package->package_name }}</p>
                             <p class="mb-0"><span>Duration :</span><span>{{ $package->package_duration }} day/s</span></p>

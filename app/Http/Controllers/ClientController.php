@@ -117,7 +117,7 @@ class ClientController extends Controller
             }
 
             $vehicle = Vehicle::find($request->vehicle_id);
-            $rate_per_day = $request->rent_options === 'With Driver' ? $vehicle->rate_with_driver : $vehicle->rate_without_driver;
+            $rate_per_day = $request->rent_options === 'With Driver' ? $vehicle->rate_w_driver : $vehicle->rate;
             $computed_price = ($rate_per_day * $request->number_of_days) + ($additional_rate ? $additional_rate->rate : 0);
 
             $booking = Booking::create([
@@ -137,7 +137,7 @@ class ClientController extends Controller
                 'start_datetime' => $request->start_date,
                 'number_of_days' => $request->number_of_days,
                 'with_driver' => $request->rent_options === 'With Driver',
-                'pickup_location' => $request->rent_options === 'With Driver' ? $request->pickup_location : null
+                'pickup_location' => $request->pickup_location
             ]);
 
             BookingLog::create([

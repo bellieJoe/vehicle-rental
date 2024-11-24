@@ -11278,12 +11278,6 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-rounded-lg{
     border-radius: 0.5rem
 }
-.tw-border{
-    border-width: 1px
-}
-.tw-border-2{
-    border-width: 2px
-}
 .tw-border-4{
     border-width: 4px
 }
@@ -11413,6 +11407,10 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-text-white{
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+}
+.tw-text-yellow-500{
+    --tw-text-opacity: 1;
+    color: rgb(234 179 8 / var(--tw-text-opacity, 1))
 }
 .tw-text-blue-500{
     --tw-text-opacity: 1;

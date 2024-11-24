@@ -75,6 +75,8 @@
                                             <dt>Gcash Transaction Id<dd>#{{ $payment->gcash_transaction_no }}</dd>
                                         @elseif($payment->payment_method == 'Debit')
                                             Debit
+                                        @elseif($payment->payment_method == 'Cash')
+                                            Cash
                                         @else
                                             N/A
                                         @endif
@@ -91,16 +93,16 @@
                                             </form>
                                         @endif
                                         @if($payment->attempts >= 3)
-                                            <form action="" method="POST">
+                                            <form action="{{ route('org.bookings.payments.reset-attempts', $payment->id) }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="payment_id" value="{{ $payment->id }}">
-                                                <button type="submit" class="btn btn-sm btn-success tw-w-full">Reset Attempts</button>
+                                                <button type="submit" class="btn btn-sm btn-success tw-w-full mb-2">Reset Attempts</button>
                                             </form>
                                         @endif
                                         @if($payment->payment_status != "Paid")
                                             <form action="{{ route('org.bookings.payments.approve-cash', $payment->id) }}" method="post">
                                                 @csrf
-                                                <button class="btn btn-sm btn-primary">Approve Cash Payment</button>
+                                                <button class="btn btn-sm btn-primary tw-w-full">Approve Cash Payment</button>
                                             </form>
                                         @endif
                                     </td>

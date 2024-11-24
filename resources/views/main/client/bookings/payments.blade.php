@@ -149,7 +149,7 @@
                                         ">
                                             {{ ucfirst($refund->status) }}
                                         </td>
-                                        <td>{{ $refund->refunded_at->diffForHumans() ?? 'N/A' }}</td>
+                                        <td>{{ $refund->refunded_at ? $refund->refunded_at->diffForHumans() : 'N/A' }}</td>
                                     </tr>
                                 </tbody>
                             </table>

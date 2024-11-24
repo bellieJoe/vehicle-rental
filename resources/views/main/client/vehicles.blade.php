@@ -30,6 +30,9 @@
                     <div class="card-body p-0">
                         <div style="width: 100%; height: 200px; background-size: cover; background-position: center center; background-repeat: no-repeat; background-image: url({{ $vehicle->image ? asset("images/vehicles/$vehicle->image") : ''}}); border-radius: 0.25rem;"></div>
                         <div class="p-3">
+                            <a href="{{ route('feedbacks.index', ['type' => 'vehicle', 'id' => $vehicle->id]) }}" class="tw-text-yellow-500 tw-block small">
+                                <i class="fas fa-star"></i> {{ $vehicle->computeFeedbackAverage() }} / 5 out of {{ $vehicle->countFeedbacks() }} feedbacks
+                            </a>
                             <span class="badge badge-primary"><i class="fa-solid fa-user mr-2"></i>{{ $vehicle->user->organisation->org_name }}</span>
                             <span class="badge badge-secondary">{{ $vehicle->vehicleCategory->category_name }}</span>
                             <h5 class="card-title h5">{{ $vehicle->model }} #{{ $vehicle->plate_number }}</h5>

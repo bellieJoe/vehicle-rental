@@ -10,13 +10,31 @@ use App\Models\Gallery;
 use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Refund;
+use App\Models\User;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class OrgController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        $package_count = Package::where('user_id', auth()->user()->id)->count();
+        $vehicle_count = Vehicle::where('user_id', auth()->user()->id)->count();
+        $vehicleIds = Vehicle::where('user_id', auth()->user()->id)->pluck('id');
+        $packageIds = Package::where('user_id', auth()->user()->id)->pluck('id');
+        $booking_count = Booking::whereIn('vehicle_id', $vehicleIds)->orWhereIn('package_id', $packageIds)->count();
+        return view('main.org.index')
+            ->with([
+                'package_count' => $package_count,
+                'vehicle_count' => $vehicle_count,
+                'booking_count' => $booking_count
+            ]); 
+    }
+
     public function bookings(Request $request)
     {
         $status = $request->query('status');
@@ -308,4 +326,74 @@ class OrgController extends Controller
             return redirect()->back()->with('success', 'Booking completed successfully.');
         });
     }
+
+    public function getOwnerBookings($user_id)
+    {
+        // return User::find($user_id);
+        // Fetch bookings for packages owned by the user
+        $packageBookings = Booking::whereHas('package', function ($query) use ($user_id) {
+            $query->where('user_id', $user_id);
+        })
+            ->where('status', 'Booked')
+            ->where('start_datetime', '>=', now())
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
+            ->select('booking_details.start_datetime', 'booking_details.number_of_days', 'package_id')
+            ->get();
+
+        // Transform package bookings to calendar events
+        $packageEvents = $packageBookings->map(function ($booking) {
+            $start = Carbon::parse($booking->start_datetime);
+            $end = $start->copy()->addDays($booking->number_of_days)->subHours(9);
+
+            return [
+                'title' => 'Package Booked - ' . $booking->package->name,
+                'start' => $start->toIso8601String(),
+                'end' => $end->toIso8601String(),
+                'backgroundColor' => '#ff8800', // Orange color for package bookings
+                'borderColor' => '#ff8800',
+            ];
+        });
+
+        // Fetch bookings for vehicles owned by the user
+        $vehicleBookings = Booking::whereHas('vehicle', function ($query) use ($user_id) {
+            $query->where('user_id', $user_id);
+        })
+            ->where('status', 'Booked')
+            ->where('start_datetime', '>=', now())
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
+            ->select('booking_details.start_datetime', 'booking_details.number_of_days', 'vehicle_id')
+            ->get();
+
+        // Transform vehicle bookings to calendar events
+        $vehicleEvents = $vehicleBookings->map(function ($booking) {
+            $start = Carbon::parse($booking->start_datetime);
+            $end = $start->copy()->addDays($booking->number_of_days);
+
+            return [
+                'title' => 'Vehicle Booked - ' . $booking->vehicle->model,
+                'start' => $start->toIso8601String(),
+                'end' => $end->toIso8601String(),
+                'backgroundColor' => '#ff0000', // Red color for vehicle bookings
+                'borderColor' => '#ff0000',
+            ];
+        });
+
+        // Combine package and vehicle events
+        return [...$packageEvents, ...$vehicleEvents];
+
+        // Return combined events as JSON response
+        return response()->json($allEvents);
+    }
+
+    public function resetAttempts(Request $request, $payment_id) {
+        $payment = Payment::find($payment_id);
+        $payment->update([
+            'attempts' => 0
+        ]);
+
+        Mail::to($payment->booking->user->email)->send(new BookingUpdate($payment->booking, "Payment attempts reset successfully.", $payment->booking->user, route('client.bookings')));
+
+        return redirect()->back()->with('success', 'Payment attempts reset successfully.');
+    }
+
 }

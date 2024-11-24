@@ -26,7 +26,7 @@
     accept="{{$accept}}"
     {{ $disabled ? 'disabled' : '' }} 
     {{ $readonly ? 'readonly' : '' }}
->{{ old($name) }}</textarea>
+>{{ old($name, $value) }}</textarea>
 
 @error($name, $errorBag)
     <span class="text-danger">{{ $message }}</span>

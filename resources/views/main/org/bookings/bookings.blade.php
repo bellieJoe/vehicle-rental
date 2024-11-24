@@ -44,17 +44,20 @@
                                                 Actions
                                             </button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('org.bookings.edit', $booking->id)}}">Update</a>
+                                                <a class="dropdown-item" href="{{ route('org.bookings.edit', $booking->id)}}"><i class="fas fa-edit mr-2 tw-text-blue-500"></i>Update</a>
                                                 @if ($booking->canBeCompleted())
                                                     <form action="{{ route('org.bookings.complete', $booking->id)}}" method="POST">
                                                         @csrf
-                                                        <button class="dropdown-item" type="submit">Complete Booking</button>
+                                                        <button class="dropdown-item" type="submit"><i class="fas fa-check mr-2 tw-text-green-500"></i>Complete Booking</button>
                                                     </form>
                                                 @endif
                                                 @if(!in_array($booking->status, ["Pending", "Rejected"]))
-                                                    <a class="dropdown-item" href="{{ route('org.bookings.payments', $booking->id)}}">View Payments</a>
+                                                    <a class="dropdown-item" href="{{ route('org.bookings.payments', $booking->id)}}"><i class="fas fa-credit-card mr-2 tw-text-gray-400"></i> View Payments</a>
                                                 @endif
-                                                <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})">View Logs</button>
+                                                @if(in_array($booking->status, ['Completed']) && $booking->feedback)
+                                                    <button class="dropdown-item" onclick="showFeedbackModal({{$booking->feedback}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i>Show Rating</button>
+                                                @endif
+                                                <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})"><i class="fas fa-list mr-2 tw-text-gray-400"></i>View Logs</button>
                                             </div>
                                         </div>
                                     </td>
@@ -76,16 +79,16 @@
                                                 </div>
                                                 <div class="mt-2">
                                                     <dl class="row tw-max-w-md">
-                                                        <dt class="col-sm-4 mb-0 tw-font-bold">No. of Days :</dt>
-                                                        <dd class="col-sm-8 mb-0">{{$booking->bookingDetail->number_of_days}} Day/s</dd>
-                                                        <dt class="col-sm-4 mb-0 tw-font-bold">Start Date :</dt>
-                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
-                                                        <dt class="col-sm-4 mb-0 tw-font-bold"></dt>
-                                                        <dd class="col-sm-8 mb-0">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
-                                                        <dt class="col-sm-4 mb-0 tw-font-bold">Rent Option :</dt>
-                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
-                                                        <dt class="col-sm-4 mb-0 tw-font-bold">Pickup Location :</dt>
-                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->pickup_location ?? 'N/A' }}</dd>
+                                                        <dt class="col-sm-5 mb-0 tw-font-bold">No. of Days :</dt>
+                                                        <dd class="col-sm-7 mb-0">{{$booking->bookingDetail->number_of_days}} Day/s</dd>
+                                                        <dt class="col-sm-5 mb-0 tw-font-bold">Start Date :</dt>
+                                                        <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->start_datetime->format('F j, Y, g:i A') }} </dd>
+                                                        <dt class="col-sm-5 mb-0 tw-font-bold"></dt>
+                                                        <dd class="col-sm-7 mb-0">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
+                                                        <dt class="col-sm-5 mb-0 tw-font-bold">Rent Option :</dt>
+                                                        <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
+                                                        <dt class="col-sm-5 mb-0 tw-font-bold">Pickup Location :</dt>
+                                                        <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->pickup_location ?? 'N/A' }}</dd>
                                                     </dl>
                                                 </div>
                                             @endif
@@ -142,6 +145,17 @@
                                         </h5>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td colspan="5" class="text-right">
+                                        @if($booking->feedback)
+                                            <div class="d-flex justify-content-end">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i class="fas fa-star {{ $i <= $booking->feedback->rating ? 'text-warning' : 'text-muted' }}"></i>
+                                                @endfor
+                                            </div>
+                                        @endif
+                                    </td>
+                                </tr>
                             </tbody>
                         @empty
                             <tbody>
@@ -162,4 +176,5 @@
     <x-vehicle-details  />
     <x-packages.view-package-modal  />
     <x-bookings.view-logs-modal />
+    <x-feedbacks.show-modal />
 </x-master>

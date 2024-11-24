@@ -79,6 +79,15 @@
         @if ($errors->vehicle_update->any())
             $updateVehicleModal.modal('show');
         @endif
+
+        $updateVehicleModal.find('#rent_options').change(function(e) {
+            if(['With Driver', 'Both'].includes(e.target.value)) {
+                $updateVehicleModal.find('#rate_w_driver').closest('.col-sm').show();
+            }
+            else {
+                $updateVehicleModal.find('#rate_w_driver').closest('.col-sm').hide();
+            }
+        });
     });
 
     function setUpdateModal(vehicle) {

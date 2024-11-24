@@ -12,7 +12,7 @@
                     <option value="Pending" {{request()->query('status') == 'Pending' ? 'selected' : ''}}>Pending</option>
                     <option value="To Pay" {{request()->query('status') == 'To Pay' ? 'selected' : ''}}>To Pay</option>
                     <option value="Rejected" {{request()->query('status') == 'Rejected' ? 'selected' : ''}}>Rejected</option>
-                    {{-- <option value="Completed" {{request()->query('status') == 'Completed' ? 'selected' : ''}}>Completed</option> --}}
+                    <option value="Completed" {{request()->query('status') == 'Completed' ? 'selected' : ''}}>Completed</option>
                     <option value="Cancelled" {{request()->query('status') == 'Cancelled' ? 'selected' : ''}}>Cancelled</option>
                     <option value="Booked" {{request()->query('status') == 'Booked' ? 'selected' : ''}}>Booked</option>
                 </select>
@@ -119,8 +119,11 @@
                                             @if(!in_array($booking->status, ['Pending', 'Rejected']))
                                                 <a class="dropdown-item" href="{{ route('client.bookings.payments', $booking->id) }}"><i class="fas fa-credit-card mr-2 tw-text-gray-400" ></i> View Payments</a>
                                             @endif
-                                            @if(in_array($booking->status, ['Completed']))
+                                            @if(in_array($booking->status, ['Completed']) && !$booking->feedback)
                                                 <button class="dropdown-item" onclick="showCreateFeedbackModal({{$booking}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i> Rate</button>
+                                            @endif
+                                            @if(in_array($booking->status, ['Completed']) && $booking->feedback)
+                                                <button class="dropdown-item" onclick="showFeedbackModal({{$booking->feedback}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i>Show Rating</button>
                                             @endif
                                             <hr>
                                             <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})"><i class="fas fa-list mr-2 tw-text-gray-400"></i> View Logs</button>
@@ -146,5 +149,6 @@
 <x-packages.view-package-modal  />
 <x-bookings.view-logs-modal />
 <x-feedbacks.create-modal />
+<x-feedbacks.show-modal />
 
 </x-master>

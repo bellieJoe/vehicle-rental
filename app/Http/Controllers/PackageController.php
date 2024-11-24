@@ -123,4 +123,19 @@ class PackageController extends Controller
         return redirect()->back()->with('success', 'Package availability updated successfully');
     }
 
+    public function destroy(Request $request){
+        if(!$request->package_id){
+            return redirect()->back()->with('error', 'Package not found')->withInput();
+        }
+        $package = Package::find($request->package_id);
+        if(!$package){
+            return redirect()->back()->with('error', 'Package not found')->withInput();
+        }
+        if($package->bookings()->count() > 0){
+            return redirect()->back()->with('error', 'Package has bookings')->withInput();
+        }
+        $package->delete(); 
+        return redirect()->back()->with('success', 'Package deleted successfully');
+    }
+
 }

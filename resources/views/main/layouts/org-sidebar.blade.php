@@ -24,12 +24,18 @@
         Organization Interface
     </div>
 
+    <li class="nav-item {{ request()->is('org') || request()->routeIs('org.index') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('org.index') }}">
+          <i class="fa-solid fa-house"></i><span>Dashboard</span>
+        </a>
+   
+    </li>
     <li class="nav-item {{ request()->is('org/galleries/*') || request()->routeIs('org.galleries.index') ? 'active' : '' }}">
         <a class="nav-link " href="{{ route('org.galleries.index') }}">
           <i class="fa-solid fa-photo-video"></i><span>Galleries</span>
         </a>
     </li>
-
+    
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item {{ (request()->is('org/vehicles/*') || request()->routeIs('org.vehicles.index') ? 'active' : '') }}">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">

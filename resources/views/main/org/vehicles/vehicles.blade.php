@@ -41,9 +41,13 @@
                             <h5 class="card-title h5">{{ $vehicle->model }}</h5>
                             <h6 class="card-subtitle">{{ $vehicle->brand }}</h6>
                             <h6 class="">{{ $vehicle->bookings_count }} Bookings</h6>
+                            <a href="{{ route('feedbacks.index', ['type' => 'vehicle', 'id' => $vehicle->id]) }}" class="tw-text-yellow-500 tw-block small">
+                                <i class="fas fa-star"></i> {{ $vehicle->computeFeedbackAverage() }} / 5 out of {{ $vehicle->countFeedbacks() }} feedbacks
+                            </a>
                             <div class="row align-items-center">
                                 <div class="col">
                                     <button class="btn btn-sm btn-danger my-2" onclick="setDeleteModal({{$vehicle->id}})">Delete</button>
+                                    <button class="btn btn-sm btn-outline-primary my-2" onclick="showVehicleSchedule({{$vehicle->id}})">Schedules</button>
                                     <button class="btn btn-sm btn-outline-primary my-2" onclick="showVehicleDetails({{$vehicle}})">Details</button>
                                     <button class="btn btn-sm btn-primary my-2" onclick="setUpdateModal({{$vehicle}})">Update</button>
                                 </div>
@@ -80,6 +84,7 @@
 <x-org.create-vehicle-modal :categories="$categories"></x-org.create-vehicle-modal>
 <x-org.update-vehicle-modal :categories="$categories" ></x-org.update-vehicle-modal>
 <x-vehicle-details></x-vehicle-details>
+<x-vehicle-bookings-modal />
 
 
 <div class="modal fade" id="deleteVehicleModal" tabindex="-1" role="dialog" aria-labelledby="deleteVehicleModalLabel" aria-hidden="true">

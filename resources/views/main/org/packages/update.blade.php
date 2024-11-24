@@ -30,7 +30,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <x-forms.ckeditor name="package_description" value="{{$package->package_description ? $package->package_description : old('package_description')}}" label="Package Description" required></x-forms.ckeditor> 
+                        <x-forms.textarea name="package_description" value="{{$package->package_description ? $package->package_description : old('package_description')}}" label="Package Description" required />
                     </div>  
                     <div class="form-group">
                         <x-forms.input name="package_image"  type="file" accept="image/*" errorBag="package_update" label="Package Image" placeholder="Enter package Image" ></x-forms.input>
