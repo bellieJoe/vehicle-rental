@@ -22,7 +22,6 @@
               <dl class="row">
                 <dt class="col-sm-3">Brand :</dt><dd class="col-sm-9">{{$vehicle->brand}}</dd>
                 <dt class="col-sm-3">Model :</dt><dd class="col-sm-9">{{$vehicle->model}}</dd>
-                <dt class="col-sm-3">Plate Number :</dt><dd class="col-sm-9">{{$vehicle->plate_number}}</dd>
                 <dt class="col-sm-3">Category :</dt><dd class="col-sm-9">{{$vehicle->vehicleCategory->category_name}}</dd>
                 <dt class="col-sm-3">Owner :</dt><dd class="col-sm-9">{{$vehicle->user->organisation->org_name}}</dd>
                 <dt class="col-sm-3">Rate :</dt><dd class="col-sm-9">PHP {{$vehicle->rate}}</dd>
@@ -60,9 +59,9 @@
             @endif
           </div>
 
-          {{-- <div class="form-group">
-            <x-forms.select name="payment_method" label="Payment Method" placeholder="Please Payment Method" :options="['Cash' => 'Cash', 'Gcash' => 'Gcash', 'Debit' => 'Debit Card']"  required />
-          </div> --}}
+          <div class="form-group">
+            <x-forms.input name="license_no" label="Driver's License Number" placeholder="Enter driver's license number" />
+          </div>
 
           <div class="form-group">
             <x-forms.select value="{{ old('payment_option') }}" name="payment_option" label="Payment Option" placeholder="Select Payment Schedule" :options="['Full' => 'Pay in full', 'Installment' => 'Pay in Installment']" />
@@ -84,7 +83,7 @@
           </div>
 
           <div class="form-group">
-            <x-forms.input name="pickup_location" label="Pickup/Delivery Location or Landmark" placeholder="Enter pickup location"  />
+            <x-forms.input name="pickup_location" label="Pickup Location or Landmark" placeholder="Enter pickup location"  />
           </div>
 
           <hr>
@@ -117,7 +116,17 @@
     });
     $rentOptions.on('change', function(e) {
       computePrice();
+      console.log(e.target.value);
+      if (e.target.value === "Without Driver") {
+        $('#license_no').closest('.form-group').show();
+        $('#pickup_location').closest('.form-group').hide();
+      }
+      else {
+        $('#license_no').closest('.form-group').hide();
+        $('#pickup_location').closest('.form-group').show();
+      }
     });
+    $rentOptions.change();
     $additionalRate.on('change', function(e) {
       computePrice();
     });

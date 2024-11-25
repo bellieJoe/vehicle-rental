@@ -26,9 +26,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <x-forms.input name="plate_number" label="Plate Number" placeholder="Enter plate number" errorBag="vehicle_update" required></x-forms.input>
-                </div>
-                <div class="form-group">
                     <label for="vehicle_category_id" class="col-form-label"><span class="tw-text-red-500">*</span>Category:</label>
                     <select class="form-control" id="vehicle_category_id" name="vehicle_category_id" required>
                         @foreach($categories as $category)  
@@ -95,7 +92,6 @@
         $updateVehicleModal.find('#id').val(vehicle.id);
         $updateVehicleModal.find('#model').val(vehicle.model);
         $updateVehicleModal.find('#brand').val(vehicle.brand);
-        $updateVehicleModal.find('#plate_number').val(vehicle.plate_number);
         $updateVehicleModal.find('#vehicle_category_id').val(vehicle.vehicle_category_id);
         $updateVehicleModal.find('#rent_options').val(vehicle.rent_options).change();
         $updateVehicleModal.find('#rate').val(vehicle.rate);

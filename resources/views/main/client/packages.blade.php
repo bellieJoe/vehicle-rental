@@ -51,7 +51,7 @@
             </div>
         @empty
             <div class="col-md-12 text-center">
-                <p class="lead">No vehicles available.</p>
+                <p class="lead">No packages available.</p>
             </div>
         @endforelse
     </div>

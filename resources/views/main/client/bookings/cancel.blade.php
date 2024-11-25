@@ -17,7 +17,6 @@
                     <dt class="col-sm-4">Created At :</dt><dd class="col-sm-8">{{ $booking->created_at->diffForHumans() }}</dd>
                     <dt class="col-sm-4">Client Name :</dt><dd class="col-sm-8">{{ $booking->name }}</dd>
                     <dt class="col-sm-4">Client Contact # :</dt><dd class="col-sm-8">{{ $booking->contact_number }}</dd>
-                    <dt class="col-sm-4">Vehicle :</dt><dd class="col-sm-8">{{ $booking->vehicle->model }} #{{ $booking->vehicle->plate_number }}</dd>
                     <dt class="col-sm-4">Computed Price :</dt><dd class="col-sm-8">PHP {{ number_format($booking->computed_price, 2) }}</dd>
                     <dt class="col-sm-4">Payment Method :</dt><dd class="col-sm-8">{{ $booking->payment_method }}</dd>
                     <dt class="col-sm-4">Status :</dt><dd class="col-sm-8">{{ $booking->status }}</dd>

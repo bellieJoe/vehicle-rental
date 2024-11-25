@@ -5,7 +5,7 @@
         <!-- slider section -->
         <section class="slider_section ">
         <div class="slider_bg_box">
-            <img src="{{ asset('assets/images/hero.jpg') }}" alt="">
+            <img src="{{ asset('assets/images/hero.png') }}" alt="">
         </div>
         {{-- <div id="customCarousel1" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
@@ -59,10 +59,10 @@
                         </div>
                         <div class="detail-box">
                             <h5>
-                                Wide Range of Vehicles & Tour Packages
+                                Wide Range of Vehicles & Packages
                             </h5>
                             <p>
-                                We offer a range of vehicles and tour packages from trusted partners. From short trips to long-term rentals and guided tours, we've got you covered. Our vehicles are regularly maintained for your safety and comfort.
+                                We offer a range of vehicles and packages from trusted partners. From short trips to long-term rentals, we've got you covered. Our vehicles are regularly maintained for your safety and comfort.
                             </p>
                         </div>
                     </div>

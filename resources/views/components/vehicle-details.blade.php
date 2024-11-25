@@ -11,7 +11,6 @@
                 <dl class="row mb-3">
                     <dt class="col-sm-3" >Model :</dt><dd id="model" class="col-sm-9"></dd>
                     <dt class="col-sm-3" >Brand :</dt><dd id="brand" class="col-sm-9"></dd>
-                    <dt class="col-sm-3" >Plate Number :</dt><dd id="plate_number" class="col-sm-9"></dd>
                     <dt class="col-sm-3" >Category :</dt><dd id="category" class="col-sm-9"></dd>
                     <dt class="col-sm-3" >Owner :</dt><dd id="owner" class="col-sm-9"></dd>
                     <dt class="col-sm-3" >Rate :</dt><dd id="rate" class="col-sm-9">PHP</dd>
@@ -38,7 +37,6 @@
         $('#vehicleDetailsModal').find('.modal-title').text(vehicle.model + ' Details');
         $('#vehicleDetailsModal').find('#model').text(vehicle.model);
         $('#vehicleDetailsModal').find('#brand').text(vehicle.brand);
-        $('#vehicleDetailsModal').find('#plate_number').text(vehicle.plate_number);
         $('#vehicleDetailsModal').find('#category').text(vehicle.vehicle_category.category_name);
         $('#vehicleDetailsModal').find('#owner').text(vehicle.user.organisation.org_name);
         $('#vehicleDetailsModal').find('#rate').text(`Php ${["Both", "Without Driver"].includes(vehicle.rent_options) ? vehicle.rate : "N/A"}`);

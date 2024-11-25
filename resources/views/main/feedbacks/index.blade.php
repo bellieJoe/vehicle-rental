@@ -6,7 +6,7 @@
     <div class="row">
         @if($type == 'vehicle')
             <div class="col-md-6">
-                <p><strong>Vehicle:</strong> {{ $vehicle->model }} #{{ $vehicle->plate_number }}</p>
+                <p><strong>Vehicle:</strong> {{ $vehicle->model }} </p>
                 <p><strong>Average Rating:</strong> 
                     {{ $vehicle->computeFeedbackAverage() }}
                 </p>

@@ -16,7 +16,7 @@
                         <dt class="col-sm-4 mb-0">Client Name :</dt><dd class="col-sm-8 mb-0">{{ $booking->name }}</dd>
                         <dt class="col-sm-4 mb-0">Client Contact # :</dt><dd class="col-sm-8 mb-0">{{ $booking->contact_number }}</dd>
                         @if($booking->booking_type == 'Vehicle')
-                            <dt class="col-sm-4 mb-0">Vehicle :</dt><dd class="col-sm-8 mb-0">{{ $booking->vehicle->model }} #{{ $booking->vehicle->plate_number }}</dd>
+                            <dt class="col-sm-4 mb-0">Vehicle :</dt><dd class="col-sm-8 mb-0">{{ $booking->vehicle->model }} </dd>
                         @endif
                         @if($booking->booking_type == 'Package')
                             <dt class="col-sm-4 mb-0">Package :</dt><dd class="col-sm-8 mb-0">{{ $booking->package->package_name }}</dd>

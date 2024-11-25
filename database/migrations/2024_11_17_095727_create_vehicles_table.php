@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignId('vehicle_category_id')->constrained();
             $table->string('brand');
             $table->string('model');
-            $table->string('plate_number');
             $table->enum('rent_options', ["With Driver", "Without Driver", "Both"])->default("Both");
             $table->string('image')->nullable();
             $table->boolean('is_available')->default(false);

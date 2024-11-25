@@ -23,7 +23,7 @@
                             >
                                 {{ $refund->status }}
                             </td>
-                            <td>{{ $refund->refunded_at->format('M d, Y h:i A') ?? 'N/A' }}</td>
+                            <td>{{ $refund->refunded_at ?? 'N/A' }}</td>
                             <td>
                                 @if ($refund->status == 'pending')
                                     <button class="btn btn-sm btn-primary" onclick="showRefundModal({{$refund}})">Refund</button>

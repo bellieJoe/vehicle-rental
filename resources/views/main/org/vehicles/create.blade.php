@@ -22,9 +22,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <x-forms.input name="plate_number" label="Plate Number" placeholder="Enter plate number" errorBag="vehicle_create" required></x-forms.input>
-                </div>
-                <div class="form-group">
                     <label for="vehicle_category_id" class="col-form-label"><span class="tw-text-red-500">*</span>Category:</label>
                     <select class="form-control" id="vehicle_category_id" name="vehicle_category_id" required>
                         @foreach($categories as $category)  

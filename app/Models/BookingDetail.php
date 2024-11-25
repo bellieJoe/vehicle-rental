@@ -21,4 +21,8 @@ class BookingDetail extends Model
         return $this->belongsTo(Booking::class);
     }
 
+    public function additionalRate(){
+        return $this->belongsTo(AdditionalRate::class);
+    }
+
 }

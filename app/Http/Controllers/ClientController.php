@@ -12,6 +12,7 @@ use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Refund;
 use App\Models\Vehicle;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -89,7 +90,8 @@ class ClientController extends Controller
             // 'payment_method' => 'required|in:Cash,Gcash,Debit',
             'additional_rate' => 'nullable|exists:additional_rates,id',
             'payment_option' => 'required|in:'.Payment::OPTION_FULL_PAYMENT.','.Payment::OPTION_INSTALLMENT,
-            'pickup_location' => 'required',
+            'pickup_location' => 'requiredif:rent_options,With Driver',
+            'license_no' => 'required_if:rent_options,Without Driver',
         ]);
 
         // check if vehicle is available
@@ -137,7 +139,8 @@ class ClientController extends Controller
                 'start_datetime' => $request->start_date,
                 'number_of_days' => $request->number_of_days,
                 'with_driver' => $request->rent_options === 'With Driver',
-                'pickup_location' => $request->pickup_location
+                'license_no' => $request->rent_options === 'Without Driver' ? $request->license_no : null,
+                'pickup_location' => $request->rent_options === 'With Driver' ? $request->pickup_location : null
             ]);
 
             BookingLog::create([
@@ -168,6 +171,10 @@ class ClientController extends Controller
 
         if ($status) {
             $query->where('status', $status);
+        }
+
+        if($request->query('transaction_number')){
+            $query->where('transaction_number', $request->query('transaction_number'));
         }
 
         $bookings = $query->paginate(10);
@@ -555,6 +562,16 @@ class ClientController extends Controller
 
             return redirect()->back()->with('success', 'Feedback submitted successfully.');
         });
+    }
+
+    public function downloadReceipt($payment_id){
+        $payment = Payment::find($payment_id);
+
+        if(!$payment){
+            return redirect()->back()->with('error', 'Invalid payment.');
+        }
+        return Pdf::loadView("reports.payment-receipt", ["payment" => $payment])->download("IRENTA HUB Payment Receipt $payment->id.pdf");
+        return view("reports.payment-receipt", ["payment" => $payment]);
     }
 
 

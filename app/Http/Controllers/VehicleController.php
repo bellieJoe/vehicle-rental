@@ -21,8 +21,7 @@ class VehicleController extends Controller
         $vehicles = Vehicle::where('user_id', auth()->user()->id)
             ->where(function($query) use ($_query) {
                 $query->where('model', 'LIKE', "%{$_query}%")
-                    ->orWhere('brand', 'LIKE', "%{$_query}%")
-                    ->orWhere('plate_number', 'LIKE', "%{$_query}%");
+                    ->orWhere('brand', 'LIKE', "%{$_query}%");
             })
             ->with([
                 'vehicleCategory',
@@ -45,7 +44,6 @@ class VehicleController extends Controller
             $request->validateWithBag('vehicle_create', [
                 "brand" => "required",
                 "model" => "required",
-                "plate_number" => "required|unique:vehicles,plate_number",
                 "vehicle_category_id" => "required|exists:vehicle_categories,id",
                 "image" => "required|image|mimes:jpeg,png,jpg|max:2048",
                 "rent_options" => "required|in:With Driver,Without Driver,Both",
@@ -59,7 +57,6 @@ class VehicleController extends Controller
             Vehicle::create([
                 "brand" => $request->brand,
                 "model" => $request->model,
-                "plate_number" => $request->plate_number,
                 "vehicle_category_id" => $request->vehicle_category_id,
                 "image" => $imageName,
                 "rent_options" => $request->rent_options,
@@ -88,10 +85,6 @@ class VehicleController extends Controller
             $request->validateWithBag('vehicle_update', [
                 "brand" => "required",
                 "model" => "required",
-                "plate_number" => [
-                    "required", 
-                    Rule::unique('vehicles', 'plate_number')->ignore($request->id), 
-                ],
                 "vehicle_category_id" => "required|exists:vehicle_categories,id",
                 "image" => "nullable|image|mimes:jpeg,png,jpg|max:2048",
                 "rent_options" => "required|in:With Driver,Without Driver,Both",
@@ -112,7 +105,6 @@ class VehicleController extends Controller
             $vehicle->update([
                 "brand" => $request->brand,
                 "model" => $request->model,
-                "plate_number" => $request->plate_number,
                 "vehicle_category_id" => $request->vehicle_category_id,
                 "rent_options" => $request->rent_options,
                 "rate" => $request->rate,
@@ -142,11 +134,10 @@ class VehicleController extends Controller
     
         $vehicles = Vehicle::where('user_id', $user_id)
             ->where(function($q) use ($query) {
-                $q->where('plate_number', 'like', '%' . $query . '%')
-                  ->orWhere('model', 'like', '%' . $query . '%')
+                $q->orWhere('model', 'like', '%' . $query . '%')
                   ->orWhere('brand', 'like', '%' . $query . '%');
             })
-            ->addSelect(DB::raw("CONCAT(brand, ' ', model, ' ', plate_number) as text"))
+            ->addSelect(DB::raw("CONCAT(brand, ' ', model) as text"))
             ->get();
     
         return $vehicles;

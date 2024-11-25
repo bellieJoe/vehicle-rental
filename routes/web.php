@@ -187,6 +187,7 @@ Route::prefix('client')
             Route::post('pay-debit', [ClientController::class, 'payDebit'])->name('client.bookings.payments.debit');
             Route::get('pay-debit-success/{token}', [ClientController::class, 'debitSuccess'])->name('client.bookings.payments.debit-success');
             Route::get('pay-debit-failed/{token}', [ClientController::class, 'debitFailed'])->name('client.bookings.payments.debit-failed');
+            Route::get('receipt/{payment_id}', [ClientController::class, 'downloadReceipt'])->name('client.bookings.payments.receipt');
         });
     });
 });

@@ -3,22 +3,34 @@
 
         <h1 class="h4">Bookings</h1>
 
-        <div class="d-flex justify-content-between my-3">
-            <form action="{{route('org.bookings.index')}}" method="GET" class="form-inline d-sm-flex align-items-sm-center justify-content-sm-end">
+        <div class="my-3">
+            <form action="{{ route('org.bookings.index') }}" method="GET" class="row">
                 @csrf
-                <div class="form-group mr-sm-3">
-                    <label for="status" class="mr-2 d-block d-sm-inline">Status</label>
+                <!-- Transaction Number Field -->
+                <div class="form mb-2 col-sm">
+                    <label for="transaction_number" class="mr-2 font-weight-bold">Transaction #</label>
+                    <input type="text" name="transaction_number" id="transaction_number" 
+                           class="form-control" value="{{ request()->query('transaction_number') }}">
+                </div>
+        
+                <!-- Status Field -->
+                <div class="form mb-2 col-sm">
+                    <label for="status" class="mr-2 font-weight-bold">Status</label>
                     <select name="status" id="status" class="form-control">
-                        <option value="" {{request()->query('status') == '' ? 'selected' : ''}}>All</option>
-                        <option value="Pending" {{request()->query('status') == 'Pending' ? 'selected' : ''}}>Pending</option>
-                        <option value="To Pay" {{request()->query('status') == 'To Pay' ? 'selected' : ''}}>To Pay</option>
-                        <option value="Rejected" {{request()->query('status') == 'Rejected' ? 'selected' : ''}}>Rejected</option>
-                        <option value="Completed" {{request()->query('status') == 'Completed' ? 'selected' : ''}}>Completed</option>
-                        <option value="Cancelled" {{request()->query('status') == 'Cancelled' ? 'selected' : ''}}>Cancelled</option>
-                        <option value="Booked" {{request()->query('status') == 'Booked' ? 'selected' : ''}}>Booked</option>
+                        <option value="" {{ request()->query('status') == '' ? 'selected' : '' }}>All</option>
+                        <option value="Pending" {{ request()->query('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="To Pay" {{ request()->query('status') == 'To Pay' ? 'selected' : '' }}>To Pay</option>
+                        <option value="Rejected" {{ request()->query('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                        <option value="Completed" {{ request()->query('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="Cancelled" {{ request()->query('status') == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="Booked" {{ request()->query('status') == 'Booked' ? 'selected' : '' }}>Booked</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary d-sm-inline-block">Filter</button>
+        
+                <!-- Filter Button -->
+                <div class="form mb-2 align-self-end col-sm">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
             </form>
         </div>
 
@@ -74,7 +86,7 @@
                                             @if ($booking->booking_type == 'Vehicle')
                                                 <div class="mt-2">
                                                     <button class="btn btn-sm btn-outline-secondary " onclick="showVehicleDetails({{$booking->vehicle}})">
-                                                        {{ $booking->vehicle->model}} #{{$booking->vehicle->plate_number}}
+                                                        {{ $booking->vehicle->model}} 
                                                     </button>
                                                 </div>
                                                 <div class="mt-2">
@@ -87,8 +99,13 @@
                                                         <dd class="col-sm-7 mb-0">({{ $booking->bookingDetail->start_datetime->diffForHumans() }})</dd>
                                                         <dt class="col-sm-5 mb-0 tw-font-bold">Rent Option :</dt>
                                                         <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->with_driver ? 'With Driver' : 'Without Driver' }}</dd>
-                                                        <dt class="col-sm-5 mb-0 tw-font-bold">Pickup Location :</dt>
-                                                        <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->pickup_location ?? 'N/A' }}</dd>
+                                                        @if($booking->bookingDetail->with_driver)
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Pickup Location :</dt>
+                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->pickup_location ?? 'N/A' }}</dd>
+                                                        @else 
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Drivers License No. :</dt>
+                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->license_no  }}</dd>
+                                                        @endif
                                                     </dl>
                                                 </div>
                                             @endif

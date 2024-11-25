@@ -24,7 +24,7 @@
                         <dt class="col-sm-3">Client Name :</dt><dd class="col-sm-9">{{ $booking->name }}</dd>
                         <dt class="col-sm-3">Client Contact # :</dt><dd class="col-sm-9">{{ $booking->contact_number }}</dd>
                         @if($booking->booking_type == 'Vehicle')
-                            <dt class="col-sm-3">Vehicle :</dt><dd class="col-sm-9">{{ $booking->vehicle->model }} #{{ $booking->vehicle->plate_number }}</dd>
+                            <dt class="col-sm-3">Vehicle :</dt><dd class="col-sm-9">{{ $booking->vehicle->model }}</dd>
                         @endif
                         @if($booking->booking_type == 'Package')
                             <dt class="col-sm-3">Package :</dt><dd class="col-sm-9">{{ $booking->package->package_name }}</dd>
@@ -41,12 +41,6 @@
                     </dl>
                 </div>
             </div>
-
-            {{-- @if($booking->status == 'Cancelled')
-                <div class="d-flex justify-content-end">
-                    <button class="btn btn-sm btn-primary">Refund</button>
-                </div>
-            @endif --}}
 
             <div class="card mt-2">
                 <div class="card-header">
@@ -75,9 +69,18 @@
                                     </td>
                                     <td class="
                                         {{ $payment->payment_status == 'Paid' ? 'tw-text-green-500' : '' }}
-                                        {{ $payment->payment_status == 'Failed' ? 'tw-text-red-500' : '' }}
+                                        {{ $payment->payment_status == 'Payment Invalid' ? 'tw-text-red-500' : '' }}
                                         {{ $payment->payment_status == 'Pending' ? 'tw-text-gray-500' : '' }}
-                                    ">{{ $payment->payment_status }} </td>
+                                    ">
+                                        <span class="tw-font-bold">{{ $payment->payment_status }}</span>
+                                        @if($payment->gcash_transaction_no && $payment->payment_status == 'Payment Invalid')
+                                            <div class="tw-mt-2 tw-text-sm tw-text-red-500 tw-font-semibold tw-bg-red-100 tw-p-3 tw-rounded-lg">
+                                                Invalid transaction code: 
+                                                <span class="tw-bg-white tw-px-2 tw-rounded">{{ $payment->gcash_transaction_no }}</span>.
+                                                Please check and enter the correct code.
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td>{{ 3 - $payment->attempts >= 0 ? 3 - $payment->attempts : 0 }}</td>
                                     <td>
                                         @php
@@ -112,13 +115,24 @@
                                         {{ count($booking->payments) }} --}}
 
                                         @if($can_pay && $attempts < 3)
-                                            <button class="btn btn-sm btn-primary m-1 " {{ $is_disabled ? 'disabled' : '' }} onclick="showPayViaGCashModal({{ $payment->id }}, {{$payment->amount}}, {{ $org->gcash_number}})" >Pay Via Gcash</button>
+                                            <button class="btn btn-sm btn-primary m-1 " {{ $is_disabled ? 'disabled' : '' }} onclick="showPayViaGCashModal({{ $payment->id }}, {{$payment->amount}}, {{ $org->gcash_number}})" >
+                                                @if($payment->gcash_transaction_no && $payment->payment_status == 'Payment Invalid')
+                                                    Update Gcash Payment
+                                                @else
+                                                    Pay via Gcash
+                                                @endif
+                                            </button>
                                             <button class="btn btn-sm btn-primary m-1" {{ $is_disabled ? 'disabled' : '' }} onclick="showPayViaDebitModal({{ $payment->id }}, {{$payment->amount}})">Pay Via Debit Card</button>
                                         @endif
                                         @if($attempts >= 3)
                                             <div class="tw-max-w-[300px] small tw-block">
                                                 <p class="text-danger">You have reached the maximum allowed attempts for payment. If you have any concerns, please contact the business owner to assist you further.</p>
                                             </div>
+                                        @endif
+                                        @if($payment->payment_status == 'Paid')
+                                            <a class="btn btn-sm btn-primary m-1 " href="{{ route('client.bookings.payments.receipt', $payment->id) }}">
+                                                <i class="fas fa-download mr-2"></i>Receipt
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>
