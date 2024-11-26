@@ -11217,11 +11217,11 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-mb-8{
     margin-bottom: 2rem
 }
-.tw-mt-4{
-    margin-top: 1rem
-}
 .tw-mt-2{
     margin-top: 0.5rem
+}
+.tw-mt-4{
+    margin-top: 1rem
 }
 .tw-block{
     display: block
@@ -11254,9 +11254,6 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-max-w-md{
     max-width: 28rem
 }
-.tw-border-collapse{
-    border-collapse: collapse
-}
 .tw-list-inside{
     list-style-position: inside
 }
@@ -11281,11 +11278,11 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-overflow-y-auto{
     overflow-y: auto
 }
-.tw-rounded-lg{
-    border-radius: 0.5rem
-}
 .tw-rounded{
     border-radius: 0.25rem
+}
+.tw-rounded-lg{
+    border-radius: 0.5rem
 }
 .tw-border-4{
     border-width: 4px
@@ -11321,6 +11318,10 @@ body.sidebar-toggled footer.sticky-footer {
     --tw-bg-opacity: 1;
     background-color: rgb(249 115 22 / var(--tw-bg-opacity, 1))
 }
+.tw-bg-red-100{
+    --tw-bg-opacity: 1;
+    background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
+}
 .tw-bg-red-500{
     --tw-bg-opacity: 1;
     background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1))
@@ -11329,22 +11330,19 @@ body.sidebar-toggled footer.sticky-footer {
     --tw-bg-opacity: 1;
     background-color: rgb(8 47 73 / var(--tw-bg-opacity, 1))
 }
-.tw-bg-red-100{
-    --tw-bg-opacity: 1;
-    background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
-}
 .tw-bg-white{
     --tw-bg-opacity: 1;
     background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
 }
+.tw-p-3{
+    padding: 0.75rem
+}
 .tw-p-6{
     padding: 1.5rem
 }
-.tw-p-2{
-    padding: 0.5rem
-}
-.tw-p-3{
-    padding: 0.75rem
+.tw-px-2{
+    padding-left: 0.5rem;
+    padding-right: 0.5rem
 }
 .tw-px-6{
     padding-left: 1.5rem;
@@ -11357,13 +11355,6 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-py-6{
     padding-top: 1.5rem;
     padding-bottom: 1.5rem
-}
-.tw-px-2{
-    padding-left: 0.5rem;
-    padding-right: 0.5rem
-}
-.tw-text-left{
-    text-align: left
 }
 .tw-text-4xl{
     font-size: 2.25rem;
@@ -11384,10 +11375,6 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-text-xl{
     font-size: 1.25rem;
     line-height: 1.75rem
-}
-.tw-text-2xl{
-    font-size: 1.5rem;
-    line-height: 2rem
 }
 .tw-font-bold{
     font-weight: 700
@@ -11452,10 +11439,6 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-text-yellow-500{
     --tw-text-opacity: 1;
     color: rgb(234 179 8 / var(--tw-text-opacity, 1))
-}
-.tw-text-gray-600{
-    --tw-text-opacity: 1;
-    color: rgb(75 85 99 / var(--tw-text-opacity, 1))
 }
 .tw-shadow-md{
     --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);

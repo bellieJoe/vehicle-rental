@@ -17,11 +17,12 @@ class AdditionalRateController extends Controller
             ->with('additional_rates', $additional_rates);
     }
 
-    public function create(){
+    public function createRental(){
         $categories = VehicleCategory::where('user_id', auth()->user()->id)->get();
         return view('main.org.additional-rates.create')
         ->with([
-            'categories' => $categories
+            'categories' => $categories,
+            'type' => AdditionalRate::TYPE_RENTAL
         ]);
     }
 

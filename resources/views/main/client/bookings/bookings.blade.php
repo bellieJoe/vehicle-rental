@@ -140,6 +140,20 @@
                                                     </dl>
                                                 </div>
                                             @endif
+                                            @if ($booking->booking_type == 'Door to Door')
+                                                <div class="mt-2">
+                                                    <dl class="row tw-max-w-md">
+                                                        <dt class="col-sm-4 mb-0 tw-font-bold">Start Date :</dt>
+                                                        <dd class="col-sm-8 mb-0">{{ $booking->d2dSchedule->depart_date->format('F j, Y, g:i A') }} </dd>
+                                                        <dt class="col-sm-4 mb-0 tw-font-bold"></dt>
+                                                        <dd class="col-sm-8 mb-0">({{ $booking->d2dSchedule->depart_date->diffForHumans() }})</dd>
+                                                        <dt class="col-sm-4 tw-font-bold">Drop Off Location:</dt>
+                                                        <dd class="col-sm-8 mb-0">{{ $booking->bookingDetail->drop_off_location }}</dd>
+                                                        <dt class="col-sm-4 tw-font-bold">Route:</dt>
+                                                        <dd class="col-sm-8 mb-0">{{ $booking->d2dSchedule->route->from_address }} to {{ $booking->d2dSchedule->route->to_address }}</dd>
+                                                    </dl>
+                                                </div>
+                                            @endif
                                         </div>
                                     </td>
                                     <td>

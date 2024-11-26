@@ -12,6 +12,10 @@ class Package extends Model
 
     protected $guarded = [];
 
+    const TYPE_PER_HOUR = 'per_hour';
+    const TYPE_PER_DAY = 'per_day';
+    const TYPE_PER_PERSON = 'per_person';
+
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);

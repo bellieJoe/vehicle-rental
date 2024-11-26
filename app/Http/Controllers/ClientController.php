@@ -7,6 +7,8 @@ use App\Models\AdditionalRate;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BookingLog;
+use App\Models\D2dSchedule;
+use App\Models\D2dVehicle;
 use App\Models\Feedback;
 use App\Models\Package;
 use App\Models\Payment;
@@ -68,7 +70,10 @@ class ClientController extends Controller
     public function rentView(Request $request, $vehicle_id)
     {
         $vehicle = Vehicle::find($vehicle_id);
-        $additional_rates = $vehicle->user->additionalRates->where('vehicle_category_id', $vehicle->vehicle_category_id);
+        $additional_rates = $vehicle->user->additionalRates->where([
+            'type' => AdditionalRate::TYPE_RENTAL,
+            'vehicle_category_id' => $vehicle->vehicle_category_id,
+        ]);
         
         return view('main.client.rent')
             ->with([
@@ -218,7 +223,14 @@ class ClientController extends Controller
                 'reason' => $request->reason
             ]);
     
-            $to = $booking->booking_type == "Vehicle" ? $booking->vehicle?->user : $booking->package?->user;
+
+            $to = null;
+            if($booking->booking_type == "Door to Door"){
+                $to = $booking->d2dSchedule->d2dVehicle->user;
+            }
+            else {
+                $to = $booking->booking_type == "Vehicle" ? $booking->vehicle?->user : $booking->package?->user;
+            }
             Mail::to($to->email)->send(new BookingUpdate(
                 $booking, 
                 "Booking from ".auth()->user()->name." has been cancelled", 
@@ -266,8 +278,16 @@ class ClientController extends Controller
             'payment_method' => Payment::METHOD_GCASH
         ]);
 
-        $orgUser = $payment->booking->vehicle ? $payment->booking->vehicle->user : $payment->booking->package->user;
-
+        $orgUser = null;
+        if($payment->booking->booking_type == "Vehicle"){
+            $orgUser = $payment->booking->vehicle->user;
+        }
+        if($payment->booking->booking_type == "Package"){
+            $orgUser = $payment->booking->package->user;
+        }
+        if($payment->booking->booking_type == Booking::TYPE_DOOR_TO_DOOR){
+            $orgUser = $payment->booking->d2dSchedule->d2dVehicle->user;
+        }
         Mail::to($orgUser->email)->send(new BookingUpdate(
             $payment->booking, 
             "Payment from ".auth()->user()->name." has been made via gcash", 
@@ -292,6 +312,9 @@ class ClientController extends Controller
         }
         if($payment->booking->booking_type == "Package"){
             $org = $payment->booking->package->user->organisation;
+        }
+        if($payment->booking->booking_type == Booking::TYPE_DOOR_TO_DOOR){
+            $org = $payment->booking->d2dSchedule->d2dVehicle->user->organisation;
         }
         if (is_null($org)) {
             return redirect()->back()->with("error", "Something went wrong while processing the payment.");
@@ -326,7 +349,15 @@ class ClientController extends Controller
             'payment_method' => Payment::METHOD_DEBIT,
             'date_paid' => now(),
         ]);
-        $orgUser = $payment->booking->vehicle ? $payment->booking->vehicle->user : $payment->booking->package->user;
+        if($payment->booking->booking_type == "Vehicle"){
+            $orgUser = $payment->booking->vehicle->user;
+        }
+        if($payment->booking->booking_type == "Package"){
+            $orgUser = $payment->booking->package->user;
+        }
+        if($payment->booking->booking_type == Booking::TYPE_DOOR_TO_DOOR){
+            $orgUser = $payment->booking->d2dSchedule->d2dVehicle->user;
+        }
         Mail::to($orgUser->email)->send(new BookingUpdate(
             $payment->booking, 
             "Payment from ".auth()->user()->name." has been made via gcash", 
@@ -574,33 +605,161 @@ class ClientController extends Controller
         return view("reports.payment-receipt", ["payment" => $payment]);
     }
 
+    public function viewD2d(Request $request){
+        $d2d_vehicles = D2dVehicle::query()
+        ->whereHas("d2dSchedules");
+
+        if($request->query("date")){
+            $d2d_vehicles->whereHas("d2dSchedules", function($query) use ($request){
+                $query->where("depart_date", $request->query("date"));
+            });
+        }
+
+        return view("main.client.d2d_vehicles.index")
+        ->with([
+            "d2d_vehicles" => $d2d_vehicles->paginate(10)
+        ]);
+    }
+
+    public function bookD2d($d2d_vehicle_id){
+        $d2d_vehicle = D2dVehicle::find($d2d_vehicle_id);
+
+        if(!$d2d_vehicle){
+            return redirect()->back()->with('error', 'Invalid vehicle.');
+        }   
+        $schedules = D2dSchedule::where([
+            "d2d_vehicle_id" => $d2d_vehicle_id,
+            ["depart_date", ">", now()]
+        ])
+        ->get();
+        $additional_rates = AdditionalRate::where([
+            "type" => AdditionalRate::TYPE_DOOR_TO_DOOR,
+            "user_id" => $d2d_vehicle->user_id
+        ])->get();
+
+        // return $additional_rates;
+
+        return view("main.client.d2d_vehicles.create")
+        ->with([
+            "d2d_vehicle" => $d2d_vehicle,
+            "schedules" => $schedules,
+            "additional_rates" => $additional_rates
+        ]);
+    }
+
+    public function storeD2d(Request $request, $d2d_vehicle_id){
+        $request->validate([
+            'contact_number' => 'required|regex:/^09\d{9}$/',
+            'name' => 'required',
+            "d2d_schedule_id" => "required|exists:d2d_schedules,id",
+            "additional_rate_id" => "nullable|exists:additional_rates,id",
+            "drop_off_location" => "required",
+            "payment_option" => "required|in:Full,Installment"
+        ]);
+
+        //  check for double booking
+        if (Booking::where([
+            ['d2d_schedule_id', '=', $request->d2d_schedule_id],
+            ['user_id', '=', auth()->user()->id],
+            ['status', '=', Booking::STATUS_BOOKED]
+        ])->exists()) {
+            return redirect()->back()->with('error', 'You have already made a booking for this Door to Door schedule.');
+        }
+
+        return DB::transaction(function () use ($request, $d2d_vehicle_id) {
+            $d2d_vehicle = D2dVehicle::find($d2d_vehicle_id);
+            $d2d_schedule = D2dSchedule::find($request->d2d_schedule_id);
+
+            if(Booking::where([
+                ['d2d_schedule_id', '=', $request->d2d_schedule_id],
+                ['status', '=', Booking::STATUS_BOOKED]
+            ])->count() >= $d2d_vehicle->max_cap){
+                return redirect()->back()->with('error', 'The maximum number of bookings for this Door to Door schedule has been reached.');
+            }
+
+            $additional_rate = null;
+
+            $computed_price = $d2d_schedule->route->rate;
+        
+            if($request->additional_rate_id){
+                $additional_rate = AdditionalRate::find($request->additional_rate_id);
+                $computed_price += $additional_rate->rate;
+            }
+
+            $booking = Booking::create([
+                'transaction_number' => time().auth()->user()->id,
+                'booking_type' => Booking::TYPE_DOOR_TO_DOOR,
+                'user_id' => auth()->user()->id,
+                'contact_number' => $request->contact_number,
+                'name' => $request->name,
+                'd2d_schedule_id' => $d2d_schedule->id,
+                'computed_price' => $computed_price,
+                'status' => Booking::STATUS_PENDING
+            ]);
+
+            BookingDetail::create([
+                'booking_id' => $booking->id,
+                'drop_off_location' => $request->drop_off_location,
+                'route_id' => $d2d_schedule->route_id,
+                'additional_rate_id' => $additional_rate ? $additional_rate->id : null
+            ]);
+
+            BookingLog::create([
+                'booking_id' => $booking->id,
+                'log' => auth()->user()->name.' Created the booking',
+            ]);
+
+            $this->_createPayments($booking, $request);
+
+            Mail::to($d2d_vehicle->user->email)->send(new BookingUpdate($booking, 'You have a new Door to Door booking.', $d2d_vehicle->user, route('org.bookings.index')));
+            
+            return redirect()->route('client.bookings');   
+        });
+    }
+
 
     // other functions
     function _createPayments(Booking $booking, Request $request){
         if($request->payment_option == Payment::OPTION_FULL_PAYMENT){
+            $payment_exp = null;
+            if($booking->booking_type == Booking::TYPE_DOOR_TO_DOOR){
+                $payment_exp = now()->addDay()->greaterThan($booking->d2dSchedule->depart_date) ? $booking->d2dSchedule->depart_date : now()->addDay();
+            }
+            else {
+                $payment_exp = now()->addDay()->greaterThan($booking->bookingDetail->start_datetime) ? $booking->bookingDetail->start_datetime : now()->addDay();
+            }
             Payment::create([
                 'booking_id' => $booking->id,
                 'amount' => $booking->computed_price,
                 'payment_status' => Payment::STATUS_PENDING,
-                'payment_exp' => now()->addDay()->greaterThan($booking->bookingDetail->start_datetime) ? $booking->bookingDetail->start_datetime : now()->addDay(),
+                'payment_exp' => $payment_exp,
             ]);
         }
         else if($request->payment_option == Payment::OPTION_INSTALLMENT){
             $downpayment = $booking->computed_price / 2;
-
+            $payment_exp = null;
+            $payment_exp2 = null;
+            if($booking->booking_type == Booking::TYPE_DOOR_TO_DOOR){
+                $payment_exp = $booking->d2dSchedule->depart_date;
+                $payment_exp2 = $booking->d2dSchedule->depart_date;
+            }
+            else {
+                $payment_exp = now()->addDay()->greaterThan($booking->bookingDetail->start_datetime) ? $booking->bookingDetail->start_datetime : now()->addDay();
+                $payment_exp2 = $booking->bookingDetail->start_datetime;
+            }
             Payment::create([
                 'booking_id' => $booking->id,
                 'is_downpayment' => true,
                 'amount' => $downpayment,
                 'payment_status' => Payment::STATUS_PENDING,
-                'payment_exp' => now()->addDay()->greaterThan($booking->bookingDetail->start_datetime) ? $booking->bookingDetail->start_datetime : now()->addDay(),
+                'payment_exp' => $payment_exp
             ]);
 
             Payment::create([
                 'booking_id' => $booking->id,
                 'amount' => $booking->computed_price - $downpayment,
                 'payment_status' => Payment::STATUS_PENDING,
-                'payment_exp' => $booking->bookingDetail->start_datetime,
+                'payment_exp' => $payment_exp2
             ]);
         }
     }

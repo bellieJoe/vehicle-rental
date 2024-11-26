@@ -49,7 +49,7 @@
 
                 <div class="row  mb-3">
                     <div class="col-sm">
-                        <x-forms.input type="number" name="rate" label="Rate (daily)" placeholder="Enter rate (daily)" errorBag="vehicle_create" />
+                        <x-forms.input type="number" name="rate" label="Rate wihtout driver (daily)" placeholder="Enter rate (daily)" errorBag="vehicle_create" />
                     </div>
                     <div class="col-sm">
                         <x-forms.input type="number" name="rate_w_driver" label="Rate with driver (daily)" placeholder="Enter rate (daily)" errorBag="vehicle_create" />

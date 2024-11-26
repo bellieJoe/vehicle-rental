@@ -7,7 +7,17 @@
         <div class="card-body">
             <div class="alert alert-info" role="alert">
                 @php
-                    $org = $booking->booking_type == 'Vehicle' ? $booking->vehicle->user->organisation : $booking->package->user->organisation;
+                    $org = null;
+                    if($booking->booking_type == 'Vehicle'){
+                        $org = $booking->vehicle->user->organisation;
+                    }
+                    if($booking->booking_type == 'Package'){
+                        $org = $booking->package->user->organisation;
+                    }
+                    if($booking->booking_type == 'Door to Door'){
+                        $org = $booking->d2dSchedule->d2dVehicle->user->organisation;
+                    }
+                   
                 @endphp
                 <h5 class="h6 tw-font-bold" >Payment Options</h5>
                 <p>You can pay through the office <span class="tw-font-bold">{{ $org->org_name }}</span> at <span class="tw-font-bold">{{ $org->address }}</span> or you can pay via Gcash or Debit Card.</p>

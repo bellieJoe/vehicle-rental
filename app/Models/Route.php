@@ -6,18 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AdditionalRate extends Model
+class Route extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
 
-    const TYPE_RENTAL = 'rental';
-    const TYPE_DOOR_TO_DOOR = 'door_to_door';
-    
-
-    public function vehicleCategory()
+    public function d2dSchedules()
     {
-        return $this->belongsTo(VehicleCategory::class);
+        return $this->hasMany(D2dSchedule::class);
     }
 }

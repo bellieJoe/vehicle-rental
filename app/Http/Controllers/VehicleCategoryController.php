@@ -36,12 +36,13 @@ class VehicleCategoryController extends Controller
         return redirect()->back()->with("message", "Category added successfully");
     }
 
+
     public function delete(Request $request){
         $request->validateWithBag('category_delete', [
             'id' => 'required|exists:vehicle_categories,id',
         ]);
 
-        if(Vehicle::where('category_id', $request->id)->exists()){
+        if(Vehicle::where('vehicle_category_id', $request->id)->exists()){
             return back()->with('error', 'Category has associated vehicles and cannot be deleted.')->withInput();
         }
 

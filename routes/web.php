@@ -38,6 +38,7 @@ Route::get("/galleries", [GalleryController::class, 'index'])->name('galleries')
 Route::view("/toc-bookings", "toc.bookings-toc")->name("toc.bookings");
 Route::view("/toc", "toc.registration-toc")->name("toc.registration");
 
+
 Route::prefix('/email')->group(function () {
     Route::get('/verify', [UserController::class, 'verificationNotice'])
     ->name('verification.notice')->middleware('auth');
@@ -62,6 +63,7 @@ Route::prefix('auth')->group(function () {
     
 });
 
+
 // ADMIN ROUTES
 Route::prefix('admin')
 ->middleware(['auth', 'role:admin', 'verified', 'is_banned'])
@@ -80,6 +82,7 @@ Route::prefix('admin')
     });
 
 });
+
 
 // ORG ROUTES
 Route::prefix('org')
@@ -116,7 +119,6 @@ Route::prefix('org')
         Route::put('process', [OrgController::class, 'processRefund'])->name('org.refunds.process');
     });
 
-    
     Route::prefix('packages')->group(function () {
         Route::get('', [PackageController::class, 'index'])->name('org.packages.index');
         Route::get('create', [PackageController::class, 'create'])->name('org.packages.create');
@@ -147,8 +149,43 @@ Route::prefix('org')
         Route::get('create', [OrgController::class, 'galleryCreate'])->name('org.galleries.create');
         Route::get('edit/{gallery_id}', [OrgController::class, 'galleryEdit'])->name('org.galleries.edit');
         Route::put('update/{gallery_id}', [OrgController::class, 'galleryUpdate'])->name('org.galleries.update');
+        Route::delete('update/{gallery_id}', [OrgController::class, 'galleryDelete'])->name('org.galleries.destroy');
     });
 
+    Route::prefix("routes")->group(function () {
+        Route::get('', [OrgController::class, 'routes'])->name('org.routes.index');
+        Route::get('create', [OrgController::class, 'routeCreate'])->name('org.routes.create');
+        Route::post('', [OrgController::class, 'routeStore'])->name('org.routes.store');
+        Route::get('edit/{route_id}', [OrgController::class, 'routeEdit'])->name('org.routes.edit');
+        Route::put('update/{route_id}', [OrgController::class, 'routeUpdate'])->name('org.routes.update');
+        Route::delete('delete/{route_id}', [OrgController::class, 'routeDelete'])->name('org.routes.delete');
+
+        Route::prefix("additional-rates")->group(function () {
+            Route::get('index/{route_id}', [OrgController::class, 'additionalRates'])->name('org.routes.additional-rates.index');
+            Route::get('create/{route_id}', [OrgController::class, 'additionalRateCreate'])->name('org.routes.additional-rates.create');
+            Route::post('store/{route_id}', [OrgController::class, 'additionalRateStore'])->name('org.routes.additional-rates.store');
+            Route::get('edit/{additional_rate_id}', [OrgController::class, 'additionalRateEdit'])->name('org.routes.additional-rates.edit');
+            Route::put('update/{additional_rate_id}', [OrgController::class, 'additionalRateUpdate'])->name('org.routes.additional-rates.update');
+            Route::delete('delete/{additional_rate_id}', [OrgController::class, 'additionalRateDelete'])->name('org.routes.additional-rates.delete');
+        });
+
+    });
+    
+    Route::prefix("d2d-vehicles")->group(function () {
+        Route::get('', [OrgController::class, 'd2dVehicles'])->name('org.d2d-vehicles.index'); 
+        Route::get('create', [OrgController::class, 'd2dVehicleCreate'])->name('org.d2d-vehicles.create');  
+        Route::post('', [OrgController::class, 'd2dVehicleStore'])->name('org.d2d-vehicles.store');
+        Route::get('edit/{d2d_vehicle_id}', [OrgController::class, 'd2dVehicleEdit'])->name('org.d2d-vehicles.edit');
+        Route::put('update/{d2d_vehicle_id}', [OrgController::class, 'd2dVehicleUpdate'])->name('org.d2d-vehicles.update');
+        Route::delete('delete/{d2d_vehicle_id}', [OrgController::class, 'd2dVehicleDelete'])->name('org.d2d-vehicles.delete');
+
+        Route::prefix("{d2d_vehicle_id}/d2d-schedules")->group(function () {
+            Route::get('', [OrgController::class, 'd2dSchedules'])->name('org.d2d-schedules.index');
+            Route::get('create', [OrgController::class, 'd2dScheduleCreate'])->name('org.d2d-schedules.create');
+            Route::post('', [OrgController::class, 'd2dScheduleStore'])->name('org.d2d-schedules.store');
+            Route::delete('delete/{d2d_schedule_id}', [OrgController::class, 'd2dScheduleDelete'])->name('org.d2d-schedules.delete');
+        });
+    });
 });
 
 // CLIENT ROUTES
@@ -174,6 +211,12 @@ Route::prefix('client')
 
     Route::prefix("feedbacks")->group(function () {
         Route::post('', [ClientController::class, 'storeFeedback'])->name('client.feedbacks.store'); 
+    });
+
+    Route::prefix("door-to-door")->group(function () {
+        Route::get('', [ClientController::class, 'viewD2d'])->name('client.d2d.index');
+        Route::get('create/{d2d_vehicle_id}', [ClientController::class, 'bookD2d'])->name('client.d2d.create');
+        Route::post('book/{d2d_vehicle_id}', [ClientController::class, 'storeD2d'])->name('client.d2d.store');
     });
 
     Route::prefix("bookings")->group(function () {
@@ -204,6 +247,8 @@ Route::prefix('api')->group(function () {
     });
 
     Route::get('owner-bookings/{user_id}', [OrgController::class, 'getOwnerBookings'])->name('api.owner-bookings');
+
+    Route::get('d2d-schedules/{d2d_vehicle_id}', [OrgController::class, 'getD2dSchedules'])->name('api.d2d-schedules');
 });
 
 // feedbacks

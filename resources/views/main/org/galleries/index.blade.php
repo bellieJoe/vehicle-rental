@@ -12,7 +12,20 @@
                                 <h5 class="card-title h5">{{ $gallery->title }}</h5>
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <a href="{{ route("org.galleries.edit", $gallery->id) }}" class="btn btn-sm btn-primary my-2" >Update</a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-secondary dropdown-toggle my-2" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <a class="dropdown-item" href="{{ route('org.galleries.edit', $gallery->id) }}">Update</a>
+                                                <form action="{{ route('org.galleries.destroy', $gallery->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this gallery?')">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                     </div>
                                 </div>
                             </div>

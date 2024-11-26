@@ -20,6 +20,10 @@ class Booking extends Model
     const STATUS_COMPLETED = 'Completed';
     const STATUS_CANCELLED = 'Cancelled';
 
+    const TYPE_VEHICLE = 'Vehicle';
+    const TYPE_PACKAGE = 'Package';
+    const TYPE_DOOR_TO_DOOR = 'Door to Door';
+
     protected $guarded = [];
 
     protected $dates = ['start_date'];
@@ -40,6 +44,10 @@ class Booking extends Model
 
     public function package(){
         return $this->belongsTo(Package::class);
+    }
+
+    public function d2dSchedule(){
+        return $this->belongsTo(D2dSchedule::class);
     }
 
     
@@ -63,8 +71,11 @@ class Booking extends Model
         if($this->booking_type == "Vehicle"){
             $end_datetime = $this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days);
         }
-        else {
+        else if($this->booking_type == "Package"){
             $end_datetime = $this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days)->subHours(9);
+        }
+        else if($this->booking_type == "Door to Door"){
+            $end_datetime = $this->d2dSchedule->depart_date->addDays(1);
         }
 
         if(!$end_datetime) {

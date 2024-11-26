@@ -1,5 +1,15 @@
 @php
-    $org = $booking->booking_type == 'Vehicle' ? $booking->vehicle->user->organisation : $booking->package->user->organisation;
+    $org = null;
+    if($booking->booking_type == 'Vehicle'){
+        $org = $booking->vehicle->user->organisation;
+    }
+    if($booking->booking_type == 'Package'){
+        $org = $booking->package->user->organisation;
+    }
+    if($booking->booking_type == 'Door to Door'){
+        $org = $booking->d2dSchedule->d2dVehicle->user->organisation;
+    }
+    
 @endphp
 <x-master>
     <div class="d-flex justify-content-between mb-4">

@@ -20,6 +20,11 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
 
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Services
+    </div>
+    
 
     <li class="nav-item {{ request()->is('client/vehicles/*') || request()->routeIs('client.vehicles') ? 'active' : '' }}">
         <a class="nav-link " href="{{ route('client.vehicles') }}">
@@ -31,6 +36,15 @@
         <i class="fa-solid fa-map-location-dot"></i><span>Book Packages</span>
         </a>
     </li>
+    <li class="nav-item {{ request()->is('client/door-to-door/*') || request()->routeIs('client.d2d.index') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('client.d2d.index') }}">
+        <i class="fa-solid fa-taxi"></i><span>Book Door to Door</span>
+        </a>
+    </li>
+
+    <div class="sidebar-heading">
+        Manage Bookings
+    </div>
     <li class="nav-item {{ request()->is('client/bookings/*') || request()->routeIs('client.bookings') ? 'active' : '' }}">
         <a class="nav-link " href="{{ route('client.bookings') }}">
             <i class="fa-solid fa-book"></i><span>My Bookings</span>
