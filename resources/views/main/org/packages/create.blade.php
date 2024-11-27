@@ -38,7 +38,7 @@
                     {{-- <div class="form-group">
                         <x-forms.select2 name="vehicle_id" errorBag="package_create" label="Vehicle" required queryUrl="{{ route('api.vehicles.apiQueryByUser', auth()->user()->id)}}" ></x-forms.select2>
                     </div> --}}
-                    <hr>
+                    <hr> 
                     
                     <div class="text-right">
                         <button type="submit" class="btn btn-primary">Add Package</button>

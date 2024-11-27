@@ -52,7 +52,7 @@
             Info
             </h4>
             <p>
-            necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful
+                iRENTA HUB is a leading service provider offering rental options and booking packages in Marinduque, Philippines. We are dedicated to providing top-notch services with a commitment to quality and customer satisfaction.
             </p>
         </div>
         </div>
