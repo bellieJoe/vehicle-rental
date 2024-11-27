@@ -30,11 +30,7 @@
         </a>
    
     </li>
-    <li class="nav-item {{ request()->is('org/galleries/*') || request()->routeIs('org.galleries.index') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('org.galleries.index') }}">
-          <i class="fa-solid fa-photo-video"></i><span>Galleries</span>
-        </a>
-    </li>
+    
 
     <div class="sidebar-heading">
         Services

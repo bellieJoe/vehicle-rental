@@ -2,7 +2,7 @@
     <h4 class="h4">Add Gallery</h4>
     <div class="card mt-4 ">
         <div class="card-body">
-            <form method="POST" action="{{route('org.galleries.store')}}" enctype="multipart/form-data">
+            <form method="POST" action="{{route('admin.galleries.store')}}" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
                     <x-forms.input name="title" errorBag="gallery_create" type="text" accept="image/*" label="Title" placeholder="Enter title" required></x-forms.input>

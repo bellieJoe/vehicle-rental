@@ -6,7 +6,7 @@
     <h4 class="h4">Edit Gallery</h4>
     <div class="card mt-4 ">
         <div class="card-body">
-            <form method="POST" action="{{route('org.galleries.update', $gallery->id)}}" enctype="multipart/form-data">
+            <form method="POST" action="{{route('admin.galleries.update', $gallery->id)}}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="form-group">

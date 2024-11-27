@@ -1,7 +1,7 @@
 <x-master>
     <h4 class="h4">Galleries</h4>
     <div class="mb-3">
-        <a href="{{ route('org.galleries.create') }}" class="btn btn-primary btn-sm mb-3">Add Gallery</a>
+        <a href="{{ route('admin.galleries.create') }}" class="btn btn-primary btn-sm mb-3">Add Gallery</a>
         <div class="row">
             @forelse ($galleries as $gallery)
                 <div class="col-md-4">
@@ -17,8 +17,8 @@
                                                 Actions
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <a class="dropdown-item" href="{{ route('org.galleries.edit', $gallery->id) }}">Update</a>
-                                                <form action="{{ route('org.galleries.destroy', $gallery->id) }}" method="POST" class="d-inline">
+                                                <a class="dropdown-item" href="{{ route('admin.galleries.edit', $gallery->id) }}">Update</a>
+                                                <form action="{{ route('admin.galleries.destroy', $gallery->id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this gallery?')">Delete</button>

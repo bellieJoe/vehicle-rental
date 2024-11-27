@@ -133,6 +133,9 @@
         max-width: 1536px
     }
 }
+.tw-relative {
+    position: relative
+}
 .tw-mx-auto {
     margin-left: auto;
     margin-right: auto
@@ -153,6 +156,9 @@
 .tw-mt-4 {
     margin-top: 1rem
 }
+.tw-ml-4 {
+    margin-left: 1rem
+}
 .tw-block {
     display: block
 }
@@ -161,6 +167,9 @@
 }
 .tw-h-full {
     height: 100%
+}
+.tw-min-h-screen {
+    min-height: 100vh
 }
 .tw-w-fit {
     width: -moz-fit-content;
@@ -184,11 +193,17 @@
 .tw-max-w-md {
     max-width: 28rem
 }
+.tw-max-w-xl {
+    max-width: 36rem
+}
 .tw-list-inside {
     list-style-position: inside
 }
 .tw-list-disc {
     list-style-type: disc
+}
+.tw-items-center {
+    align-items: center
 }
 .tw-justify-end {
     justify-content: flex-end
@@ -219,6 +234,13 @@
 }
 .tw-border-8 {
     border-width: 8px
+}
+.tw-border-r {
+    border-right-width: 1px
+}
+.tw-border-gray-400 {
+    --tw-border-opacity: 1;
+    border-color: rgb(156 163 175 / var(--tw-border-opacity, 1))
 }
 .tw-bg-\[\#4e73df\] {
     --tw-bg-opacity: 1;
@@ -286,6 +308,13 @@
     padding-top: 1.5rem;
     padding-bottom: 1.5rem
 }
+.tw-px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem
+}
+.tw-pt-8 {
+    padding-top: 2rem
+}
 .tw-text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem
@@ -315,8 +344,14 @@
 .tw-font-semibold {
     font-weight: 600
 }
+.tw-uppercase {
+    text-transform: uppercase
+}
 .tw-leading-6 {
     line-height: 1.5rem
+}
+.tw-tracking-wider {
+    letter-spacing: 0.05em
 }
 .tw-text-blue-500 {
     --tw-text-opacity: 1;
@@ -378,5 +413,32 @@
 .hover\:tw-bg-gray-100:hover {
     --tw-bg-opacity: 1;
     background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1))
+}
+@media (min-width: 640px) {
+    .sm\:tw-items-center {
+        align-items: center
+    }
+    .sm\:tw-justify-start {
+        justify-content: flex-start
+    }
+    .sm\:tw-px-6 {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem
+    }
+    .sm\:tw-pt-0 {
+        padding-top: 0px
+    }
+}
+@media (min-width: 1024px) {
+    .lg\:tw-px-8 {
+        padding-left: 2rem;
+        padding-right: 2rem
+    }
+}
+@media (prefers-color-scheme: dark) {
+    .dark\:tw-bg-gray-900 {
+        --tw-bg-opacity: 1;
+        background-color: rgb(17 24 39 / var(--tw-bg-opacity, 1))
+    }
 }
 

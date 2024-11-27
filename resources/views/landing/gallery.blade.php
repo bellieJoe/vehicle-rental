@@ -9,6 +9,14 @@
             </p>
             <p class="tw-text-lg tw-mt-4">Aba'y parine na!</p>
         </div>
+        <form action="" method="GET">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search gallery" value="{{ request()->query('search') }}">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-search"></i></button>
+                </div>
+            </div>
+        </form>
         <div class="row my-5">
             @forelse ($galleries as $gallery)
                 <div class="col-md-4">

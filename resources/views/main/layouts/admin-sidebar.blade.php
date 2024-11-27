@@ -17,6 +17,12 @@
       <a class="nav-link" href="#"><span>Admin Interface</span></a>
   </li>
 
+    <li class="nav-item {{ request()->is('admin/galleries/*') || request()->routeIs('admin.galleries.index') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('admin.galleries.index') }}">
+        <i class="fa-solid fa-photo-video"></i><span>Galleries</span>
+        </a>
+    </li>
+
   <!-- Divider -->
   <hr class="sidebar-divider">
 

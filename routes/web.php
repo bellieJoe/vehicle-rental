@@ -81,6 +81,15 @@ Route::prefix('admin')
         Route::post('reply', [InquiryController::class, 'reply'])->name('admin.inquiries.reply');
     });
 
+    Route::prefix("galleries")->group(function () { 
+        Route::get('', [GalleryController::class, 'galleries'])->name('admin.galleries.index');
+        Route::post('', [GalleryController::class, 'galleryStore'])->name('admin.galleries.store');
+        Route::get('create', [GalleryController::class, 'galleryCreate'])->name('admin.galleries.create');
+        Route::get('edit/{gallery_id}', [GalleryController::class, 'galleryEdit'])->name('admin.galleries.edit');
+        Route::put('update/{gallery_id}', [GalleryController::class, 'galleryUpdate'])->name('admin.galleries.update');
+        Route::delete('update/{gallery_id}', [GalleryController::class, 'galleryDelete'])->name('admin.galleries.destroy');
+    });
+
 });
 
 
@@ -141,15 +150,6 @@ Route::prefix('org')
             Route::post('approve-cash/{payment_id}', [OrgController::class, 'approveCashPayment'])->name('org.bookings.payments.approve-cash');
             Route::post('reset-attempts/{payment_id}', [OrgController::class, 'resetAttempts'])->name('org.bookings.payments.reset-attempts');
         });
-    });
-
-    Route::prefix("galleries")->group(function () { 
-        Route::get('', [OrgController::class, 'galleries'])->name('org.galleries.index');
-        Route::post('', [OrgController::class, 'galleryStore'])->name('org.galleries.store');
-        Route::get('create', [OrgController::class, 'galleryCreate'])->name('org.galleries.create');
-        Route::get('edit/{gallery_id}', [OrgController::class, 'galleryEdit'])->name('org.galleries.edit');
-        Route::put('update/{gallery_id}', [OrgController::class, 'galleryUpdate'])->name('org.galleries.update');
-        Route::delete('update/{gallery_id}', [OrgController::class, 'galleryDelete'])->name('org.galleries.destroy');
     });
 
     Route::prefix("routes")->group(function () {
