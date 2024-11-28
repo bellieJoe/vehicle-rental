@@ -35,7 +35,7 @@
         <link href="{{ asset('assets/css/responsive.css') }}" rel="stylesheet" />
         
 
-        <title>Veihicle Rental</title>
+        <title>Vehicle Rental</title>
  
     </head>
     <body >

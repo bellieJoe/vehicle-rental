@@ -25,10 +25,10 @@
                             @php
                                 $images = asset("images/galleries/$gallery->image");
                             @endphp
-                            <div onclick="viewImage('{{ $images  }}')" style="width: 100%; height: 200px; background-size: cover; background-position: center center; background-repeat: no-repeat; background-image: url({{ asset("images/galleries/$gallery->image") }}); border-radius: 0.25rem; overflow: hidden; transition: transform .3s ease-in-out;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+                            <div onclick="viewImage('{{ $images }}', {{ json_encode($gallery->title) }}, {{ json_encode($gallery->description) }})" style="width: 100%; height: 200px; background-size: cover; background-position: center center; background-repeat: no-repeat; background-image: url({{ asset("images/galleries/$gallery->image") }}); border-radius: 0.25rem; overflow: hidden; transition: transform .3s ease-in-out;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
                             <div class="p-3">
                                 <h5 class="card-title tw-font-bold tw-text-xl">{{ $gallery->title }}</h5>
-                                <p class="tw-text-gray-700 tw-text-sm">{{ $gallery->description }}</p>
+                                <p class="tw-text-gray-700 tw-text-sm tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap">{{ $gallery->description }}</p>
                             </div>
                         </div>
                     </div>

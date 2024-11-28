@@ -7,7 +7,9 @@
                 </button>
             </div>
             <div class="modal-body">
-                <img src="" id="viewImage" style="max-width: 100%; height: auto;" />
+                <img class="mb-2" src="" id="viewImage" style="max-width: 100%; height: auto;" />
+                <h1 class="h4 mb-2 tw-font-bold" id="viewImageModalTitle"></h1>
+                <p id="viewImageModalDescription" class="tw-text-gray-700 tw-text-sm tw-mt-2 tw-whitespace-pre-wrap"></p>
             </div>
         </div>
     </div>
@@ -15,8 +17,11 @@
 
 <script>
     console.log('test')
-    function viewImage(url) {
+    function viewImage(url, title, description) {
+        console.log({url, title, description})
         $('#viewImageModal').modal('show');
         $('#viewImage').attr('src', url);
+        $('#viewImageModalTitle').text(title);
+        $('#viewImageModalDescription').text(description);
     }
 </script>

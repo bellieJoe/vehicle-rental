@@ -11220,14 +11220,14 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-mb-8{
     margin-bottom: 2rem
 }
+.tw-ml-4{
+    margin-left: 1rem
+}
 .tw-mt-2{
     margin-top: 0.5rem
 }
 .tw-mt-4{
     margin-top: 1rem
-}
-.tw-ml-4{
-    margin-left: 1rem
 }
 .tw-block{
     display: block
@@ -11247,6 +11247,9 @@ body.sidebar-toggled footer.sticky-footer {
 }
 .tw-w-full{
     width: 100%
+}
+.tw-w-64{
+    width: 16rem
 }
 .tw-max-w-2xl{
     max-width: 42rem
@@ -11290,8 +11293,20 @@ body.sidebar-toggled footer.sticky-footer {
     margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
 }
+.tw-overflow-hidden{
+    overflow: hidden
+}
 .tw-overflow-y-auto{
     overflow-y: auto
+}
+.tw-text-ellipsis{
+    text-overflow: ellipsis
+}
+.tw-whitespace-nowrap{
+    white-space: nowrap
+}
+.tw-whitespace-pre-wrap{
+    white-space: pre-wrap
 }
 .tw-rounded{
     border-radius: 0.25rem
@@ -11366,6 +11381,10 @@ body.sidebar-toggled footer.sticky-footer {
     padding-left: 0.5rem;
     padding-right: 0.5rem
 }
+.tw-px-4{
+    padding-left: 1rem;
+    padding-right: 1rem
+}
 .tw-px-6{
     padding-left: 1.5rem;
     padding-right: 1.5rem
@@ -11377,10 +11396,6 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-py-6{
     padding-top: 1.5rem;
     padding-bottom: 1.5rem
-}
-.tw-px-4{
-    padding-left: 1rem;
-    padding-right: 1rem
 }
 .tw-pt-8{
     padding-top: 2rem
