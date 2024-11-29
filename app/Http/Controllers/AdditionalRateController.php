@@ -31,13 +31,15 @@ class AdditionalRateController extends Controller
             'name' => 'required',
             'rate' => 'required',
             'vehicle_category_id' => 'required|exists:vehicle_categories,id',
+            
         ]); 
 
         AdditionalRate::create([
             'name' => $request->name,
             'rate' => $request->rate,
             'user_id' => auth()->user()->id,
-            'vehicle_category_id' => $request->vehicle_category_id
+            'vehicle_category_id' => $request->vehicle_category_id,
+            'type' => AdditionalRate::TYPE_RENTAL
         ]);
 
         return redirect()->route('org.additional-rates.index')->with('success', 'Successfully added additional rate.');
@@ -74,5 +76,13 @@ class AdditionalRateController extends Controller
     public function delete(Request $request, $additional_rate_id){
         AdditionalRate::where('id', $additional_rate_id)->delete();
         return redirect()->route('org.additional-rates.index')->with('success', 'Successfully deleted additional rate.');
+    }
+
+    public function create(Request $request){
+        $categories = VehicleCategory::where('user_id', auth()->user()->id)->get();
+        return view('main.org.additional-rates.create')
+        ->with([
+            'categories' => $categories
+        ]);
     }
 }
