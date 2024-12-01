@@ -85,19 +85,32 @@
     <div class="sidebar-heading">
         Manage Bookings
     </div>
-
+    
     <li class="nav-item {{ request()->is('org/bookings/*') || request()->routeIs('org.bookings.index') ? 'active' : '' }}">
         <a class="nav-link " href="{{ route('org.bookings.index') }}">
-          <i class="fa-solid fa-book"></i><span>Bookings</span>
+            <i class="fa-solid fa-book"></i><span>Bookings</span>
         </a>
     </li>
-
+    
     <li class="nav-item {{ request()->is('org/refunds/*') || request()->routeIs('org.refunds.index') ? 'active' : '' }}">
         <a class="nav-link " href="{{ route('org.refunds.index') }}">
-          <i class="fa-solid fa-undo"></i><span>Refunds</span>
+            <i class="fa-solid fa-undo"></i><span>Refunds</span>
         </a>
     </li>
-
+    
+    <div class="sidebar-heading">
+        Reports
+    </div>
+    <li class="nav-item {{ request()->routeIs('org.reports.collections') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('org.reports.collections') }}">
+            <i class="fa-solid fa-money-bill-wave"></i><span>Payment Collections</span>
+        </a>
+    </li>
+    <li class="nav-item {{ request()->routeIs('org.reports.refunds') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('org.reports.refunds') }}">
+            <i class="fa-solid fa-list"></i><span>Refunds List</span>
+        </a>
+    </li>
 
   <!-- Divider -->
   <hr class="sidebar-divider d-none d-md-block">

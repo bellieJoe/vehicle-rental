@@ -10,7 +10,7 @@
 
   <div class="card my-4">
     <div class="card-body">
-      <form action="{{ route('client.vehicles.rentStore') }}" method="POST">
+      <form action="{{ route('client.vehicles.rentStore') }}" method="POST" enctype="multipart/form-data">
           @csrf
           <x-forms.input name="booking_type" value="Vehicle" type="hidden" />
           <x-forms.input name="vehicle_id" value="{{$vehicle->id}}" type="hidden" />
@@ -51,17 +51,32 @@
 
           <div class="form-group">
             @if($vehicle->rent_options == "Both")
-              <x-forms.select name="rent_options" label="Rent Options" placeholder="Please Select Rent Options" :options="['With Driver' => 'With Driver', 'Without Driver' => 'Without Driver']"  required></x-forms.select>
+              <x-forms.select name="rent_options" label="Rent Options" placeholder="Please Select Rent Options" :options="['With Driver' => 'With Driver', 'Without Driver' => 'Without Driver']" value="{{ old('rent_options') }}"  required></x-forms.select>
             @elseif($vehicle->rent_options == "With Driver")
-              <x-forms.select name="rent_options" label="Rent Options" placeholder="Please Select Rent Options" :options="['With Driver' => 'With Driver']"  required></x-forms.select>
+              <x-forms.select name="rent_options" label="Rent Options" placeholder="Please Select Rent Options" :options="['With Driver' => 'With Driver']" value="{{ old('rent_options') }}"  required></x-forms.select>
             @else
-              <x-forms.select name="rent_options" label="Rent Options" placeholder="Please Select Rent Options" :options="['Without Driver' => 'Without Driver']"  required></x-forms.select>
+              <x-forms.select name="rent_options" label="Rent Options" placeholder="Please Select Rent Options" :options="['Without Driver' => 'Without Driver']" value="{{ old('rent_options') }}"  required></x-forms.select>
             @endif
           </div>
 
-          <div class="form-group">
-            <x-forms.input name="license_no" label="Driver's License Number" placeholder="Enter driver's license number" />
+          
+          <div id="driver_details">
+            <hr>
+            <div class="form-group">
+              <x-forms.input name="license_no" label="Driver's License Number" placeholder="Enter driver's license number" />
+            </div>
+            <div class="form-group">
+              <x-forms.input name="valid_until" label="Valid Until" type="date" placeholder="Enter driver's license valid until date" />
+            </div>
+            <div class="form-group">
+              <x-forms.input name="front_id" type="file" accept=".jpg, .jpeg, .png" label="Driver License Front Picture" />
+            </div>
+            <div class="form-group">
+              <x-forms.input name="back_id" type="file" accept=".jpg, .jpeg, .png" label="Driver License Back Picture" />
+            </div>
+            <hr>
           </div>
+
 
           <div class="form-group">
             <x-forms.select value="{{ old('payment_option') }}" name="payment_option" label="Payment Option" placeholder="Select Payment Schedule" :options="['Full' => 'Pay in full', 'Installment' => 'Pay in Installment']" />
@@ -118,11 +133,11 @@
       computePrice();
       console.log(e.target.value);
       if (e.target.value === "Without Driver") {
-        $('#license_no').closest('.form-group').show();
+        $('#driver_details').show();
         $('#pickup_location').closest('.form-group').hide();
       }
       else {
-        $('#license_no').closest('.form-group').hide();
+        $('#driver_details').hide();
         $('#pickup_location').closest('.form-group').show();
       }
     });
@@ -150,6 +165,11 @@
         const computedPrice = (numberOfDays * rate) + addRate;
         $computedPrice.text(`Php ${computedPrice.toLocaleString()}`); // Add locale formatting
     }
+
+    @if($errors->any())
+        console.log("Has Errors");
+        $rentOptions.change();
+    @endif
 
   });
 </script>

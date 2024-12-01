@@ -105,6 +105,12 @@
                                                         @else 
                                                             <dt class="col-sm-5 mb-0 tw-font-bold">Drivers License No. :</dt>
                                                             <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->license_no  }}</dd>
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Valid Until :</dt>
+                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->valid_until ? $booking->bookingDetail->valid_until->format('F j, Y') : "N/A"  }}</dd>
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Front Id :</dt>
+                                                            <dd class="col-sm-7 mb-0"><a target="_blank" href="{{ asset("images/licenses/".$booking->bookingDetail->front_id)}}">{{ $booking->bookingDetail->front_id }}</a></dd>
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Back Id :</dt>
+                                                            <dd class="col-sm-7 mb-0"><a target="_blank" href="{{ asset("images/licenses/".$booking->bookingDetail->back_id)}}">{{ $booking->bookingDetail->back_id }}</a></dd>
                                                         @endif
                                                     </dl>
                                                 </div>

@@ -49,6 +49,7 @@ class VehicleController extends Controller
                 "rent_options" => "required|in:With Driver,Without Driver,Both",
                 "rate" => "nullable|required_if:rent_options,Without Driver,Both|numeric|min:0",
                 "rate_w_driver" => "nullable|required_if:rent_options,With Driver,Both|numeric|min:0",
+                "plate_number" => "required|unique:vehicles,plate_number"
             ]);
     
             $imageName = time().'.'.$request->image->extension();
@@ -62,6 +63,7 @@ class VehicleController extends Controller
                 "rent_options" => $request->rent_options,
                 "rate" => $request->rent_options === 'With Driver' ? null : $request->rate,
                 "rate_w_driver" => $request->rent_options === 'Without Driver' ? null : $request->rate_w_driver,
+                "plate_number" => $request->plate_number,
                 "user_id" => auth()->user()->id,
             ]);
     
@@ -89,7 +91,8 @@ class VehicleController extends Controller
                 "image" => "nullable|image|mimes:jpeg,png,jpg|max:2048",
                 "rent_options" => "required|in:With Driver,Without Driver,Both",
                 "rate" => "required|numeric|min:0",
-                "rate_w_driver" => "nullable|required_if:rent_options,With Driver,Both|numeric|min:0"
+                "rate_w_driver" => "nullable|required_if:rent_options,With Driver,Both|numeric|min:0",
+                "plate_number" => "required|unique:vehicles,plate_number,{$request->id}"
             ]);
     
             $vehicle = Vehicle::find($request->id); 

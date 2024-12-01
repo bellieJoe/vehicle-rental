@@ -20,6 +20,9 @@
                     <div class="col">
                         <x-forms.input name="model" label="Model" placeholder="Enter model" errorBag="vehicle_create" required></x-forms.input>
                     </div>
+                    <div class="col">
+                        <x-forms.input name="plate_number" label="Plate Number" placeholder="Enter plate number" errorBag="vehicle_create" required />
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="vehicle_category_id" class="col-form-label"><span class="tw-text-red-500">*</span>Category:</label>

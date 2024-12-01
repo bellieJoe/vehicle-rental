@@ -40,6 +40,7 @@
                             <span class="badge badge-secondary">{{ $vehicle->vehicleCategory->category_name }}</span>
                             <h5 class="card-title h5">{{ $vehicle->model }}</h5>
                             <h6 class="card-subtitle">{{ $vehicle->brand }}</h6>
+                            <h6 class="card-subtitle">{{ $vehicle->plate_number }}</h6>
                             <h6 class="">{{ $vehicle->bookings_count }} Bookings</h6>
                             <a href="{{ route('feedbacks.index', ['type' => 'vehicle', 'id' => $vehicle->id]) }}" class="tw-text-yellow-500 tw-block small">
                                 <i class="fas fa-star"></i> {{ $vehicle->computeFeedbackAverage() }} / 5 out of {{ $vehicle->countFeedbacks() }} feedbacks

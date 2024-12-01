@@ -18,6 +18,12 @@ class Booking extends Model
     // const STATUS_FOR_PICKUP = 'For Pickup';
     // const STATUS_IN_PROGRESS = 'In Progress';
     const STATUS_COMPLETED = 'Completed';
+
+    //  additional status
+    const STATUS_CANCEL_REQUESTED = 'Cancel Requested';
+    const STATUS_CANCEL_APPROVED = 'Cancel Approved';
+    const STATUS_CANCEL_REJECTED = 'Cancel Rejected';
+
     const STATUS_CANCELLED = 'Cancelled';
 
     const TYPE_VEHICLE = 'Vehicle';

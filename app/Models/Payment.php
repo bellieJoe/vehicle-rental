@@ -12,7 +12,7 @@ class Payment extends Model
 
     protected $guarded = ['id'];
 
-    protected $dates = ['payment_exp'];
+    protected $dates = ['payment_exp', 'date_paid'];
 
     const OPTION_INSTALLMENT = 'Installment';
     const OPTION_FULL_PAYMENT = 'Full';

@@ -22,20 +22,20 @@
                         </div>
                         <div class="form-group">
                             <input type="email" class="form-control form-control-user" name="email" value="{{ old('email') }}" placeholder="Email Address">
-                            @error('email', 'org_register')
+                            @error('email')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="form-group row">
                             <div class="col-sm-6 mb-3 mb-sm-0">
                                 <input type="password" class="form-control form-control-user" name="password" placeholder="Password">
-                                @error('password', 'org_register')
+                                @error('password')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="col-sm-6">
                                 <input type="password" class="form-control form-control-user" name="password_confirmation" placeholder="Repeat Password">
-                                @error('password_confirmation', 'org_register')
+                                @error('password_confirmation')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>

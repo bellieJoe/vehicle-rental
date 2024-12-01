@@ -70,10 +70,15 @@ class ClientController extends Controller
     public function rentView(Request $request, $vehicle_id)
     {
         $vehicle = Vehicle::find($vehicle_id);
-        $additional_rates = $vehicle->user->additionalRates->where([
+        // $additional_rates = $vehicle->user->additionalRates->where([
+        //     'type' => AdditionalRate::TYPE_RENTAL,
+        //     'vehicle_category_id' => $vehicle->vehicle_category_id,
+        // ]);
+
+        $additional_rates = AdditionalRate::where([
             'type' => AdditionalRate::TYPE_RENTAL,
-            'vehicle_category_id' => $vehicle->vehicle_category_id,
-        ]);
+            'vehicle_category_id' => $vehicle->vehicle_category_id
+        ])->get();
         
         return view('main.client.rent')
             ->with([
@@ -95,8 +100,12 @@ class ClientController extends Controller
             // 'payment_method' => 'required|in:Cash,Gcash,Debit',
             'additional_rate' => 'nullable|exists:additional_rates,id',
             'payment_option' => 'required|in:'.Payment::OPTION_FULL_PAYMENT.','.Payment::OPTION_INSTALLMENT,
-            'pickup_location' => 'requiredif:rent_options,With Driver',
+            'pickup_location' => 'required_if:rent_options,With Driver',
+
             'license_no' => 'required_if:rent_options,Without Driver',
+            'front_id' => 'required_if:rent_options,Without Driver|image|mimes:jpeg,png,jpg|max:2048',
+            'back_id' => 'required_if:rent_options,Without Driver|image|mimes:jpeg,png,jpg|max:2048',
+            "valid_until" => "nullable|required_if:rent_options,Without Driver|date|after_or_equal:today"
         ]);
 
         // check if vehicle is available
@@ -139,13 +148,25 @@ class ClientController extends Controller
                 // 'payment_status' => Payment::STATUS_PENDING
             ]);
 
+            $front_id = null;
+            $back_id = null;
+            if($request->rent_options === 'Without Driver'){
+                $front_id = time().'1.'.$request->front_id->extension();
+                $back_id = time().'2.'.$request->back_id->extension();
+                $request->front_id->move(public_path('images/licenses'), $front_id);
+                $request->back_id->move(public_path('images/licenses'), $back_id);
+            }
+
             BookingDetail::create([
                 'booking_id' => $booking->id,
                 'start_datetime' => $request->start_date,
                 'number_of_days' => $request->number_of_days,
                 'with_driver' => $request->rent_options === 'With Driver',
+                'pickup_location' => $request->rent_options === 'With Driver' ? $request->pickup_location : null,
                 'license_no' => $request->rent_options === 'Without Driver' ? $request->license_no : null,
-                'pickup_location' => $request->rent_options === 'With Driver' ? $request->pickup_location : null
+                'front_id' => $request->rent_options === 'Without Driver' ? $front_id : null,
+                'back_id' => $request->rent_options === 'Without Driver' ? $back_id : null,
+                'valid_until' => $request->rent_options === 'Without Driver' ? $request->valid_until : null,
             ]);
 
             BookingLog::create([

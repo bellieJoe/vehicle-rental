@@ -36,7 +36,7 @@
                             <span class="badge badge-primary"><i class="fa-solid fa-user mr-2"></i>{{ $vehicle->user->organisation->org_name }}</span>
                             <span class="badge badge-secondary">{{ $vehicle->vehicleCategory->category_name }}</span>
                             <div class="card-subtitle">{{ $vehicle->brand }}</div>
-                            <div><span>Starts at </span><span class="text-primary">PHP {{ number_format($vehicle->rate, 2) }}</span></div>
+                            <div><span>Starts at </span><span class="text-primary">PHP {{ $vehicle->rate ? number_format($vehicle->rate, 2) : number_format($vehicle->rate_w_driver, 2) }}</span></div>
                             <div class="row align-items-center">
                                 <div class="col">
                                     <button class="btn btn-sm btn-outline-primary my-2" onclick="showVehicleDetails({{$vehicle}})">Details</button>

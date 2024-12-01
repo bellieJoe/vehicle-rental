@@ -13,7 +13,7 @@
 ])
 
 <label for="{{ $name }}">
-    @if ($required)
+    @if ($required && $type != 'hidden')
         <span class="tw-text-red-500">*</span>
     @endif
     {{ $label }}

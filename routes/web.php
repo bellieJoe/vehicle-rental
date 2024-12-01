@@ -7,6 +7,7 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\OrgController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleCategoryController;
 use App\Http\Controllers\VehicleController;
@@ -185,6 +186,11 @@ Route::prefix('org')
             Route::post('', [OrgController::class, 'd2dScheduleStore'])->name('org.d2d-schedules.store');
             Route::delete('delete/{d2d_schedule_id}', [OrgController::class, 'd2dScheduleDelete'])->name('org.d2d-schedules.delete');
         });
+    });
+
+    Route::prefix("reports")->group(function () {
+        Route::get('collections', [ReportController::class, 'collections'])->name('org.reports.collections');
+        Route::get('refunds', [ReportController::class, 'refunds'])->name('org.reports.refunds');
     });
 });
 
