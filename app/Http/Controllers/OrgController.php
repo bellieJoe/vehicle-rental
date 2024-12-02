@@ -7,6 +7,8 @@ use App\Mail\RefundInvoice;
 use App\Models\AdditionalRate;
 use App\Models\Booking;
 use App\Models\BookingLog;
+use App\Models\CancellationDetail;
+use App\Models\CancellationRate;
 use App\Models\D2dSchedule;
 use App\Models\D2dVehicle;
 use App\Models\Gallery;
@@ -91,6 +93,8 @@ class OrgController extends Controller
             $request->validate([
                 'action' => 'required|in:APPROVE,REJECT'
             ]);
+
+            $discount = $request->discount;
     
             $action = $request->action;
             $booking = Booking::find($booking_id);
@@ -99,6 +103,12 @@ class OrgController extends Controller
                 $booking->update([
                     'status' => "To Pay"
                 ]);
+                if($discount){
+                    $booking->update([
+                        'discount' => $discount,
+                        'computed_price' => $booking->computed_price - $discount
+                    ]);
+                }
                 BookingLog::create([
                     'booking_id' => $booking_id,
                     'log' => "Booking was approved by " . auth()->user()->name
@@ -643,5 +653,180 @@ class OrgController extends Controller
         $d2sSched->delete();
         return redirect()->back()->with("success", "Schedule deleted successfully");
     }
+
+    // CANCELLATION RATES
+    public function cancellationRates(Request $request){
+        $rates = CancellationRate::where([
+            "user_id" => auth()->user()->id
+        ])->get();
+
+        return view("main.org.cancellation-rates.index")->with([
+            "rates" => $rates
+        ]);
+    }
+
+    public function cancellationRateCreate(){
+        return view("main.org.cancellation-rates.create");
+    }
+
+    public function cancellationRateStore(Request $request){
+        $request->validate([
+            "remaining_days" => "required",
+            "percentage" => "required"
+        ]);
+
+        $user = auth()->user();
+
+        $rate = CancellationRate::where([
+            "user_id" => $user->id,
+            "remaining_days" => $request->remaining_days
+        ])->first();
+
+        if($rate){
+            return redirect()->back()->with("error", "Cancellation rate already exist");
+        }
+
+        CancellationRate::create([
+            "user_id" => $user->id,
+            "remaining_days" => $request->remaining_days,
+            "percent" => $request->percentage
+        ]);
+
+        return redirect()->route("org.cancellation-rates.index")->with("success", "Cancellation rate created successfully");
+    }
+
+    // cancellationRateEdit
+    public function cancellationRateEdit($cancellation_rate_id){
+        $rate = CancellationRate::find($cancellation_rate_id);
+        return view("main.org.cancellation-rates.edit")->with([
+            "rate" => $rate
+        ]);
+    }
+
+    // cancellationRateUpdate
+    public function cancellationRateUpdate(Request $request, $cancellation_rate_id){
+        $request->validate([
+            "remaining_days" => "required",
+            "percentage" => "required"
+        ]);
+
+        $rate = CancellationRate::find($cancellation_rate_id);
+        $rate->remaining_days = $request->remaining_days;
+        $rate->percent = $request->percentage;
+        $rate->save();
+
+        return redirect()->route("org.cancellation-rates.index")->with("success", "Cancellation rate updated successfully");
+    }
+
+    // cancellationRateDelete
+    public function cancellationRateDelete($cancellation_rate_id){
+        $rate = CancellationRate::find($cancellation_rate_id);
+        $rate->delete();
+        return redirect()->route("org.cancellation-rates.index")->with("success", "Cancellation rate deleted successfully");
+    }
+
+
+    // approveCancellation
+    public function approveCancellation($booking_id){
+        $booking = Booking::find($booking_id);
+        $booking->status = Booking::STATUS_CANCELLED;
+        $booking->save();
+
+        CancellationDetail::where([
+            "booking_id" => $booking_id
+        ])
+        ->update([
+            "status" => Booking::STATUS_CANCEL_APPROVED
+        ]);
+
+        $client = $booking->user;
+
+        Mail::to($client->email)->send(new BookingUpdate($booking, "Your booking has been cancellation request was approved. To request a refund, please go to your bookings page and provide the necessary information. ", $client, route('client.bookings')));
+
+        return redirect()->back()->with("success", "Booking cancellation has been approved successfully.");
+    }
+
+    // rejectCancellation
+    public function rejectCancellation($booking_id){
+        $booking = Booking::find($booking_id);
+
+        CancellationDetail::where([
+            "booking_id" => $booking_id
+        ])
+        ->update([
+            "status" => Booking::STATUS_CANCEL_REJECTED
+        ]);
+
+        $client = $booking->user;
+
+        Mail::to($client->email)->send(new BookingUpdate($booking, "Your booking cancellation request was rejected. Please try again.", $client, route('client.bookings')));
+
+        return redirect()->back()->with("success", "Booking cancellation has been rejected successfully.");
+    }
+
+    // extendBooking
+    public function extendBooking(Request $request, $booking_id){
+        $request->validate([
+            "extend_days" => "required|integer|min:1"
+        ]);
+
+        return DB::transaction(function () use ($request, $booking_id){
+            
+            $booking = Booking::find($booking_id);
+    
+            if(!$booking || $booking->status != Booking::STATUS_BOOKED || $booking->booking_type != "Vehicle"){
+                return redirect()->back()->with("error", "Invalid booking");
+            }
+    
+            $start_datetime = Carbon::parse($booking->bookingDetail->start_datetime)->addDays($booking->bookingDetail->number_of_days);
+            if(!Vehicle::isVehicleAvailable($booking->vehicle_id, $start_datetime, ($request->extend_days), Booking::STATUS_BOOKED)){
+                return redirect()->back()->with("error", "Vehicle is not available at the extended number of days.");
+            }   
+    
+            $additional_computed_price = 0;
+            if($booking->bookingDetail->with_driver == 1){
+                $additional_computed_price = $request->extend_days * $booking->vehicle->rate_w_driver;
+            }
+            else {
+                $additional_computed_price = $request->extend_days * $booking->vehicle->rate;
+            }
+    
+            $booking->update([
+                "status" => Booking::STATUS_BOOKED,
+                "computed_price" => $booking->computed_price + $additional_computed_price
+            ]);
+    
+            $booking->bookingDetail->update([
+                "number_of_days" => $request->extend_days + $booking->bookingDetail->number_of_days
+            ]);
+    
+            $payment_exp = now()->addDay()->greaterThan($booking->bookingDetail->start_datetime) ? $booking->bookingDetail->start_datetime : now()->addDay();
+            Payment::create([
+                'booking_id' => $booking->id,
+                'amount' => $additional_computed_price,
+                'payment_status' => Payment::STATUS_PENDING,
+                'payment_exp' => $payment_exp,
+            ]);
+    
+            Mail::to($booking->user->email)->send(new BookingUpdate($booking, "Your booking has been extended successfully by " . $request->extend_days . " days.", $booking->user, route('client.bookings')));
+    
+            return redirect()->back()->with("success", "Booking extended successfully");
+        });
+    }
+
+    public function extendBookingView(Request $request, $booking_id){
+        $booking = Booking::find($booking_id);
+        if(!$booking || $booking->status != Booking::STATUS_BOOKED || $booking->booking_type != "Vehicle"){
+            return redirect()->back()->with("error", "Invalid booking");
+        }
+        $vehicle = Vehicle::find($booking->vehicle_id);
+        return view("main.org.bookings.extend")
+        ->with([
+            "booking" => $booking,
+            "vehicle" => $vehicle
+        ]);
+    }
+
+    
 
 }

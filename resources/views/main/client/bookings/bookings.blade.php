@@ -164,6 +164,9 @@
                                     </td>
                                     <td>
                                         <h5 class="tw-font-bold text-primary">PHP {{ number_format($booking->computed_price, 2) }} </h5>
+                                        @if($booking->discount > 0)
+                                            <p class="small tw-text-gray-400">With Discount : <br> PHP {{ number_format($booking->discount, 2) }}</p>
+                                        @endif
                                     </td>
                                     <td>
                                         <div class="badge text-white
@@ -175,6 +178,17 @@
                                             {{ $booking->status == 'Booked' ? 'tw-bg-cyan-500' : '' }}">
                                             {{$booking->status}}
                                         </div>
+                                        @if($booking->cancellationDetail)
+                                            <div class="p-2 mt-2 rounded tw-bg-gray-200">
+                                                <div class="badge text-white
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REQUESTED ? 'tw-bg-gray-500' : '' }}
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_APPROVED ? 'tw-bg-green-500' : '' }}
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REJECTED ? 'tw-bg-red-500' : '' }}">
+                                                    {{$booking->cancellationDetail->status}}
+                                                </div>
+                                                <p class="tw-mb-0">Reason : {{ $booking->cancellationDetail->reason }}</p>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td>{{$booking->created_at->diffForHumans()}}</td>
                                 </tr>

@@ -65,5 +65,9 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     public function additionalRates(){
         return $this->hasMany(AdditionalRate::class);
     }
+
+    public function cancellationRates(){
+        return $this->hasMany(CancellationRate::class);
+    }
 }
 

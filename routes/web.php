@@ -151,6 +151,10 @@ Route::prefix('org')
             Route::post('approve-cash/{payment_id}', [OrgController::class, 'approveCashPayment'])->name('org.bookings.payments.approve-cash');
             Route::post('reset-attempts/{payment_id}', [OrgController::class, 'resetAttempts'])->name('org.bookings.payments.reset-attempts');
         });
+        Route::post('approve-cancellation/{booking_id}', [OrgController::class, 'approveCancellation'])->name('org.bookings.approve-cancellation');
+        Route::post('reject-cancellation/{booking_id}', [OrgController::class, 'rejectCancellation'])->name('org.bookings.reject-cancellation');
+        Route::post('extend/{booking_id}', [OrgController::class, 'extendBooking'])->name('org.bookings.extend');
+        Route::get('extend/{booking_id}', [OrgController::class, 'extendBookingView'])->name('org.bookings.extend-view');
     });
 
     Route::prefix("routes")->group(function () {
@@ -191,6 +195,15 @@ Route::prefix('org')
     Route::prefix("reports")->group(function () {
         Route::get('collections', [ReportController::class, 'collections'])->name('org.reports.collections');
         Route::get('refunds', [ReportController::class, 'refunds'])->name('org.reports.refunds');
+    });
+
+    Route::prefix("cancellation-rates")->group(function () {
+        Route::get('', [OrgController::class, 'cancellationRates'])->name('org.cancellation-rates.index');  
+        Route::get('create', [OrgController::class, 'cancellationRateCreate'])->name('org.cancellation-rates.create');
+        Route::post('', [OrgController::class, 'cancellationRateStore'])->name('org.cancellation-rates.store');
+        Route::get('edit/{cancellation_rate_id}', [OrgController::class, 'cancellationRateEdit'])->name('org.cancellation-rates.edit');
+        Route::put('update/{cancellation_rate_id}', [OrgController::class, 'cancellationRateUpdate'])->name('org.cancellation-rates.update');
+        Route::delete('delete/{cancellation_rate_id}', [OrgController::class, 'cancellationRateDelete'])->name('org.cancellation-rates.delete'); 
     });
 });
 

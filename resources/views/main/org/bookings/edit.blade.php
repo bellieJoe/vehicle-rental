@@ -40,20 +40,45 @@
                 </div>
             </div>
 
-            <div class="form-group mt-4 tw-max-w-lg d-flex align-items-center tw-gap-x-2">
-                <label for="action " class="mr-2">Action</label>
+            <div class="form-group">
+                <label for="action" class="mr-2 font-weight-bold">Action</label>
                 <select name="action" id="action" class="form-control">
-                    <option value="">-Select Action-</option>
+                    <option value="" disabled>-Select Action-</option>
                     @if($booking->status == 'Pending')
-                        <option value="APPROVE" class="tw-text-green-500">Approve</option>
-                        <option value="REJECT" class="tw-text-red-500">Reject</option>
+                        <option {{ old('action') == 'APPROVE' ? 'selected' : ''}} value="APPROVE" class="tw-text-green-500">Approve</option>
+                        <option {{ old('action') == 'REJECT' ? 'selected' : ''}} value="REJECT" class="tw-text-red-500">Reject</option>
                     @endif
                 </select>
-                <button type="submit" class="btn btn-primary">Save</button>
                 @error('action')
                     <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
+            <div class="form-group mt-3">
+                <label for="discount" class="mr-2 font-weight-bold">Add Discount</label>
+                <input value="{{ old('discount') }}" type="number" name="discount" id="discount" class="form-control" min="0" placeholder="Enter discount amount" step="0.01">
+                @error('discount')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+            <div class="form-group mt-4 text-right">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         </form>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#action').on('change', function() {
+                if ($(this).val() === 'APPROVE') {
+                    $('#discount').closest('.form-group').show();
+                } else {
+                    $('#discount').closest('.form-group').hide();
+                }
+            });
+
+            @if ($errors->any())
+                $('#action').trigger('change');
+            @endif
+        });
+    </script>
 </x-master>

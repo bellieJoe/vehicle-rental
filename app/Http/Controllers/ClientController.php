@@ -7,6 +7,7 @@ use App\Models\AdditionalRate;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BookingLog;
+use App\Models\CancellationDetail;
 use App\Models\D2dSchedule;
 use App\Models\D2dVehicle;
 use App\Models\Feedback;
@@ -214,8 +215,10 @@ class ClientController extends Controller
     public function cancelBooking(Request $request, $booking_id)
     {    
         $request->validate([
-            'reason' => 'required|max:5000'
+            'reason' => 'required|max:5000',
+            'other_reason' => 'required_if:reason,Others|max:5000'
         ]);
+
         return DB::transaction(function () use ($request, $booking_id) {
     
             $booking = Booking::with([
@@ -227,20 +230,32 @@ class ClientController extends Controller
             
 
             if(!$booking){
-                return redirect()->back()->withErrors(['others' => 'Booking not found']);
+                return redirect()->back()->withErrors(['error' => 'Booking not found']);
             }
 
             if(in_array($booking->status, [Booking::STATUS_CANCELLED, Booking::STATUS_REJECTED, Booking::STATUS_COMPLETED])){
-                return redirect()->back()->withErrors(['others' => 'Invalid booking action.']);
+                return redirect()->back()->withErrors(['error' => 'Invalid booking action.']);
             }
 
-            $booking->update([
-                'status' => Booking::STATUS_CANCELLED
-            ]);
-    
+            if($booking->status == Booking::STATUS_PENDING || $booking->status == Booking::STATUS_TO_PAY){
+                $booking->update([
+                    'status' => Booking::STATUS_CANCELLED
+                ]);
+            }
+
+            if($booking->status == Booking::STATUS_BOOKED){
+                CancellationDetail::create([
+                    'booking_id' => $booking->id,
+                    'status' => Booking::STATUS_CANCEL_REQUESTED,
+                    'reason' => $request->reason != 'Others' ? $request->reason : $request->other_reason,
+                    'by_client' => 1,
+                    'refund_amount' => $booking->getRefundableAmount()
+                ]); 
+            }
+            
             BookingLog::create([
                 'booking_id' => $booking->id,
-                'log' => auth()->user()->name.' Cancelled the booking',
+                'log' => auth()->user()->name.'Client cancels the booking',
                 'reason' => $request->reason
             ]);
     
@@ -254,12 +269,12 @@ class ClientController extends Controller
             }
             Mail::to($to->email)->send(new BookingUpdate(
                 $booking, 
-                "Booking from ".auth()->user()->name." has been cancelled", 
+                auth()->user()->name." has cancels the booking", 
                 auth()->user(),
                 route('org.bookings.index'))
             );
     
-            return redirect()->route('client.bookings')->with('success', 'Booking cancelled successfully');
+            return redirect()->route('client.bookings')->with('success', 'Cancellation has made successfully');
         });
     }
 
@@ -469,7 +484,7 @@ class ClientController extends Controller
             'start_date' => 'required|date|after:'.now()->addDay(),
             'payment_option' => 'required|in:'.Payment::OPTION_FULL_PAYMENT.','.Payment::OPTION_INSTALLMENT,
             'pickup_location' => 'requiredIf:rent_options,With Driver',
-            'number_of_person' => 'required|integer|gte:'.$package->minimum_pax
+            'number_of_person' => 'required|integer|gte:1',
         ]);
 
         $start_date = Carbon::parse($request->start_date)->addHour(7);
@@ -492,9 +507,12 @@ class ClientController extends Controller
         }
 
         return DB::transaction(function () use ($request, $package, $start_date) {
-
-            
-            $computed_price = $package->price_per_person * $request->number_of_person;
+            $computed_price = 0;
+            if($request->number_of_person >= $package->minimum_pax){
+                $computed_price = $package->price_per_person * $request->number_of_person;
+            } else {
+                $computed_price = $package->price_per_person * $package->minimum_pax;
+            }
 
             $booking = Booking::create([
                 'transaction_number' => time().auth()->user()->id,
@@ -566,9 +584,9 @@ class ClientController extends Controller
         }
 
         $paid_amount = $booking->payments->where("payment_status", Payment::STATUS_PAID)->sum("amount");
-        $refundable_amount = $paid_amount - (($booking->computed_price / 2) * 0.05);
+        $refundable_amount = $booking->cancellationDetail->refund_amount;
 
-        if($paid_amount <= 0){
+        if($refundable_amount <= 0){
             return redirect()->back()->with('error', 'No payment has been made for this booking.');
         }
 

@@ -40,8 +40,8 @@
                     <div class="col-sm-6 mb-3">
                         <div class="card">
                             <div class="card-body">
-                                <h6 class="card-title">Refundable Amount</h6>
-                                <p class="card-text h4">PHP {{ number_format($refundable_amount, 2) }}</p>
+                                <h6 class="card-title">Refundable Amount Upon Cancellation</h6>
+                                <p class="card-text h4">{{ $booking->cancellationDetail ? "PHP ".number_format($booking->cancellationDetail->refund_amount, 2) : "N/A" }}</p>
                             </div>
                         </div>
                     </div>

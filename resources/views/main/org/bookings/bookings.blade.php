@@ -66,6 +66,9 @@
                                                 @if(!in_array($booking->status, ["Pending", "Rejected"]))
                                                     <a class="dropdown-item" href="{{ route('org.bookings.payments', $booking->id)}}"><i class="fas fa-credit-card mr-2 tw-text-gray-400"></i> View Payments</a>
                                                 @endif
+                                                @if($booking->status == 'Booked' && $booking->booking_type == 'Vehicle')
+                                                    <a href="{{ route('org.bookings.extend-view', $booking->id)}}" class="dropdown-item"><i class="fas fa-calendar-plus mr-2 tw-text-gray-400"></i>Extend Booking</a>
+                                                @endif
                                                 @if(in_array($booking->status, ['Completed']) && $booking->feedback)
                                                     <button class="dropdown-item" onclick="showFeedbackModal({{$booking->feedback}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i>Show Rating</button>
                                                 @endif
@@ -160,6 +163,24 @@
                                             {{ $booking->status == 'Booked' ? 'tw-bg-cyan-500' : '' }}">
                                             {{$booking->status == 'Pending' ? "Pending for Approval" : $booking->status }}
                                         </div>
+                                        @if($booking->cancellationDetail)
+                                            <div class="p-2 mt-2 rounded tw-bg-gray-200">
+                                                <div class="badge text-white
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REQUESTED ? 'tw-bg-gray-500' : '' }}
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_APPROVED ? 'tw-bg-green-500' : '' }}
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REJECTED ? 'tw-bg-red-500' : '' }}">
+                                                    {{$booking->cancellationDetail->status}}
+                                                </div>
+                                                <div class="tw-bg-white mt-2 p-3 rounded-lg ">
+                                                    <h6 class="tw-font-semibold tw-mb-1">Cancellation Reason:</h6>
+                                                    <p class="tw-mb-2 tw-text-gray-700">{{ $booking->cancellationDetail->reason }}</p>
+                                                </div>
+                                                @if($booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REQUESTED)
+                                                    <button class="btn btn-sm btn-outline-primary" onclick="showApproveCancellationModal({{$booking->cancellationDetail}}, '{{ route('org.bookings.approve-cancellation', $booking->id)}}')">Approve</button>
+                                                    <button class="btn btn-sm btn-outline-danger"  onclick="showRejectCancellationModal({{$booking->cancellationDetail}}, '{{ route('org.bookings.reject-cancellation', $booking->id)}}')">Reject</button>
+                                                @endif
+                                            </div>
+                                        @endif
                                     </td>
                                     <td>{{$booking->created_at->diffForHumans()}} {{ $booking->canBeCompleted() }}</td>
                                 </tr>
@@ -167,7 +188,10 @@
                                     <td colspan="2">
                                         <dl>
                                             <dt>Computed Price:</dt>
-                                            <dd class="tw-font-bold text-primary">PHP {{ number_format($booking->computed_price, 2) }}</dd>
+                                            <dd class="tw-font-bold text-primary mb-0">PHP {{ number_format($booking->computed_price, 2) }}</dd>
+                                            @if($booking->discount > 0)
+                                                <dd class="tw-font-bold small">With Discount : PHP {{ number_format($booking->discount, 2) }}</dd>
+                                            @endif
                                         </dl>
                                     </td>
                                     <td colspan="1">
@@ -203,7 +227,7 @@
                         @endforelse
                     </table>
                 </div>
-                <div class="p-3">
+                <div class="p-3">   
                     {{ $bookings->links() }}
                 </div>
             </div>
@@ -214,4 +238,60 @@
     <x-packages.view-package-modal  />
     <x-bookings.view-logs-modal />
     <x-feedbacks.show-modal />
+
+    <div class="modal fade" id="approveCancellationModal" tabindex="-1" role="dialog" aria-labelledby="approveCancellationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="" method="POST" class="modal-content">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Approve Cancellation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-danger">Are you sure you want to approve this cancellation? This action is irreversible and the booking status will be changed to "Cancelled".</p>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Approve</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="rejectCancellationModal" tabindex="-1" role="dialog" aria-labelledby="rejectCancellationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="" method="POST" class="modal-content">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Reject Cancellation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-danger">Are you sure you want to reject this cancellation? This action is irreversible.</p>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Reject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showApproveCancellationModal(cancellationDetail, route) {
+            $cancellationModal = $('#approveCancellationModal');
+            $cancellationModal.find('form').attr('action', route);
+            $cancellationModal.modal("show");
+        }
+
+        function showRejectCancellationModal(cancellationDetail, route) {
+            $cancellationModal = $('#rejectCancellationModal');
+            $cancellationModal.find('form').attr('action', route);
+            $cancellationModal.modal("show");
+        }
+    </script>
 </x-master>

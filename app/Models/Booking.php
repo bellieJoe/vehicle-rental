@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -105,6 +106,93 @@ class Booking extends Model
 
     public function feedback(){
         return $this->hasOne(Feedback::class);
+    }
+
+    public function cancellationDetail(){
+        return $this->hasOne(CancellationDetail::class);
+    }
+
+    public function getRefundableAmount(){
+        $orgUser = null;
+        $start_date = null;
+        if($this->booking_type == "Vehicle"){
+            $orgUser = $this->vehicle->user;
+            $start_date = $this->bookingDetail->start_datetime;
+        }
+        else if($this->booking_type == "Package"){
+            $orgUser = $this->package->user;
+            $start_date = $this->bookingDetail->start_datetime;
+        }
+        else if($this->booking_type == "Door to Door"){
+            $orgUser = $this->d2dSchedule->user;
+            $start_date = $this->d2dSchedule->depart_date;
+        }
+
+        $start_date = Carbon::parse($start_date);
+        
+        $cancellationRates = $orgUser->cancellationRates->sortBy("remaining_days");
+
+        $percentage = $this->getCancellationRatePercent($start_date, $cancellationRates);
+ 
+        $amount_paid = $this->getAmountPaid();
+        return $amount_paid * ($percentage / 100);
+    }
+
+    public function getStartDate(){
+        if($this->booking_type == "Vehicle"){
+            return $this->bookingDetail->start_datetime;
+        }
+        else if($this->booking_type == "Package"){
+            return $this->bookingDetail->start_datetime;
+        }
+        else if($this->booking_type == "Door to Door"){
+            return $this->d2dSchedule->depart_date;
+        }
+    }
+
+    public function getRefundablePercentage(){
+
+        $orgUser = null;
+        $start_date = null;
+        if($this->booking_type == "Vehicle"){
+            $orgUser = $this->vehicle->user;
+            $start_date = $this->bookingDetail->start_datetime;
+        }
+        else if($this->booking_type == "Package"){
+            $orgUser = $this->package->user;
+            $start_date = $this->bookingDetail->start_datetime;
+        }
+        else if($this->booking_type == "Door to Door"){
+            $orgUser = $this->d2dSchedule->user;
+            $start_date = $this->d2dSchedule->depart_date;
+        }
+
+        $start_date = Carbon::parse($start_date);
+        
+        $cancellationRates = $orgUser->cancellationRates->sortBy("remaining_days");
+
+        return $this->getCancellationRatePercent($start_date, $cancellationRates);
+    }
+
+    function getCancellationRatePercent($start_date, $cancellationRates) {
+    
+        // Sort the cancellation rates by remaining_days in ascending order
+        $cancellationRates = collect($cancellationRates)->sortBy('remaining_days');
+    
+        // Get the current date and calculate the remaining days
+        $currentDate = Carbon::now(); // Get today's date, adjust if needed
+        $remainingDays = $currentDate->diffInDays(Carbon::parse($start_date), false); // Calculate remaining days
+    
+        // Iterate through the sorted cancellation rates to find the applicable one
+        foreach ($cancellationRates as $rate) {
+            // If remaining days is less than or equal to the cancellation rate's remaining_days
+            if ($remainingDays <= $rate['remaining_days']) {
+                return $rate['percent']; // Return the corresponding percentage
+            }
+        }
+    
+        // If no applicable rate is found, return a default percentage (e.g., 0 or a custom default)
+        return 95;
     }
 
 }

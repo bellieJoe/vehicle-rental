@@ -25,20 +25,20 @@
     </div>
 
     <li class="nav-item {{ request()->is('org') || request()->routeIs('org.index') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('org.index') }}">
+        <a class="nav-link py-2 " href="{{ route('org.index') }}">
           <i class="fa-solid fa-house"></i><span>Dashboard</span>
         </a>
    
     </li>
     
 
-    <div class="sidebar-heading">
+    <div class="sidebar-heading mt-3">
         Services
     </div>
     
     {{-- VEHICLES --}}
     <li class="nav-item {{ (request()->is('org/vehicles/*') || request()->routeIs('org.vehicles.index') ? 'active' : '') }}">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRoutes" aria-expanded="true" aria-controls="collapseTwo">
+        <a class="nav-link py-2 collapsed" href="#" data-toggle="collapse" data-target="#collapseRoutes" aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-car"></i><span>Vehicle Rentals</span>
         </a>
         <div id="collapseRoutes" class="collapse 
@@ -55,7 +55,7 @@
 
     {{-- PACKAGES --}}
     <li class="nav-item {{ request()->is('org/packages/*') || request()->routeIs('org.packages.index') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('org.packages.index') }}">
+        <a class="nav-link py-2" href="{{ route('org.packages.index') }}">
           <i class="fa-solid fa-box"></i><span>Packages</span>
         </a>
     </li>
@@ -67,7 +67,7 @@
         || request()->is('org/d2d-vehicles/*') 
         || request()->routeIs('org.d2d-vehicles.index') ? 'active' : '') }}
      ">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+        <a class="nav-link py-2 collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-map-marked-alt"></i><span>Door to Door</span>
             </a>
         <div id="collapseTwo" class="collapse {{ (request()->is('org/routes/*') 
@@ -82,32 +82,39 @@
         </div>
     </li>
 
-    <div class="sidebar-heading">
+
+    <div class="sidebar-heading mt-3">
         Manage Bookings
     </div>
     
     <li class="nav-item {{ request()->is('org/bookings/*') || request()->routeIs('org.bookings.index') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('org.bookings.index') }}">
+        <a class="nav-link py-2" href="{{ route('org.bookings.index') }}">
             <i class="fa-solid fa-book"></i><span>Bookings</span>
         </a>
     </li>
     
-    <li class="nav-item {{ request()->is('org/refunds/*') || request()->routeIs('org.refunds.index') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('org.refunds.index') }}">
+    <li class="nav-item  {{ request()->is('org/refunds/*') || request()->routeIs('org.refunds.index') ? 'active' : '' }}">
+        <a class="nav-link py-2" href="{{ route('org.refunds.index') }}">
             <i class="fa-solid fa-undo"></i><span>Refunds</span>
         </a>
     </li>
+
+    <li class="nav-item {{ request()->routeIs('org.cancellation-rates.index') || request()->is('org/cancellation-rates/*') ? 'active' : '' }}">
+        <a class="nav-link py-2" href="{{ route('org.cancellation-rates.index') }}">
+            <i class="fa-solid fa-percent"></i><span>Cancellation Rates</span>
+        </a>
+    </li>
     
-    <div class="sidebar-heading">
+    <div class="sidebar-heading mt-3">
         Reports
     </div>
     <li class="nav-item {{ request()->routeIs('org.reports.collections') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('org.reports.collections') }}">
+        <a class="nav-link py-2" href="{{ route('org.reports.collections') }}">
             <i class="fa-solid fa-money-bill-wave"></i><span>Payment Collections</span>
         </a>
     </li>
     <li class="nav-item {{ request()->routeIs('org.reports.refunds') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('org.reports.refunds') }}">
+        <a class="nav-link py-2" href="{{ route('org.reports.refunds') }}">
             <i class="fa-solid fa-list"></i><span>Refunds List</span>
         </a>
     </li>

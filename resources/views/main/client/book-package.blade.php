@@ -78,7 +78,13 @@
     $('#number_of_person').on('input', function() {
       let number_of_person = $(this).val();
       let price_per_person = {{ $package->price_per_person }};
-      let computed_price = number_of_person * price_per_person;
+      let computed_price = 0;
+      if(number_of_person >= {{ $package->minimum_pax }}){
+        computed_price = number_of_person * price_per_person;
+      }
+      else {
+        computed_price = price_per_person * {{ $package->minimum_pax }};
+      }
       $('#computed_price').text('Php ' + computed_price.toFixed(2));
     });
   });
