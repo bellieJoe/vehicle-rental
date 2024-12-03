@@ -11217,6 +11217,9 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-mb-0{
     margin-bottom: 0px
 }
+.tw-mb-1{
+    margin-bottom: 0.25rem
+}
 .tw-mb-2{
     margin-bottom: 0.5rem
 }
@@ -11234,9 +11237,6 @@ body.sidebar-toggled footer.sticky-footer {
 }
 .tw-mt-4{
     margin-top: 1rem
-}
-.tw-mb-1{
-    margin-bottom: 0.25rem
 }
 .tw-block{
     display: block
@@ -11269,9 +11269,6 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-max-w-\[300px\]{
     max-width: 300px
 }
-.tw-max-w-lg{
-    max-width: 32rem
-}
 .tw-max-w-md{
     max-width: 28rem
 }
@@ -11293,9 +11290,8 @@ body.sidebar-toggled footer.sticky-footer {
 .tw-justify-center{
     justify-content: center
 }
-.tw-gap-x-2{
-    -moz-column-gap: 0.5rem;
-         column-gap: 0.5rem
+.tw-gap-2{
+    gap: 0.5rem
 }
 .tw-space-y-2 > :not([hidden]) ~ :not([hidden]){
     --tw-space-y-reverse: 0;

@@ -11,6 +11,7 @@ use App\Models\CancellationDetail;
 use App\Models\CancellationRate;
 use App\Models\D2dSchedule;
 use App\Models\D2dVehicle;
+use App\Models\ExtensionRequest;
 use App\Models\Gallery;
 use App\Models\Package;
 use App\Models\Payment;
@@ -825,6 +826,79 @@ class OrgController extends Controller
             "booking" => $booking,
             "vehicle" => $vehicle
         ]);
+    }
+
+    public function approveExtension(Request $request, $extension_id){
+        if(!$extension_id){
+            return redirect()->back()->with("error", "Invalid request");
+        }
+
+        return DB::transaction(function () use ($extension_id){
+            
+            $extension = ExtensionRequest::find($extension_id);
+            $booking = $extension->booking;
+
+            if(!$extension || $extension->status != ExtensionRequest::STATUS_PENDING){
+                return redirect()->back()->with("error", "Invalid request");
+            }
+    
+            if(!$booking || $booking->status != Booking::STATUS_BOOKED || $booking->booking_type != "Vehicle"){
+                return redirect()->back()->with("error", "Invalid booking");
+            }
+    
+            $start_datetime = Carbon::parse($booking->bookingDetail->start_datetime)->addDays($booking->bookingDetail->number_of_days);
+            if(!Vehicle::isVehicleAvailable($booking->vehicle_id, $start_datetime, ($extension->extend_days), Booking::STATUS_BOOKED)){
+                return redirect()->back()->with("error", "Vehicle is not available at the extended number of days.");
+            }   
+    
+            $additional_computed_price = 0;
+            if($booking->bookingDetail->with_driver == 1){
+                $additional_computed_price = $extension->extend_days * $booking->vehicle->rate_w_driver;
+            }
+            else {
+                $additional_computed_price = $extension->extend_days * $booking->vehicle->rate;
+            }
+    
+            $booking->update([
+                "status" => Booking::STATUS_BOOKED,
+                "computed_price" => $booking->computed_price + $additional_computed_price
+            ]);
+
+            $extension->update([
+                "status" => ExtensionRequest::STATUS_APPROVED
+            ]);
+    
+            $booking->bookingDetail->update([
+                "number_of_days" => $extension->extend_days + $booking->bookingDetail->number_of_days
+            ]);
+    
+            $payment_exp = now()->addDay()->greaterThan($booking->bookingDetail->start_datetime) ? $booking->bookingDetail->start_datetime : now()->addDay();
+            Payment::create([
+                'booking_id' => $booking->id,
+                'amount' => $additional_computed_price,
+                'payment_status' => Payment::STATUS_PENDING,
+                'payment_exp' => $payment_exp,
+            ]);
+    
+            Mail::to($booking->user->email)->send(new BookingUpdate($booking, "Your booking has been extended successfully by " . $extension->extend_days . " days.", $booking->user, route('client.bookings')));
+    
+            return redirect()->back()->with("success", "Booking extended successfully");
+        });
+    }
+
+    public function rejectExtension(Request $request, $extension_id){
+        $extension = ExtensionRequest::find($extension_id);
+        if(!$extension || $extension->status != ExtensionRequest::STATUS_PENDING){
+            return redirect()->back()->with("error", "Invalid request");
+        }
+
+        $extension->update([
+            "status" => ExtensionRequest::STATUS_REJECTED
+        ]);
+
+        $booking = $extension->booking;
+        Mail::to($booking->user->email)->send(new BookingUpdate($booking, "Your extension request has been rejected.", $booking->user, route('client.bookings')));
+        return redirect()->back()->with("success", "Extension request rejected successfully");
     }
 
     

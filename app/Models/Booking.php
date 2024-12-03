@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Faker\Extension\Extension;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -150,6 +151,18 @@ class Booking extends Model
         }
     }
 
+    public function getEndDate(){
+        if($this->booking_type == "Vehicle"){
+            return $this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days);
+        }
+        else if($this->booking_type == "Package"){
+            return $this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days)->subHours(9);
+        }
+        else if($this->booking_type == "Door to Door"){
+            return $this->d2dSchedule->depart_date->addDays(1);
+        }
+    }
+
     public function getRefundablePercentage(){
 
         $orgUser = null;
@@ -174,6 +187,10 @@ class Booking extends Model
         return $this->getCancellationRatePercent($start_date, $cancellationRates);
     }
 
+    public function extensionRequests(){
+        return $this->hasMany(ExtensionRequest::class);
+    }
+
     function getCancellationRatePercent($start_date, $cancellationRates) {
     
         // Sort the cancellation rates by remaining_days in ascending order
@@ -193,6 +210,28 @@ class Booking extends Model
     
         // If no applicable rate is found, return a default percentage (e.g., 0 or a custom default)
         return 95;
+    }
+
+    public function getExtensionRequests(){
+        return $this->hasMany(ExtensionRequest::class);
+    }
+
+    public function getLatestExtensionRequest() : ?ExtensionRequest {
+        return ExtensionRequest::where("booking_id", $this->id)
+        ->orderBy("created_at", "desc")
+        ->first();
+    }
+
+    public function getOrganization(){
+        if($this->booking_type == "Vehicle"){
+            return $this->vehicle->user;
+        }
+        else if($this->booking_type == "Package"){
+            return $this->package->user;
+        }
+        else if($this->booking_type == "Door to Door"){
+            return $this->d2dSchedule->d2dVehicle->user;
+        }
     }
 
 }

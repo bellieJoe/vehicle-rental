@@ -10,6 +10,7 @@ use App\Models\BookingLog;
 use App\Models\CancellationDetail;
 use App\Models\D2dSchedule;
 use App\Models\D2dVehicle;
+use App\Models\ExtensionRequest;
 use App\Models\Feedback;
 use App\Models\Package;
 use App\Models\Payment;
@@ -754,6 +755,58 @@ class ClientController extends Controller
             
             return redirect()->route('client.bookings');   
         });
+    }
+
+    public function extendBooking(Request $request, $booking_id){
+        $request->validate([
+            "extend_days" => "required|integer|min:1"
+        ]);
+
+        return DB::transaction(function () use ($request, $booking_id){
+            
+            $booking = Booking::find($booking_id);
+    
+            if(!$booking || $booking->status != Booking::STATUS_BOOKED || $booking->booking_type != "Vehicle"){
+                return redirect()->back()->with("error", "Invalid booking");
+            }
+    
+            $start_datetime = Carbon::parse($booking->bookingDetail->start_datetime)->addDays($booking->bookingDetail->number_of_days);
+            if(!Vehicle::isVehicleAvailable($booking->vehicle_id, $start_datetime, ($request->extend_days), Booking::STATUS_BOOKED)){
+                return redirect()->back()->with("error", "Vehicle is not available at the extended number of days.");
+            }   
+
+            if(ExtensionRequest::where([
+                'booking_id' => $booking->id,
+                'status' => ExtensionRequest::STATUS_PENDING
+            ])->exists()){
+                return redirect()->back()->with("error", "You have already made an extension request for this booking.");
+            }
+
+            ExtensionRequest::create([
+                "booking_id" => $booking->id,
+                "extend_days" => $request->extend_days,
+                "status" => ExtensionRequest::STATUS_PENDING
+            ]);
+    
+            $org = $booking->getOrganization();
+    
+            Mail::to($org->email)->send(new BookingUpdate($booking, "Your booking has a new extension request of " . $request->extend_days . " days.", $org, route('org.bookings.index')));
+    
+            return redirect()->back()->with("success", "Booking extendension request sent successfully");
+        });
+    }
+
+    public function extendBookingView(Request $request, $booking_id){
+        $booking = Booking::find($booking_id);
+        if(!$booking || $booking->status != Booking::STATUS_BOOKED || $booking->booking_type != "Vehicle"){
+            return redirect()->back()->with("error", "Invalid booking");
+        }
+        $vehicle = Vehicle::find($booking->vehicle_id);
+        return view("main.client.bookings.extend")
+        ->with([
+            "booking" => $booking,
+            "vehicle" => $vehicle
+        ]);
     }
 
 

@@ -39,9 +39,9 @@
     
     <div class="card">
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table">
-                        @forelse ($bookings as $booking)
+                @forelse ($bookings as $booking)
+                    <div class="table-responsive">
+                        <table class="table">
                             <thead class="bg-primary text-white">
                                 <tr>
                                     <th scope="col">Transaction #</th>
@@ -62,6 +62,9 @@
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                 @if(in_array($booking->status, ['Pending', 'To Pay', 'Booked']))
                                                     <a class="dropdown-item" href="{{ route('client.bookings.cancelView', $booking->id)}}"><i class="fa-solid fa-circle-xmark mr-2 tw-text-gray-400"></i>Cancel</a>
+                                                @endif
+                                                @if($booking->status == 'Booked' && $booking->booking_type == 'Vehicle')
+                                                    <a class="dropdown-item" href="{{ route('client.bookings.extend-view', $booking->id)}}"><i class="fa-solid fa-calendar-plus mr-2 tw-text-gray-400"></i>Request Extension</a>
                                                 @endif
                                                 @if(in_array($booking->status, ['Cancelled']) && $booking->refunds_count <= 0)
                                                     <a class="dropdown-item" href="{{ route('client.refund.view', $booking->id) }}"><i class="fa-solid fa-arrow-rotate-left mr-2 tw-text-gray-400"></i>Ask Refund</a>
@@ -199,10 +202,10 @@
                                     <td colspan="7" class="text-center">No Bookings</td>
                                 </tr>
                             </tbody>
-                        @endforelse
+                        </table>
+                    </div>
+                @endforelse
                    
-                </table>
-            </div>
             {{ $bookings->links() }}
         </div>
     </div>

@@ -155,6 +155,8 @@ Route::prefix('org')
         Route::post('reject-cancellation/{booking_id}', [OrgController::class, 'rejectCancellation'])->name('org.bookings.reject-cancellation');
         Route::post('extend/{booking_id}', [OrgController::class, 'extendBooking'])->name('org.bookings.extend');
         Route::get('extend/{booking_id}', [OrgController::class, 'extendBookingView'])->name('org.bookings.extend-view');
+        Route::post('approve-extension/{extension_id}', [OrgController::class, 'approveExtension'])->name('org.bookings.approve-extension');
+        Route::post('reject-extension/{extension_id}', [OrgController::class, 'rejectExtension'])->name('org.bookings.reject-extension');
     });
 
     Route::prefix("routes")->group(function () {
@@ -251,6 +253,9 @@ Route::prefix('client')
             Route::get('pay-debit-failed/{token}', [ClientController::class, 'debitFailed'])->name('client.bookings.payments.debit-failed');
             Route::get('receipt/{payment_id}', [ClientController::class, 'downloadReceipt'])->name('client.bookings.payments.receipt');
         });
+
+        Route::get('extend/{booking_id}', [ClientController::class, 'extendBookingView'])->name('client.bookings.extend-view');
+        Route::post('extend/{booking_id}', [ClientController::class, 'extendBooking'])->name('client.bookings.extend');
     });
 });
 

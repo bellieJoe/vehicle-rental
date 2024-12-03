@@ -181,6 +181,33 @@
                                                 @endif
                                             </div>
                                         @endif
+                                        @php
+                                            $extensionRequest = $booking->getLatestExtensionRequest();
+                                        @endphp
+                                        @if($extensionRequest)
+                                            <div class="p-2 mt-2 rounded tw-bg-gray-200">
+                                                <h6 class="tw-font-semibold tw-mb-1">Extension Request:</h6>
+                                                <div class="badge text-white
+                                                    {{ $extensionRequest->status == \App\Models\ExtensionRequest::STATUS_PENDING ? 'tw-bg-gray-500' : '' }}
+                                                    {{ $extensionRequest->status == \App\Models\ExtensionRequest::STATUS_APPROVED ? 'tw-bg-green-500' : '' }}
+                                                    {{ $extensionRequest->status == \App\Models\ExtensionRequest::STATUS_REJECTED ? 'tw-bg-red-500' : '' }}">
+                                                    {{ $extensionRequest->status }}
+                                                </div>
+                                                <p class="tw-mb-0">No. of Days : {{ $extensionRequest->extend_days }}</p>
+                                                @if($extensionRequest->status == \App\Models\ExtensionRequest::STATUS_PENDING)
+                                                    <div class="row p-2 tw-gap-2">
+                                                        <form action="{{ route('org.bookings.approve-extension', $extensionRequest->id) }}" method="POST">
+                                                            @csrf
+                                                            <button class="btn btn-sm btn-outline-primary" type="submit" >Approve</button>
+                                                        </form>
+                                                        <form action="{{ route('org.bookings.reject-extension', $extensionRequest->id) }}" method="POST">
+                                                            @csrf
+                                                            <button class="btn btn-sm btn-outline-danger" type="submit" >Reject</button>
+                                                        </form>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endif
                                     </td>
                                     <td>{{$booking->created_at->diffForHumans()}} {{ $booking->canBeCompleted() }}</td>
                                 </tr>
