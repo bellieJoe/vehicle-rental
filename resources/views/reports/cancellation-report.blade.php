@@ -70,7 +70,7 @@
 
             <div class="printable">
                 <h4 class="h4 text-center">
-                    Refunds List Report - 
+                    Cancellation List Report - 
                     @if ($filter === 'monthly')
                         {{ \Carbon\Carbon::parse(request('month'))->format('F Y') }}
                     @elseif ($filter === 'weekly')
@@ -85,25 +85,25 @@
                 </h4>
 
                 <div class="d-flex justify-content-end align-items-center bg-light p-2 rounded">
-                    <strong class="mr-2">Total Amount:</strong>
-                    <span class="font-weight-bold text-primary">PHP {{ number_format($totalCollections, 2) }}</span>
+                    <strong class="mr-2">Total Cancellations:</strong>
+                    <span class="font-weight-bold text-primary">{{ $bookings->count() }}</span>
                 </div>
 
                 <div class="table-responsive">
                     <table class="table border">
                         <thead>
                         <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Amount</th>
-                            <th scope="col">Requested By</th>
+                            <th scope="col">Transaction #</th>
+                            <th scope="col">Client</th>
+                            <th scope="col">Date Cancelled</th>
                         </tr>
                         </thead>
                         <tbody>
-                            @forelse($refunds as $refund)
+                            @forelse($bookings as $booking)
                                 <tr>
-                                    <td>{{ $refund->refunded_at ? $refund->refunded_at->format('M d, Y h:i A') : 'N/A' }}</td>
-                                    <td>PHP {{ number_format($refund->amount, 2) }}</td>
-                                    <td>{{ $refund->booking->user->name }}</td>
+                                    <td>{{ $booking->transaction_number }}</td>
+                                    <td>{{ $booking->user->name }}</td>
+                                    <td>{{ $booking->updated_at->format('M d, Y h:i A') }}</td>
                                 </tr>
                             @empty
                                 <tr><td colspan="3" class="text-center">No Refunds</td></tr>

@@ -31,10 +31,20 @@
                     Refund Details
                 </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div class="text-muted">Refundable Amount ({{ $booking->getRefundablePercentage() }}%)</div>
-                        <div class="font-weight-bold">PHP {{ number_format($booking->getRefundableAmount(), 2) }}</div>
-                        {{-- {{ $booking->getRefundableAmount()}} --}}
+                    <div class="row">
+                        <div class="col-12 col-sm-4 text-muted">
+                            Amount Paid ({{ number_format($booking->getAmountPaid(), 2) }})
+                        </div>
+                        <div class="col-12 col-sm-4 text-muted">
+                            Refundable Amount ({{ $booking->getRefundablePercentage() }}%) - PHP {{ number_format($booking->getRefundableAmount(), 2) }}
+                        </div>
+                        <div class="col-12 col-sm-4 text-muted">
+                            <p class="mb-0">
+                                <i class="fa-solid fa-info-circle mr-2"></i>
+                                Note: This is the initial refundable amount based on the cancelation policy.
+                                The final refundable amount will be set by the operator.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

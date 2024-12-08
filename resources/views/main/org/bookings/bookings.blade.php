@@ -63,6 +63,14 @@
                                                         <button class="dropdown-item" type="submit"><i class="fas fa-check mr-2 tw-text-green-500"></i>Complete Booking</button>
                                                     </form>
                                                 @endif
+                                                @if($booking->bookingDetail)
+                                                    @if($booking->booking_type == 'Vehicle' && $booking->status == 'Booked' && now()->isBefore($booking->bookingDetail->start_datetime->addHours(3)))
+                                                        <button class="dropdown-item" data-toggle="modal" data-target="#releaseNoticeModal-{{$booking->id}}" type="submit"><i class="fas fa-unlock mr-2 tw-text-red-500"></i>Send Release Notice</button>
+                                                    @endif
+                                                    @if($booking->booking_type == 'Vehicle' && $booking->status == 'Booked' && now()->isBefore($booking->bookingDetail->start_datetime->addDays($booking->bookingDetail->number_of_days)->addHours(3)))
+                                                        <button class="dropdown-item" data-toggle="modal" data-target="#returnNoticeModal-{{$booking->id}}" type="submit"><i class="fas fa-ban mr-2 tw-text-red-500"></i>Send Return Notice</button>
+                                                    @endif
+                                                @endif
                                                 @if(!in_array($booking->status, ["Pending", "Rejected"]))
                                                     <a class="dropdown-item" href="{{ route('org.bookings.payments', $booking->id)}}"><i class="fas fa-credit-card mr-2 tw-text-gray-400"></i> View Payments</a>
                                                 @endif
@@ -73,6 +81,53 @@
                                                     <button class="dropdown-item" onclick="showFeedbackModal({{$booking->feedback}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i>Show Rating</button>
                                                 @endif
                                                 <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})"><i class="fas fa-list mr-2 tw-text-gray-400"></i>View Logs</button>
+                                            </div>
+                                        </div>
+
+                                        {{-- RETURN NOTICE MODAL --}}
+                                        <div class="modal fade" id="returnNoticeModal-{{$booking->id}}" tabindex="-1" role="dialog" aria-labelledby="returnNoticeModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <form action="{{ route('org.send-return-notice', $booking->id)}}" class="modal-content" method="POST">
+                                                    @csrf
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="returnNoticeModalLabel">Send Return Notice</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="returnNoticeMessage">Message</label>
+                                                            <textarea name="message" id="message" class="form-control" rows="3" required></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">Send</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        {{-- RELEASE NOTICE MODAL --}}
+                                        <div class="modal fade" id="releaseNoticeModal-{{$booking->id}}" tabindex="-1" role="dialog" aria-labelledby="returnNoticeModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <form action="{{ route('org.send-release-notice', $booking->id)}}" class="modal-content" method="POST">
+                                                    @csrf
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="releaseNoticeLabel">Send Release Notice</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="message">Message</label>
+                                                            <textarea name="message" id="message" class="form-control" rows="3"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">Send</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </td>
@@ -114,6 +169,10 @@
                                                             <dd class="col-sm-7 mb-0"><a target="_blank" href="{{ asset("images/licenses/".$booking->bookingDetail->front_id)}}">{{ $booking->bookingDetail->front_id }}</a></dd>
                                                             <dt class="col-sm-5 mb-0 tw-font-bold">Back Id :</dt>
                                                             <dd class="col-sm-7 mb-0"><a target="_blank" href="{{ asset("images/licenses/".$booking->bookingDetail->back_id)}}">{{ $booking->bookingDetail->back_id }}</a></dd>
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Pickup Time :</dt>
+                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->rent_out_time ? date('g:i A', strtotime($booking->bookingDetail->rent_out_time)) : "N/A" }}</dd>
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Pickup Location :</dt>
+                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->rent_out_location ? $booking->bookingDetail->rent_out_location : "N/A" }}</dd>
                                                         @endif
                                                     </dl>
                                                 </div>
@@ -168,15 +227,16 @@
                                                 <div class="badge text-white
                                                     {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REQUESTED ? 'tw-bg-gray-500' : '' }}
                                                     {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_APPROVED ? 'tw-bg-green-500' : '' }}
-                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REJECTED ? 'tw-bg-red-500' : '' }}">
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REJECTED ? 'tw-bg-red-500' : '' }}
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_COMPLETED ? 'tw-bg-cyan-500' : '' }}">
                                                     {{$booking->cancellationDetail->status}}
                                                 </div>
-                                                <div class="tw-bg-white mt-2 p-3 rounded-lg ">
+                                                <div class="tw-bg-white my-2 p-3 rounded-lg ">
                                                     <h6 class="tw-font-semibold tw-mb-1">Cancellation Reason:</h6>
                                                     <p class="tw-mb-2 tw-text-gray-700">{{ $booking->cancellationDetail->reason }}</p>
                                                 </div>
                                                 @if($booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REQUESTED)
-                                                    <button class="btn btn-sm btn-outline-primary" onclick="showApproveCancellationModal({{$booking->cancellationDetail}}, '{{ route('org.bookings.approve-cancellation', $booking->id)}}')">Approve</button>
+                                                    <button class="btn btn-sm btn-outline-primary" onclick="showApproveCancellationModal({{$booking->cancellationDetail}}, '{{ route('org.bookings.approve-cancellation', $booking->id)}}', {{ $booking->getAmountPaid() }})">Approve</button>
                                                     <button class="btn btn-sm btn-outline-danger"  onclick="showRejectCancellationModal({{$booking->cancellationDetail}}, '{{ route('org.bookings.reject-cancellation', $booking->id)}}')">Reject</button>
                                                 @endif
                                             </div>
@@ -277,9 +337,27 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-danger">Are you sure you want to approve this cancellation? This action is irreversible and the booking status will be changed to "Cancelled".</p>
-                    
+                    <p class="text-danger">Are you sure you want to approve this cancellation? This action is irreversible.</p>
+                    <table class="table border">
+                        <tr>
+                            <th>Initial Refundable Amount</th>
+                            <td id="initial-refundable-amount"></td>
+                        </tr>
+                        <tr>
+                            <th>Total Amount Paid</th>
+                            <td id="total-amount-paid"></td>
+                        </tr>
+                    </table>
+                    <div class="form-group">
+                        <label for="">Set Refundable Amount</label>
+                        <input value="{{ old('refund_amount') }}" type="number" name="refund_amount" class="form-control" min="0" >
+                        <small class="form-text text-muted">Enter the amount to be refunded to the customer. Leave blank to use the computed refundable amount of the booking.</small>
+                        @error('refund_amount', 'approve_cancellation')
+                            <span class="text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
                 </div>
+                
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Approve</button>
                 </div>
@@ -309,8 +387,15 @@
     </div>
 
     <script>
-        function showApproveCancellationModal(cancellationDetail, route) {
+        $(document).ready(function() {
+            @if($errors->approve_cancellation->any())
+                $('#approveCancellationModal').modal('show');
+            @endif
+        })
+        function showApproveCancellationModal(cancellationDetail, route, amountPaid) {
             $cancellationModal = $('#approveCancellationModal');
+            $cancellationModal.find('#initial-refundable-amount').text('PHP ' + cancellationDetail.refund_amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+            $cancellationModal.find('#total-amount-paid').text('PHP ' + amountPaid.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
             $cancellationModal.find('form').attr('action', route);
             $cancellationModal.modal("show");
         }

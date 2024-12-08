@@ -97,9 +97,25 @@
             @enderror
           </div>
 
+          <hr>
+
+          
           <div class="form-group">
             <x-forms.input name="pickup_location" label="Pickup Location or Landmark" placeholder="Enter pickup location"  />
           </div>
+
+          <div id="rent_out_options">
+            <h5>Rent Out/Release Option</h5>
+            <div class="form-group">
+              <x-forms.input name="rent_out_time" label="Time" type="time" placeholder="Enter rent out time" />
+            </div>
+            <div class="form-group">
+              <x-forms.input name="rent_out_location" label="Location" type="text" placeholder="Enter Location" />
+            </div>
+          </div>
+
+
+          
 
           <hr>
 
@@ -135,10 +151,12 @@
       if (e.target.value === "Without Driver") {
         $('#driver_details').show();
         $('#pickup_location').closest('.form-group').hide();
+        $('#rent_out_options').show();
       }
       else {
         $('#driver_details').hide();
         $('#pickup_location').closest('.form-group').show();
+        $('#rent_out_options').hide();
       }
     });
     $rentOptions.change();

@@ -118,6 +118,11 @@
                                                             <dd class="col-sm-7 mb-0"><a target="_blank" href="{{ asset("images/licenses/".$booking->bookingDetail->front_id)}}">{{ $booking->bookingDetail->front_id }}</a></dd>
                                                             <dt class="col-sm-5 mb-0 tw-font-bold">Back Id :</dt>
                                                             <dd class="col-sm-7 mb-0"><a target="_blank" href="{{ asset("images/licenses/".$booking->bookingDetail->back_id)}}">{{ $booking->bookingDetail->back_id }}</a></dd>
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Pickup Time :</dt>
+                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->rent_out_time ? date('g:i A', strtotime($booking->bookingDetail->rent_out_time)) : "N/A" }}</dd>
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Pickup Location :</dt>
+                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->rent_out_location ? $booking->bookingDetail->rent_out_location : "N/A" }}</dd>
+
                                                         @endif
                                                         @if($booking->bookingDetail->pickup_location)
                                                             <dt class="col-sm-4 tw-font-bold">Pickup Location:</dt>
@@ -186,10 +191,24 @@
                                                 <div class="badge text-white
                                                     {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REQUESTED ? 'tw-bg-gray-500' : '' }}
                                                     {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_APPROVED ? 'tw-bg-green-500' : '' }}
-                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REJECTED ? 'tw-bg-red-500' : '' }}">
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_REJECTED ? 'tw-bg-red-500' : '' }}
+                                                    {{ $booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_COMPLETED ? 'tw-bg-cyan-500' : '' }}">
                                                     {{$booking->cancellationDetail->status}}
                                                 </div>
                                                 <p class="tw-mb-0">Reason : {{ $booking->cancellationDetail->reason }}</p>
+                                                @if($booking->cancellationDetail->status == \App\Models\Booking::STATUS_CANCEL_APPROVED)
+                                                    <p class="tw-mb-0 mt-2">Refund Amount: PHP {{ number_format($booking->cancellationDetail->refund_amount, 2) }}</p>
+                                                    <div class="row">
+                                                        <form class="col-sm" action="{{ route('client.bookings.cancelCancellation', $booking->cancellationDetail->id) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-primary">Continue Booking</button>
+                                                        </form>
+                                                        <form class="col-sm" action="{{ route('client.bookings.completeCancellation', $booking->cancellationDetail->id) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-primary">Continue Cancellation</button>
+                                                        </form>
+                                                    </div>
+                                                @endif
                                             </div>
                                         @endif
                                     </td>

@@ -15,4 +15,12 @@ class Gallery extends Model
     public function organisation(){
         return $this->belongsTo(Organisation::class);
     }
+
+    public function ratings(){
+        return $this->hasMany(GalleryFeedback::class);
+    }
+
+    public function getAverageRating(){
+        return $this->ratings()->avg('rating');
+    }
 }

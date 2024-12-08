@@ -89,6 +89,7 @@ Route::prefix('admin')
         Route::get('edit/{gallery_id}', [GalleryController::class, 'galleryEdit'])->name('admin.galleries.edit');
         Route::put('update/{gallery_id}', [GalleryController::class, 'galleryUpdate'])->name('admin.galleries.update');
         Route::delete('update/{gallery_id}', [GalleryController::class, 'galleryDelete'])->name('admin.galleries.destroy');
+        
     });
 
 });
@@ -197,6 +198,7 @@ Route::prefix('org')
     Route::prefix("reports")->group(function () {
         Route::get('collections', [ReportController::class, 'collections'])->name('org.reports.collections');
         Route::get('refunds', [ReportController::class, 'refunds'])->name('org.reports.refunds');
+        Route::get('cancellations', [ReportController::class, 'cancellations'])->name('org.reports.cancellations');
     });
 
     Route::prefix("cancellation-rates")->group(function () {
@@ -207,6 +209,9 @@ Route::prefix('org')
         Route::put('update/{cancellation_rate_id}', [OrgController::class, 'cancellationRateUpdate'])->name('org.cancellation-rates.update');
         Route::delete('delete/{cancellation_rate_id}', [OrgController::class, 'cancellationRateDelete'])->name('org.cancellation-rates.delete'); 
     });
+
+    Route::post('send-return-notice/{booking_id}', [OrgController::class, 'sendReturnNotice'])->name('org.send-return-notice');
+    Route::post('send-release-notice/{booking_id}', [OrgController::class, 'sendReleaseNotice'])->name('org.send-release-notice');
 });
 
 // CLIENT ROUTES
@@ -244,6 +249,8 @@ Route::prefix('client')
         Route::get('', [ClientController::class, 'bookings'])->name('client.bookings');
         Route::get('cancel/{booking_id}', [ClientController::class, 'cancelBookingView'])->name('client.bookings.cancelView');
         Route::put('cancel/{booking_id}', [ClientController::class, 'cancelBooking'])->name('client.bookings.cancel');
+        Route::post('cancel-cancellation/{cancellation_detail_id}', [ClientController::class, 'cancelCancellation'])->name('client.bookings.cancelCancellation');
+        Route::post('complete-cancellation/{cancellation_detail_id}', [ClientController::class, 'completeCancellation'])->name('client.bookings.completeCancellation');
 
         Route::prefix("payments")->group(function () {
             Route::get('{booking_id}', [ClientController::class, 'paymentsView'])->name('client.bookings.payments');
@@ -256,6 +263,7 @@ Route::prefix('client')
 
         Route::get('extend/{booking_id}', [ClientController::class, 'extendBookingView'])->name('client.bookings.extend-view');
         Route::post('extend/{booking_id}', [ClientController::class, 'extendBooking'])->name('client.bookings.extend');
+
     });
 });
 
@@ -291,3 +299,7 @@ Route::get('/mailable', function () {
 Route::prefix('inquiry')->group(function () {
     Route::post('', [InquiryController::class, 'store'])->name('inquiry.store');
 });
+
+
+//  
+Route::post('add-feedback/{gallery_id}', [GalleryController::class, 'addFeedback'])->name('admin.galleries.add-feedback')->middleware('auth');

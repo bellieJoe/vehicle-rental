@@ -69,5 +69,17 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     public function cancellationRates(){
         return $this->hasMany(CancellationRate::class);
     }
+
+    public function getFrequentlyRentedvehicles(){
+        $vehicles = Vehicle::where('user_id', $this->id)
+        ->withCount('bookings')
+        // ->where('bookings_count', '>', 0)
+        // ->orderBy('bookings_count', 'desc')
+        ->limit(10)
+        ->get()
+        ->sortByDesc('bookings_count', SORT_NUMERIC);
+        
+        return $vehicles;
+    }
 }
 

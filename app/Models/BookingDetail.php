@@ -18,7 +18,7 @@ class BookingDetail extends Model
 
     protected $casts = [
         'start_datetime' => 'datetime',
-        'valid_until' => 'date',
+        'valid_until' => 'date'
     ];
 
     public function booking()

@@ -118,6 +118,11 @@
             <i class="fa-solid fa-list"></i><span>Refunds List</span>
         </a>
     </li>
+    <li class="nav-item {{ request()->routeIs('org.reports.cancellations') ? 'active' : '' }}">
+        <a class="nav-link py-2" href="{{ route('org.reports.cancellations') }}">
+            <i class="fa-solid fa-list"></i><span>Cancellation List</span>
+        </a>
+    </li>
 
   <!-- Divider -->
   <hr class="sidebar-divider d-none d-md-block">

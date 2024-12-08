@@ -25,6 +25,7 @@ class Booking extends Model
     const STATUS_CANCEL_REQUESTED = 'Cancel Requested';
     const STATUS_CANCEL_APPROVED = 'Cancel Approved';
     const STATUS_CANCEL_REJECTED = 'Cancel Rejected';
+    const STATUS_CANCEL_COMPLETED = 'Cancel Completed';
 
     const STATUS_CANCELLED = 'Cancelled';
 

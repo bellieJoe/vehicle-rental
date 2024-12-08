@@ -45,6 +45,38 @@
         </div>
     </div>
 
+    @php
+        $frequentlyBookedVehicles = auth()->user()->getFrequentlyRentedvehicles();
+    @endphp
+
+    {{-- {{ $frequentlyBookedVehicles }} --}}
+
+    <div class="card my-4">
+        <div class="card-header">
+            Frequently Rented Vehicles
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>No. of Bookings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($frequentlyBookedVehicles as $index => $vehicle)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $vehicle->model }}</td>
+                            <td>{{ $vehicle->bookings_count }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');

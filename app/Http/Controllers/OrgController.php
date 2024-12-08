@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mail\BookingUpdate;
 use App\Mail\RefundInvoice;
+use App\Mail\ReleaseNotice;
+use App\Mail\ReturnNotice;
 use App\Models\AdditionalRate;
 use App\Models\Booking;
 use App\Models\BookingLog;
@@ -728,21 +730,38 @@ class OrgController extends Controller
 
 
     // approveCancellation
-    public function approveCancellation($booking_id){
-        $booking = Booking::find($booking_id);
-        $booking->status = Booking::STATUS_CANCELLED;
-        $booking->save();
+    public function approveCancellation(Request $request, $booking_id){
+        $refund_amount = $request->refund_amount;
 
-        CancellationDetail::where([
+        $booking = Booking::find($booking_id);
+        // $booking->status = Booking::STATUS_CANCELLED;
+        // $booking->save();
+
+        if($refund_amount && $refund_amount > $booking->computed_price){
+            return redirect()->back()->with("error", "Refund amount must be below the computed price.");
+        }
+
+        if($refund_amount && $refund_amount > $booking->getAmountPaid()){
+            return redirect()->back()->with("error", "Refund amount is invalid, must be below the total amount paid.");
+        }
+
+        $cancellation = CancellationDetail::where([
             "booking_id" => $booking_id
-        ])
-        ->update([
-            "status" => Booking::STATUS_CANCEL_APPROVED
+        ])->first();
+
+        $cancellation->update([
+            "status" => Booking::STATUS_CANCEL_APPROVED,
         ]);
+
+        if($refund_amount){
+            $cancellation->update([
+                "refund_amount" => $refund_amount
+            ]);
+        }
 
         $client = $booking->user;
 
-        Mail::to($client->email)->send(new BookingUpdate($booking, "Your booking has been cancellation request was approved. To request a refund, please go to your bookings page and provide the necessary information. ", $client, route('client.bookings')));
+        Mail::to($client->email)->send(new BookingUpdate($booking, "Your booking cancellation request was approved. To request a refund, please go to your bookings page and provide the necessary information. ", $client, route('client.bookings')));
 
         return redirect()->back()->with("success", "Booking cancellation has been approved successfully.");
     }
@@ -899,6 +918,46 @@ class OrgController extends Controller
         $booking = $extension->booking;
         Mail::to($booking->user->email)->send(new BookingUpdate($booking, "Your extension request has been rejected.", $booking->user, route('client.bookings')));
         return redirect()->back()->with("success", "Extension request rejected successfully");
+    }
+
+    public function sendReturnNotice(Request $request, $booking_id){
+        $request->validate([
+            "message" => "required"
+        ]);
+        $booking = Booking::find($booking_id);
+        if(!$booking || $booking->status != Booking::STATUS_BOOKED){
+            return redirect()->back()->with("error", "Invalid booking");
+        }
+
+        $org = $booking->getOrganization()->organisation;
+
+        $message = "REMINDER FROM ".$org->org_name."  Please be advised that the vehicle should be returned to ".$org->address." ".$org->org_name." office no later than ".$booking->getEndDate()->format("F d Y H:i A").". Your prompt attention to this matter is greatly appreciated. Thank you.";
+        Mail::to($booking->user->email)->send(new ReturnNotice($message, $request->message, $booking->user->name));
+
+        return redirect()->back()->with("success", "Return notice sent successfully");
+    }
+
+    public function sendReleaseNotice(Request $request, $booking_id){
+        $request->validate([
+            "message" => "required"
+        ]);
+        $booking = Booking::with(["bookingDetail", "user"])->find($booking_id);
+        if(!$booking || $booking->status != Booking::STATUS_BOOKED){
+            return redirect()->back()->with("error", "Invalid booking");
+        }
+
+        $org = $booking->getOrganization()->organisation;
+
+        $message = "";
+        if($booking->bookingDetail->with_driver == 1){
+            $message = "Reminder from ".$org->org_name."that your about to be pick up on or before ".$booking->bookingDetail->star_datetime->format("F d Y H:i A")." from ".$booking->bookingDetail->pickup_location.". Thank you.!";
+        } 
+        else {
+            $message = "Reminder from ".$org->org_name." that your vehicle will be ready to pickup at ".$booking->bookingDetail->rent_out_time.", ".$booking->bookingDetail->rent_out_location.". Thank you.!";
+        }
+        Mail::to($booking->user->email)->send(new ReleaseNotice($message, $request->message, $booking->user->name));
+
+        return redirect()->back()->with("success", "Release notice sent successfully");
     }
 
     

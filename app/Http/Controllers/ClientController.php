@@ -107,7 +107,9 @@ class ClientController extends Controller
             'license_no' => 'required_if:rent_options,Without Driver',
             'front_id' => 'required_if:rent_options,Without Driver|image|mimes:jpeg,png,jpg|max:2048',
             'back_id' => 'required_if:rent_options,Without Driver|image|mimes:jpeg,png,jpg|max:2048',
-            "valid_until" => "nullable|required_if:rent_options,Without Driver|date|after_or_equal:today"
+            "valid_until" => "nullable|required_if:rent_options,Without Driver|date|after_or_equal:today",
+            'rent_out_time' => 'nullable|required_if:rent_options,Without Driver',
+            'rent_out_location' => 'nullable|required_if:rent_options,Without Driver',
         ]);
 
         // check if vehicle is available
@@ -169,6 +171,8 @@ class ClientController extends Controller
                 'front_id' => $request->rent_options === 'Without Driver' ? $front_id : null,
                 'back_id' => $request->rent_options === 'Without Driver' ? $back_id : null,
                 'valid_until' => $request->rent_options === 'Without Driver' ? $request->valid_until : null,
+                'rent_out_time' => $request->rent_options === 'Without Driver' ? $request->rent_out_time : null,
+                'rent_out_location' => $request->rent_options === 'Without Driver' ? $request->rent_out_location : null,
             ]);
 
             BookingLog::create([
@@ -807,6 +811,32 @@ class ClientController extends Controller
             "booking" => $booking,
             "vehicle" => $vehicle
         ]);
+    }
+
+    public function cancelCancellation($cancellation_detail_id){
+        CancellationDetail::find($cancellation_detail_id)->delete();
+
+        return redirect()->back()->with("success", "Cancellation cancelled successfully");
+    }
+
+    public function completeCancellation($cancellation_detail_id){
+        $cancellation_detail = CancellationDetail::find($cancellation_detail_id);
+        
+        $booking = $cancellation_detail->booking;
+
+        $booking->status = Booking::STATUS_CANCELLED;
+        $booking->save();
+
+        CancellationDetail::where([
+            "booking_id" => $booking->id
+        ])->update([
+            "status" => Booking::STATUS_CANCEL_COMPLETED
+        ]);
+
+        Mail::to($booking->user->email)->send(new BookingUpdate($booking, "Your booking has been cancelled.", $booking->user, route('client.bookings')));
+
+        return redirect()->back()->with("success", "Cancellation completed successfully");
+
     }
 
 
