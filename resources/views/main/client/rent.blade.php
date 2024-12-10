@@ -106,8 +106,13 @@
 
           <div id="rent_out_options">
             <h5>Rent Out/Release Option</h5>
-            <div class="form-group">
-              <x-forms.input name="rent_out_time" label="Time" type="time" placeholder="Enter rent out time" />
+            <div class="row">
+              <div class="col-sm mb-3">
+                <x-forms.input name="rent_out_time" label="Rent Out Time" type="datetime-local" placeholder="Enter rent out time" />
+              </div>
+              <div class="col-sm mb-3">
+                <x-forms.input name="return_in_time" label="Return In Time" type="datetime-local" placeholder="Enter return in time" />
+              </div>
             </div>
             <div class="form-group">
               <x-forms.input name="rent_out_location" label="Location" type="text" placeholder="Enter Location" />

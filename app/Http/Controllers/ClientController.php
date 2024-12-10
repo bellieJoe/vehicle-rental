@@ -108,8 +108,26 @@ class ClientController extends Controller
             'front_id' => 'required_if:rent_options,Without Driver|image|mimes:jpeg,png,jpg|max:2048',
             'back_id' => 'required_if:rent_options,Without Driver|image|mimes:jpeg,png,jpg|max:2048',
             "valid_until" => "nullable|required_if:rent_options,Without Driver|date|after_or_equal:today",
-            'rent_out_time' => 'nullable|required_if:rent_options,Without Driver',
+            
             'rent_out_location' => 'nullable|required_if:rent_options,Without Driver',
+        ]);
+
+        $request->validate([
+            'rent_out_time' => [
+                'required_if:rent_options,Without Driver',
+                'date',
+                'after_or_equal:' . $request->start_date,
+            ],
+            'return_in_time' => [
+                'required_if:rent_options,Without Driver',
+                'date',
+                function ($attribute, $value, $fail) use ($request) {
+                    $expectedDate = Carbon::parse($request->start_date)->addDays($request->number_of_days);
+                    if (Carbon::parse($value)->isAfter($expectedDate)) {
+                        $fail("The return in time must be before " . $expectedDate->toDateString());
+                    }
+                },
+            ],
         ]);
 
         // check if vehicle is available
@@ -172,6 +190,7 @@ class ClientController extends Controller
                 'back_id' => $request->rent_options === 'Without Driver' ? $back_id : null,
                 'valid_until' => $request->rent_options === 'Without Driver' ? $request->valid_until : null,
                 'rent_out_time' => $request->rent_options === 'Without Driver' ? $request->rent_out_time : null,
+                'return_in_time' => $request->rent_options === 'Without Driver' ? $request->return_in_time : null,
                 'rent_out_location' => $request->rent_options === 'Without Driver' ? $request->rent_out_location : null,
             ]);
 

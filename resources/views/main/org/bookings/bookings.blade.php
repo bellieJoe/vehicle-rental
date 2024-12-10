@@ -169,8 +169,10 @@
                                                             <dd class="col-sm-7 mb-0"><a target="_blank" href="{{ asset("images/licenses/".$booking->bookingDetail->front_id)}}">{{ $booking->bookingDetail->front_id }}</a></dd>
                                                             <dt class="col-sm-5 mb-0 tw-font-bold">Back Id :</dt>
                                                             <dd class="col-sm-7 mb-0"><a target="_blank" href="{{ asset("images/licenses/".$booking->bookingDetail->back_id)}}">{{ $booking->bookingDetail->back_id }}</a></dd>
-                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Pickup Time :</dt>
-                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->rent_out_time ? date('g:i A', strtotime($booking->bookingDetail->rent_out_time)) : "N/A" }}</dd>
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Preferred Release Time :</dt>
+                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->rent_out_time ? date('F d Y g:i A', strtotime($booking->bookingDetail->rent_out_time)) : "N/A" }}</dd>
+                                                            <dt class="col-sm-5 mb-0 tw-font-bold">Preferred Return Time :</dt>
+                                                            <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->return_in_time ? date('F d Y g:i A', strtotime($booking->bookingDetail->return_in_time)) : "N/A" }}</dd>
                                                             <dt class="col-sm-5 mb-0 tw-font-bold">Pickup Location :</dt>
                                                             <dd class="col-sm-7 mb-0">{{ $booking->bookingDetail->rent_out_location ? $booking->bookingDetail->rent_out_location : "N/A" }}</dd>
                                                         @endif

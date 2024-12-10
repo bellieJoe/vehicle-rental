@@ -930,8 +930,9 @@ class OrgController extends Controller
         }
 
         $org = $booking->getOrganization()->organisation;
+        $end_datetime =  $booking->bookingDetail->with_driver ? Carbon::parse($booking->bookingDetail->start_datetime)->addDays($booking->bookingDetail->number_of_days) : Carbon::parse($booking->bookingDetail->return_in_time) ;
 
-        $message = "REMINDER FROM ".$org->org_name."  Please be advised that the vehicle should be returned to ".$org->address." ".$org->org_name." office no later than ".$booking->getEndDate()->format("F d Y H:i A").". Your prompt attention to this matter is greatly appreciated. Thank you.";
+        $message = "REMINDER FROM ".$org->org_name."  Please be advised that the vehicle should be returned to ".$org->address." ".$org->org_name." office no later than ".$end_datetime->format("F d Y H:i A").". Your prompt attention to this matter is greatly appreciated. Thank you.";
         Mail::to($booking->user->email)->send(new ReturnNotice($message, $request->message, $booking->user->name));
 
         return redirect()->back()->with("success", "Return notice sent successfully");
@@ -950,10 +951,10 @@ class OrgController extends Controller
 
         $message = "";
         if($booking->bookingDetail->with_driver == 1){
-            $message = "Reminder from ".$org->org_name."that your about to be pick up on or before ".$booking->bookingDetail->star_datetime->format("F d Y H:i A")." from ".$booking->bookingDetail->pickup_location.". Thank you.!";
+            $message = "Reminder from ".$org->org_name." that your about to be pick up on or before ".date("F j Y g:i A", strtotime($booking->bookingDetail->star_datetime))." from ".$booking->bookingDetail->pickup_location.". Thank you.!";
         } 
         else {
-            $message = "Reminder from ".$org->org_name." that your vehicle will be ready to pickup at ".$booking->bookingDetail->rent_out_time.", ".$booking->bookingDetail->rent_out_location.". Thank you.!";
+            $message = "Reminder from " . $org->org_name . " that your vehicle will be ready to pickup at " . date("F d Y H:i A", strtotime($booking->bookingDetail->rent_out_time)) . ", " . $booking->bookingDetail->rent_out_location . ". Thank you!";
         }
         Mail::to($booking->user->email)->send(new ReleaseNotice($message, $request->message, $booking->user->name));
 
