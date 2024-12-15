@@ -224,6 +224,7 @@ Route::prefix('client')
         Route::get('rent/{vehicle_id}', [ClientController::class, 'rentView'])->name('client.vehicles.rentView');   
         Route::post('rent', [ClientController::class, 'rentStore'])->name('client.vehicles.rentStore'); 
     });
+
     Route::prefix("packages")->group(function () {
         Route::get('', [ClientController::class, 'packages'])->name('client.packages');
         Route::get('book/{package_id}', [ClientController::class, 'bookPackageView'])->name('client.packages.bookView');
@@ -263,7 +264,8 @@ Route::prefix('client')
 
         Route::get('extend/{booking_id}', [ClientController::class, 'extendBookingView'])->name('client.bookings.extend-view');
         Route::post('extend/{booking_id}', [ClientController::class, 'extendBooking'])->name('client.bookings.extend');
-
+        Route::get('return/{booking_id}', [ClientController::class, 'returnBookingView'])->name('client.bookings.return-view');
+        Route::post('return/{booking_id}', [ClientController::class, 'returnBooking'])->name('client.bookings.return');
     });
 });
 

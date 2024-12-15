@@ -16,6 +16,7 @@ use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Refund;
 use App\Models\Vehicle;
+use App\Models\VehicleReturn;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -107,12 +108,15 @@ class ClientController extends Controller
             'license_no' => 'required_if:rent_options,Without Driver',
             'front_id' => 'required_if:rent_options,Without Driver|image|mimes:jpeg,png,jpg|max:2048',
             'back_id' => 'required_if:rent_options,Without Driver|image|mimes:jpeg,png,jpg|max:2048',
-            "valid_until" => "nullable|required_if:rent_options,Without Driver|date|after_or_equal:today",
+            // "valid_until" => "nullable|required_if:rent_options,Without Driver|date|after_or_equal:today",
             
             'rent_out_location' => 'nullable|required_if:rent_options,Without Driver',
         ]);
 
+        $end_date = Carbon::parse($request->start_date)->addDays($request->number_of_days);
+
         $request->validate([
+            'valid_until' => 'required_if:rent_options,Without Driver|date|after:'.$end_date,
             'rent_out_time' => [
                 'required_if:rent_options,Without Driver',
                 'date',
@@ -858,6 +862,51 @@ class ClientController extends Controller
 
     }
 
+    public function returnBooking(Request $request, $booking_id){
+        $booking = Booking::find($booking_id);
+
+        if(!$booking || $booking->status != Booking::STATUS_BOOKED || $booking->booking_type != "Vehicle"){
+            return redirect()->back()->with("error", "Invalid booking");
+        }
+
+        if($booking->isLateReturn()) {
+            $request->validate([
+                'return_reason' => 'required|max:5000',
+                'penalty' => 'required|numeric'
+            ]);
+        }
+
+        return DB::transaction(function () use ($request, $booking){
+            $bookingDetail = $booking->bookingDetail;
+            $bookingDetail->update([
+                "return_in_time" => $request->return_in_time
+            ]);
+
+            VehicleReturn::create([
+                "booking_id" => $booking->id,
+                "return_reason" => $request->return_reason,
+                "penalty" => $request->penalty,
+
+                "status" => VehicleReturn::STATUS_PENDING
+            ]);
+
+            return redirect()->route("client.bookings")->with("success", "Return waiver request sent successfully");
+        });
+    }
+
+    public function returnBookingView(Request $request, $booking_id){
+        $booking = Booking::find($booking_id);
+        if(!$booking || $booking->status != Booking::STATUS_BOOKED || $booking->booking_type != "Vehicle"){
+            return redirect()->back()->with("error", "Invalid booking");
+        }
+        $vehicle = Vehicle::find($booking->vehicle_id);
+        return view("main.client.bookings.return")
+        ->with([
+            "booking" => $booking,
+            "vehicle" => $vehicle
+        ]);
+    }
+
 
     // other functions
     function _createPayments(Booking $booking, Request $request){
@@ -995,5 +1044,6 @@ class ClientController extends Controller
         return !$overlappingBookings; // Returns true if no overlap, meaning the vehicle is available
     }
 
+    
 
 }

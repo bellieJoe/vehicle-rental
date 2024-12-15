@@ -108,10 +108,10 @@
             <h5>Rent Out/Release Option</h5>
             <div class="row">
               <div class="col-sm mb-3">
-                <x-forms.input name="rent_out_time" label="Rent Out Time" type="datetime-local" placeholder="Enter rent out time" />
+                <x-forms.input name="rent_out_time" label="Rent Out Time/Date" type="datetime-local" placeholder="Enter rent out datetime" />
               </div>
               <div class="col-sm mb-3">
-                <x-forms.input name="return_in_time" label="Return In Time" type="datetime-local" placeholder="Enter return in time" />
+                <x-forms.input name="return_in_time" label="Return In Time/Date" type="datetime-local" placeholder="Enter return in datetime" />
               </div>
             </div>
             <div class="form-group">

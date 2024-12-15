@@ -55,31 +55,44 @@
                             <tbody class="tw-border-4 hover:tw-bg-gray-100 tw-border-8">
                                 <tr>
                                     <td colspan="7" class="py-1" style="text-align:right;">
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Actions
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                @if(in_array($booking->status, ['Pending', 'To Pay', 'Booked']))
-                                                    <a class="dropdown-item" href="{{ route('client.bookings.cancelView', $booking->id)}}"><i class="fa-solid fa-circle-xmark mr-2 tw-text-gray-400"></i>Cancel</a>
-                                                @endif
-                                                @if($booking->status == 'Booked' && $booking->booking_type == 'Vehicle')
-                                                    <a class="dropdown-item" href="{{ route('client.bookings.extend-view', $booking->id)}}"><i class="fa-solid fa-calendar-plus mr-2 tw-text-gray-400"></i>Request Extension</a>
-                                                @endif
-                                                @if(in_array($booking->status, ['Cancelled']) && $booking->refunds_count <= 0)
-                                                    <a class="dropdown-item" href="{{ route('client.refund.view', $booking->id) }}"><i class="fa-solid fa-arrow-rotate-left mr-2 tw-text-gray-400"></i>Ask Refund</a>
-                                                @endif
-                                                @if(!in_array($booking->status, ['Pending', 'Rejected']))
-                                                    <a class="dropdown-item" href="{{ route('client.bookings.payments', $booking->id) }}"><i class="fas fa-credit-card mr-2 tw-text-gray-400" ></i> View Payments</a>
-                                                @endif
-                                                @if(in_array($booking->status, ['Completed']) && !$booking->feedback)
-                                                    <button class="dropdown-item" onclick="showCreateFeedbackModal({{$booking}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i> Rate</button>
-                                                @endif
-                                                @if(in_array($booking->status, ['Completed']) && $booking->feedback)
-                                                    <button class="dropdown-item" onclick="showFeedbackModal({{$booking->feedback}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i>Show Rating</button>
-                                                @endif
-                                                <hr>
-                                                <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})"><i class="fas fa-list mr-2 tw-text-gray-400"></i> View Logs</button>
+                                        <div class="d-flex justify-content-end align-items-center">
+                                            @if($booking->feedback)
+                                                <div class="d-flex align-items-center mr-2 hover:tw-cursor-pointer hove:tw-opacity-75" onclick="showFeedbackModal({{$booking->feedback}})">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="fas fa-star {{ $i <= $booking->feedback->rating ? 'text-warning' : 'text-muted' }}"></i>
+                                                    @endfor
+                                                    <span class="text-muted ml-2">({{$booking->feedback->rating}})</span>
+                                                </div>
+                                            @endif
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Actions
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    @if(in_array($booking->status, ['Pending', 'To Pay', 'Booked']))
+                                                        <a class="dropdown-item" href="{{ route('client.bookings.cancelView', $booking->id)}}"><i class="fa-solid fa-circle-xmark mr-2 tw-text-gray-400"></i>Cancel</a>
+                                                    @endif
+                                                    @if($booking->status == 'Booked' && $booking->booking_type == 'Vehicle')
+                                                        <a class="dropdown-item" href="{{ route('client.bookings.extend-view', $booking->id)}}"><i class="fa-solid fa-calendar-plus mr-2 tw-text-gray-400"></i>Request Extension</a>
+                                                    @endif
+                                                    @if(in_array($booking->status, ['Cancelled']) && $booking->refunds_count <= 0)
+                                                        <a class="dropdown-item" href="{{ route('client.refund.view', $booking->id) }}"><i class="fa-solid fa-arrow-rotate-left mr-2 tw-text-gray-400"></i>Ask Refund</a>
+                                                    @endif
+                                                    @if(!in_array($booking->status, ['Pending', 'Rejected']))
+                                                        <a class="dropdown-item" href="{{ route('client.bookings.payments', $booking->id) }}"><i class="fas fa-credit-card mr-2 tw-text-gray-400" ></i> View Payments</a>
+                                                    @endif
+                                                    @if(in_array($booking->status, ['Completed']) && !$booking->feedback)
+                                                        <button class="dropdown-item" onclick="showCreateFeedbackModal({{$booking}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i> Rate</button>
+                                                    @endif
+                                                    @if(in_array($booking->status, ['Completed']) && $booking->feedback)
+                                                        <button class="dropdown-item" onclick="showFeedbackModal({{$booking->feedback}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i>Show Rating</button>
+                                                    @endif
+                                                    {{-- @if($booking->canReturn())
+                                                        <a class="dropdown-item" href="{{ route('client.bookings.return-view', $booking->id) }}"><i class="fas fa-undo mr-2 tw-text-gray-400"></i>Return</a>
+                                                    @endif --}}
+                                                    <hr>
+                                                    <button class="dropdown-item" onclick="showViewLogsModal({{ $booking->bookingLogs }})"><i class="fas fa-list mr-2 tw-text-gray-400"></i> View Logs</button>
+                                                </div>
                                             </div>
                                         </div>
                                         
@@ -216,6 +229,26 @@
                                     </td>
                                     <td>{{$booking->created_at->diffForHumans()}}</td>
                                 </tr>
+                                @if($booking->isLateReturn())
+                                    <tr>
+                                        <td colspan="7" class="">
+                                            <div class="alert alert-warning" role="alert">
+                                                <span class="tw-font-bold">Warning:</span>
+                                                <p>You are seeing this message for one or more of the following reasons:</p>
+                                                <ul>
+                                                    <li>The booking should have already been completed by {{ $booking->getEndDate()->format('F j, Y g:i A') }}.</li>
+                                                    <li>If you have already returned the vehicle, please wait for the organization to review your return and mark this booking as "Completed".</li>
+                                                    <li>If the vehicle has not been returned, it means you have missed the return date. Note that additional charges may apply for late returns.</li>
+                                                </ul>
+                                            </div>
+                                            @if(!$booking->vehicleReturn)
+                                                <a href="{{ route('client.bookings.return-view', $booking->id) }}" class="btn btn-sm btn-warning float-right" >Update Return Date/Time</a>
+                                            @else
+                                                <button class="btn btn-sm btn-warning float-right" disabled>Update Return Date/Time</button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endif
                             </tbody>
                         @empty
                             <tbody>

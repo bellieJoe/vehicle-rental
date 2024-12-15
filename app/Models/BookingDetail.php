@@ -13,7 +13,7 @@ class BookingDetail extends Model
     protected $guarded = [];
 
     protected $dates = [
-        'start_datetime', 'valid_until', "cancelled_at"
+        'start_datetime', 'valid_until', "cancelled_at", "return_in_time"
     ];
 
     protected $casts = [

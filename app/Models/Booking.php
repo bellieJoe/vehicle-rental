@@ -7,6 +7,7 @@ use Faker\Extension\Extension;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use PDO;
 
 class Booking extends Model
 {
@@ -233,6 +234,63 @@ class Booking extends Model
         else if($this->booking_type == "Door to Door"){
             return $this->d2dSchedule->d2dVehicle->user;
         }
+    }
+
+    public function canReturn(){
+        if($this->booking_type != "Vehicle"){
+            return false;
+        }
+        
+        if($this->status != "Booked"){
+            return false;
+        }
+
+        if(now()->isAfter($this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days)->subHours(12))){
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isLateReturn() {
+        if($this->booking_type != "Vehicle"){
+            return false;
+        }
+        
+        if($this->status != "Booked"){
+            return false;
+        }
+
+        if(now()->isAfter($this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days))){
+            return true;
+        }
+
+        return false;
+    }
+
+    public function computePenalty(){
+        if($this->booking_type != "Vehicle"){
+            return 0;
+        }
+
+        if(now()->isAfter($this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days))){
+            $days = now()->diffInHours($this->bookingDetail->start_datetime->addDays($this->bookingDetail->number_of_days));
+            $daysFloat = $days / 24;
+            return $daysFloat * $this->vehicle->rate;
+        }
+
+        return 0;
+    }
+
+    public function getPenaltyPerHour(){
+        if($this->booking_type != "Vehicle"){
+            return 0;
+        }
+        return $this->vehicle->rate / 24;    
+    }
+
+    public function vehicleReturn () {
+        return $this->hasOne(VehicleReturn::class);
     }
 
 }
