@@ -87,6 +87,9 @@
                                                     @if(in_array($booking->status, ['Completed']) && $booking->feedback)
                                                         <button class="dropdown-item" onclick="showFeedbackModal({{$booking->feedback}})"><i class="fas fa-star mr-2 tw-text-gray-400"></i>Show Rating</button>
                                                     @endif
+                                                    @if($booking->status == 'Booked' && $booking->booking_type == 'Vehicle' && now()->isAfter($booking->getEndDate()->subHours(24)) && !$booking->vehicleReturn)
+                                                        <a class="dropdown-item" href="{{ route('client.bookings.return-view', $booking->id) }}"><i class="fas fa-undo mr-2 tw-text-gray-400"></i>Return In</a>
+                                                    @endif
                                                     {{-- @if($booking->canReturn())
                                                         <a class="dropdown-item" href="{{ route('client.bookings.return-view', $booking->id) }}"><i class="fas fa-undo mr-2 tw-text-gray-400"></i>Return</a>
                                                     @endif --}}
@@ -95,7 +98,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
                                     </td>
                                 </tr>
                                 <tr>
@@ -244,8 +246,15 @@
                                             @if(!$booking->vehicleReturn)
                                                 <a href="{{ route('client.bookings.return-view', $booking->id) }}" class="btn btn-sm btn-warning float-right" >Update Return Date/Time</a>
                                             @else
-                                                <button class="btn btn-sm btn-warning float-right" disabled>Update Return Date/Time</button>
+                                                <button class="btn btn-sm btn-warning float-right" disabled>Return</button>
                                             @endif
+                                        </td>
+                                    </tr>
+                                @endif
+                                @if($booking->stats == "Booked" && $booking->vehicleReturn && $booking->vehicleReturn->status == \App\Models\VehicleReturn::STATUS_REJECTED)
+                                    <tr>
+                                        <td colspan="7">
+                                            The organization has approved your return with extra charges for late return.
                                         </td>
                                     </tr>
                                 @endif
@@ -253,7 +262,9 @@
                         @empty
                             <tbody>
                                 <tr>
-                                    <td colspan="7" class="text-center">No Bookings</td>
+                                    <td  class="text-center p-2">
+                                        <p class="m-0 text-center p-3">No Bookings</p>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

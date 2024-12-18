@@ -46,16 +46,16 @@
 
         <form action="{{ route('client.bookings.return', $booking->id) }}" method="POST">
             @csrf
+            <div class="form-group">
+                <label for="return_in_time">Return Date/Time</label>
+                <input type="datetime-local" name="return_in_time" id="return_in_time" min="{{ now()->addHours(1)->format('Y-m-d H:i') }}" max="{{ $booking->isLateReturn() ? '' : $booking->getEndDate()->format('Y-m-d H:i') }}" class="form-control @error('return_in_time') is-invalid @enderror" placeholder="Return Date/Time" required >
+                @error('return_in_time')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
             @if($booking->isLateReturn())
-                <div class="form-group">
-                    <label for="return_in_time">Return Date/Time</label>
-                    <input type="datetime-local" name="return_in_time" id="return_in_time" min="{{ now()->addHours(1)->format('Y-m-d H:i') }}" class="form-control @error('return_in_time') is-invalid @enderror" placeholder="Return Date/Time" required >
-                    @error('return_in_time')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
                 <div class="form-group">
                     <label for="return_date">Penalty (PHP)</label>
                     <input type="number" name="penalty" id="penalty" class="form-control @error('penalty') is-invalid @enderror" placeholder="Penalty (PHP)" value="{{ old('penalty', 0) }}" required readonly>
@@ -77,7 +77,7 @@
                 </div>
             @endif
 
-            <button type="submit" class="btn btn-primary">Update/Waive Charges</button>
+            <button type="submit" class="btn btn-primary">Continue</button>
         </form>
     </div>
 </div>

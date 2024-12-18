@@ -158,6 +158,7 @@ Route::prefix('org')
         Route::get('extend/{booking_id}', [OrgController::class, 'extendBookingView'])->name('org.bookings.extend-view');
         Route::post('approve-extension/{extension_id}', [OrgController::class, 'approveExtension'])->name('org.bookings.approve-extension');
         Route::post('reject-extension/{extension_id}', [OrgController::class, 'rejectExtension'])->name('org.bookings.reject-extension');
+        Route::post('approve-return/{return_id}', [OrgController::class, 'approveReturn'])->name('org.bookings.approve-return');
     });
 
     Route::prefix("routes")->group(function () {
@@ -266,6 +267,7 @@ Route::prefix('client')
         Route::post('extend/{booking_id}', [ClientController::class, 'extendBooking'])->name('client.bookings.extend');
         Route::get('return/{booking_id}', [ClientController::class, 'returnBookingView'])->name('client.bookings.return-view');
         Route::post('return/{booking_id}', [ClientController::class, 'returnBooking'])->name('client.bookings.return');
+        
     });
 });
 

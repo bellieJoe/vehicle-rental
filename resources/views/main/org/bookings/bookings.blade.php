@@ -295,34 +295,47 @@
                                         </h5>
                                     </td>
                                 </tr>
-                                @if($booking->vehicleReturn && $booking->vehicleReturn->status == \App\Models\VehicleReturn::STATUS_PENDING)
+                                @if($booking->booking_type == "Vehicle" && $booking->status == "Booked" && now()->isAfter($booking->getEndDate()))
+                                    <tr>
+                                        <td colspan="5" class="text-center text-danger">
+                                            <strong>Reminder:</strong> This booking should already be completed and vehicle should already be returned. Kindly mark this booking as "Completed" if the client have already returned the vehicle.
+                                        </td>
+                                    </tr>
+                                @endif
+                                @if($booking->vehicleReturn && $booking->vehicleReturn->status != \App\Models\VehicleReturn::STATUS_APPROVED)
                                     <tr>
                                         <td colspan="5">
                                             <div class="card">
                                                 <div class="card-body">
-                                                    <form action="{{ route('org.bookings.approve-vehicle-return', $booking->id) }}" method="POST">
+                                                    <form action="{{ route('org.bookings.approve-return', $booking->vehicleReturn->id) }}" method="POST">
                                                         @csrf
                                                         <h6 class="card-title tw-font-semibold mb-0">Vehicle Return</h6>
-                                                        <p class="card-text">The Client has requested to adjust and waive the vehicle return date and penalties.</p>
+                                                        <p class="card-text">The Client has notified you that he/she is ready to return the vehicle.</p>
                                                         <table class="table table-sm border table-bordered">
                                                             <tr>
-                                                                <td class="pr-2 tw-font-semibold">Reason for Adjustment:</td>
-                                                                <td>{{ $booking->vehicleReturn->return_reason }}</td>
+                                                                <td class="pr-2 tw-font-semibold">Reason for Late Return :</td>
+                                                                <td>{{ $booking->vehicleReturn->return_reason ? $booking->vehicleReturn->return_reason : '-' }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td class="pr-2 tw-font-semibold">Extra Charges if rejected:</td>
-                                                                <td>PHP {{ $booking->vehicleReturn->penalty }}</td>
+                                                                <td>{{ $booking->vehicleReturn->penalty ? "PHP ".$booking->vehicleReturn->penalty : '-' }}</td>
                                                             </tr>
                                                             <tr>
-                                                                <td class="pr-2 tw-font-semibold">Adjusted Date:</td>
+                                                                <td class="pr-2 tw-font-semibold">Return Date/Time:</td>
                                                                 <td>{{ $booking->bookingDetail ? $booking->bookingDetail->return_in_time->format('F j, Y g:i A') : '-' }}</td>
                                                             </tr>
                                                         </table>
-                                                        <div class="d-flex justify-content-end align-items-center tw-gap-2 ">
-                                                            <label for="" class="mr-2">Action : </label>
-                                                            <button class="btn btn-sm btn-outline-danger" name="reject">Reject</button>
-                                                            <button class="btn btn-sm btn-outline-primary" name="approve">Approved</button>
-                                                        </div>
+                                                        @if($booking->vehicleReturn->status == \App\Models\VehicleReturn::STATUS_PENDING)
+                                                            <div class="d-flex justify-content-end align-items-center tw-gap-2 ">
+                                                                <label for="" class="mr-2">Action : </label>
+                                                                @if($booking->vehicleReturn->penalty && $booking->vehicleReturn->penalty > 0 && $booking->vehicleReturn->return_reason)
+                                                                    <button class="btn btn-sm btn-outline-primary" name="action" value="reject">Approve & Include Charges</button>
+                                                                    <button class="btn btn-sm btn-outline-primary" name="action" value="approve">Approve & Waive Charges</button>
+                                                                @else
+                                                                    <button class="btn btn-sm btn-outline-primary" name="action" value="approve">Approve</button>
+                                                                @endif
+                                                            </div>
+                                                        @endif
                                                     </form>
                                                 </div>
                                             </div>

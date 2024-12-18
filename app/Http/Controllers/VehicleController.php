@@ -150,7 +150,7 @@ class VehicleController extends Controller
     {
         $bookings = Booking::where('vehicle_id', $vehicle_id)
             ->where('status', 'Booked')
-            ->where('start_datetime', '>=', now())
+            ->where('start_datetime', '>=', now()->subDays(30))
             ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
             ->select('booking_details.start_datetime', 'booking_details.number_of_days')
             ->get();

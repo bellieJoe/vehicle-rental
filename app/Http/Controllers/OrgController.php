@@ -21,6 +21,7 @@ use App\Models\Refund;
 use App\Models\Route;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\VehicleReturn;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -313,7 +314,7 @@ class OrgController extends Controller
             $query->where('user_id', $user_id);
         })
             ->where('status', 'Booked')
-            ->where('start_datetime', '>=', now())
+            ->where('start_datetime', '>=', now()->subDays(30))
             ->join('booking_details', 'bookings.id', '=', 'booking_details.booking_id')
             ->select('booking_details.start_datetime', 'booking_details.number_of_days', 'vehicle_id')
             ->get();
@@ -961,6 +962,39 @@ class OrgController extends Controller
         return redirect()->back()->with("success", "Release notice sent successfully");
     }
 
-    
+    public function approveReturn(Request $request, $return_id){
+        $return = VehicleReturn::find($return_id);
+        if(!$return || $return->status != VehicleReturn::STATUS_PENDING){
+            return redirect()->back()->with("error", "Invalid request");
+        }
 
+        $request->validate([
+            "action" => "required|in:approve,reject"
+        ]);
+
+        if($request->action == "approve"){
+
+            $return->update([
+                "status" => VehicleReturn::STATUS_APPROVED
+            ]);
+
+            return redirect()->back()->with("success", "Return request approved successfully");
+        }
+        else {
+            $return->update([
+                "status" => VehicleReturn::STATUS_REJECTED
+            ]);
+
+            $booking = Booking::find($return->booking_id);
+
+            Payment::create([
+                'booking_id' => $booking->id,
+                'amount' => $return->penalty,
+                'payment_status' => Payment::STATUS_PENDING,
+                'payment_exp' => now()->addDay(),
+            ]);
+
+            return redirect()->back()->with("success", "Return request rejected successfully");
+        }
+    }
 }
