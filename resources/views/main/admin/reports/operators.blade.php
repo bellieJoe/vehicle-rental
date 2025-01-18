@@ -56,6 +56,12 @@
                                 font-family: Arial, sans-serif;
                                 margin: 20px;
                             }
+                            .text-center {
+                                text-align: center;
+                            }
+                            h1, h2, h3, h4, h5, h6 {
+                                margin-bottom: 0px;
+                            }
                             .table {
                                 width: 100%;
                                 border-collapse: collapse;

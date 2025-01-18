@@ -35,7 +35,7 @@
                 @php
                     $operator_name = request("user_id") && request("user_id") != "All" ? $operators->where('user_id', request("user_id"))->first()->org_name : 'All';
                 @endphp
-                <h6 class="text-center">Operator : {{ $operator_name }}</h6>
+                <h6 style="margin-top: 0px" class="text-center">Operator : {{ $operator_name }}</h6>
 
                 {{-- <div class="d-flex justify-content-end align-items-center bg-light p-2 rounded">
                     <strong class="mr-2">Total Cancellations:</strong>
@@ -141,6 +141,12 @@
                             body {
                                 font-family: Arial, sans-serif;
                                 margin: 20px;
+                            }
+                            .text-center {
+                                text-align: center;
+                            }
+                            h1, h2, h3, h4, h5, h6 {
+                                margin-bottom: 0px;
                             }
                             .table {
                                 width: 100%;
