@@ -31,6 +31,12 @@
 
             <div class="printable">
 
+                <h3 class="text-center">Service Feedbacks</h3>
+                @php
+                    $operator_name = request("user_id") && request("user_id") != "All" ? $operators->where('user_id', request("user_id"))->first()->org_name : 'All';
+                @endphp
+                <h6 class="text-center">Operator : {{ $operator_name }}</h6>
+
                 {{-- <div class="d-flex justify-content-end align-items-center bg-light p-2 rounded">
                     <strong class="mr-2">Total Cancellations:</strong>
                     <span class="font-weight-bold text-primary">{{ $bookings->count() }}</span>
