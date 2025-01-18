@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\D2dVehicle;
+use App\Models\Organisation;
+use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Refund;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -187,6 +192,66 @@ class ReportController extends Controller
         return view('reports.cancellation-report')->with([
             'bookings' => $bookings->get(),
             'filter' => $filter,
+        ]);
+    }
+
+    public function operators() {
+        $operators = Organisation::query();
+        $operators->leftJoin('users', 'users.id', '=', 'organisations.user_id');
+        return view("main.admin.reports.operators")
+        ->with([
+            "operators" => $operators->get(),
+            "operator_count" => $operators->count()
+        ]);
+    }
+
+    public function services() {
+        $vehicles = Vehicle::query();
+        $d2ds = D2dVehicle::query();
+        $packages = Package::query();
+        $operators = Organisation::query();
+
+        $vehicles->with('user', 'user.organisation');
+        $packages->with('user', 'user.organisation');
+        $d2ds->with('user', 'user.organisation');
+
+        if(request('user_id') && request('user_id') != 'All') {
+            $vehicles->where('user_id', request('user_id'));
+            $d2ds->where('user_id', request('user_id'));
+            $packages->where('user_id', request('user_id'));
+        }
+        
+        return view("main.admin.reports.services")
+        ->with([
+            "vehicles" => $vehicles->get(),
+            "d2ds" => $d2ds->get(),
+            "packages" => $packages->get(),
+            "operators" => $operators->get()
+        ]);
+    }
+
+    public function feedbacks() {
+        $vehicles = Vehicle::query();
+        $d2ds = D2dVehicle::query();
+        $packages = Package::query();
+        $operators = Organisation::query();
+
+        $vehicles->with('user', 'user.organisation');
+        $packages->with('user', 'user.organisation');
+        $d2ds->with('user', 'user.organisation');
+
+        if(request('user_id') && request('user_id') != 'All') {
+            $vehicles->where('user_id', request('user_id'));
+            $d2ds->where('user_id', request('user_id'));
+            $packages->where('user_id', request('user_id'));
+        }
+        
+        return view("main.admin.reports.feedbacks")
+        ->with([
+            "vehicles" => $vehicles->get(),
+            "d2ds" => $d2ds->get(),
+            "packages" => $packages->get(),
+            "operators" => $operators->get()
         ]);
     }
     

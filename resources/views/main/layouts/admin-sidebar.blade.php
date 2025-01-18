@@ -47,6 +47,20 @@
       </a>
   </li>
 
+  <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReports" aria-expanded="true" aria-controls="collapseReports">
+            <i class="fas fa-fw fa-chart-pie"></i><span>Reports</span>
+        </a>
+        <div id="collapseReports" class="collapse {{ (request()->is('admin/reports/*') ? 'show' : '') }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                {{-- <h6 class="collapse-header">Custom Components:</h6> --}}
+                <a class="collapse-item {{ request()->routeIs('admin.reports.operators') ? 'active' : '' }}" href="{{ route('admin.reports.operators') }}">Operators</a>
+                <a class="collapse-item {{ request()->routeIs('admin.reports.services') ? 'active' : '' }}" href="{{ route('admin.reports.services') }}">Services</a>
+                <a class="collapse-item {{ request()->routeIs('admin.reports.feedbacks') ? 'active' : '' }}" href="{{ route('admin.reports.feedbacks') }}">Rates/Feedbacks</a>
+            </div>
+        </div>
+    </li>
+
 
   <!-- Divider -->
   <hr class="sidebar-divider d-none d-md-block">

@@ -92,6 +92,12 @@ Route::prefix('admin')
         
     });
 
+    Route::prefix("reports")->group(function () {
+        Route::get('operators', [ReportController::class, 'operators'])->name('admin.reports.operators');
+        Route::get('services', [ReportController::class, 'services'])->name('admin.reports.services');
+        Route::get('feedbacks', [ReportController::class, 'feedbacks'])->name('admin.reports.feedbacks');
+    });
+
 });
 
 

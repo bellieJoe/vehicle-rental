@@ -105,23 +105,24 @@
         </a>
     </li>
     
-    <div class="sidebar-heading mt-3">
-        Reports
-    </div>
-    <li class="nav-item {{ request()->routeIs('org.reports.collections') ? 'active' : '' }}">
-        <a class="nav-link py-2" href="{{ route('org.reports.collections') }}">
-            <i class="fa-solid fa-money-bill-wave"></i><span>Payment Collections</span>
+    <li class="nav-item {{ request()->routeIs('org.reports.collections') || request()->routeIs('org.reports.refunds') || request()->routeIs('org.reports.cancellations') ? 'active' : '' }}">
+        <a class="nav-link py-2 collapsed" href="#" data-toggle="collapse" data-target="#collapseReports" aria-expanded="true" aria-controls="collapseReports">
+            <i class="fa-solid fa-chart-pie"></i><span>Reports</span>
         </a>
-    </li>
-    <li class="nav-item {{ request()->routeIs('org.reports.refunds') ? 'active' : '' }}">
-        <a class="nav-link py-2" href="{{ route('org.reports.refunds') }}">
-            <i class="fa-solid fa-list"></i><span>Refunds List</span>
-        </a>
-    </li>
-    <li class="nav-item {{ request()->routeIs('org.reports.cancellations') ? 'active' : '' }}">
-        <a class="nav-link py-2" href="{{ route('org.reports.cancellations') }}">
-            <i class="fa-solid fa-list"></i><span>Cancellation List</span>
-        </a>
+        <div id="collapseReports" class="collapse {{ request()->routeIs('org.reports.collections') || request()->routeIs('org.reports.refunds') || request()->routeIs('org.reports.cancellations') ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                {{-- <h6 class="collapse-header">Custom Components:</h6> --}}
+                <a class="collapse-item {{ request()->routeIs('org.reports.collections') ? 'active' : '' }}" href="{{ route('org.reports.collections') }}">
+                    Payment Collections
+                </a>
+                <a class="collapse-item {{ request()->routeIs('org.reports.refunds') ? 'active' : '' }}" href="{{ route('org.reports.refunds') }}">
+                    Refunds List
+                </a>
+                <a class="collapse-item {{ request()->routeIs('org.reports.cancellations') ? 'active' : '' }}" href="{{ route('org.reports.cancellations') }}">
+                    Cancellation List
+                </a>
+            </div>
+        </div>
     </li>
 
   <!-- Divider -->
